@@ -361,10 +361,13 @@ export default defineComponent({
     }
 
     this.presets = await UserSettings.loadPresets();
-    this.defaultDownloadDir = await TransmissionRPC.getSessionArgument('download-dir');
+    this.defaultDownloadDir = await TransmissionRPC.getSessionArgument('download-dir') || "";
 
-    if(UserSettings.state.rememberSelectedPreset){
+    if(UserSettings.state.rememberSelectedPreset && UserSettings.state.selectedPreset){
       this.selectPreset(UserSettings.state.selectedPreset);
+    }
+    else if(!this.settings.downloadDir){
+      this.settings.downloadDir = this.defaultDownloadDir;
     }
   },
   watch: {
@@ -421,8 +424,9 @@ export default defineComponent({
         paused:!this.settings.start
       } as Record<string,any>;
       
-      if(this.settings.downloadDir!=""){
-        args["download-dir"]=this.settings.downloadDir;
+      const dir = this.settings.downloadDir;
+      if(dir && dir !== Locale.downloadDir){
+        args["download-dir"]=dir;
       }
 
       const wanted=[];
@@ -486,19 +490,25 @@ export default defineComponent({
           break;
       }
 
-      return TransmissionRPC.torrentAdd({...this.settings, ...args});
+      const payload: Record<string, any> = {...this.settings, ...args};
+      // The RPC argument is download-dir. downloadDir would be sent as download_dir.
+      delete payload.downloadDir;
+      return TransmissionRPC.torrentAdd(payload);
     },
     selectPreset(name: string){
       this.selectedPreset = this.selectedPreset==name ? "" : name;
       UserSettings.setValue("selectedPreset", this.selectedPreset, true);
       if(this.selectedPreset!=""){
         this.settings = {...this.presets[name]};
+        if(!this.settings.downloadDir){
+          this.settings.downloadDir = this.defaultDownloadDir;
+        }
       }
       else {
         this.settings = {
           start:true,
           bandwidthPriority:0,
-          downloadDir:""
+          downloadDir:this.defaultDownloadDir
         }
       }
     },

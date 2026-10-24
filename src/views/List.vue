@@ -116,6 +116,12 @@
           <ion-button fill="clear" @click="serverInformations()" :aria-label="Locale.serverInformation">
             <ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon>
           </ion-button>
+          <ion-button fill="clear" @click="stopAll()" :aria-label="Locale.stopAll">
+            <ion-icon slot="icon-only" :ios="pauseCircleOutline" :md="pauseCircleSharp"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="resumeAll()" :aria-label="Locale.resumeAll">
+            <ion-icon slot="icon-only" :ios="playCircleOutline" :md="playCircleSharp"></ion-icon>
+          </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
           <div>
@@ -188,7 +194,10 @@ import {
   linkSharp,
   analyticsOutline,
   analyticsSharp,
-  
+  pauseCircleOutline,
+  pauseCircleSharp,
+  playCircleOutline,
+  playCircleSharp,
 } from 'ionicons/icons';
 import ConnectionStatus from './components/ConnectionStatus.vue';
 import TorrentDetails from './TorrentDetails.vue'
@@ -344,6 +353,10 @@ export default defineComponent({
       linkSharp,
       analyticsOutline,
       analyticsSharp,
+      pauseCircleOutline,
+      pauseCircleSharp,
+      playCircleOutline,
+      playCircleSharp,
     }
   },
   async created() {
@@ -454,6 +467,24 @@ export default defineComponent({
         .then((response) => {
           Utils.responseToast(response.result)
           for (const torrent of this.getTorrentsByIds(torrentIds)) {
+            torrent.status=Utils.actionStatusResult(action,torrent.status,torrent.percentDone);
+          }
+        })
+        .catch((error) => {
+          Utils.responseToast(error.message);
+        })
+    },
+    stopAll(){
+      this.torrentActionAll("stop");
+    },
+    resumeAll(){
+      this.torrentActionAll("start");
+    },
+    torrentActionAll(action: string){
+      TransmissionRPC.torrentActionAll(action)
+        .then((response) => {
+          Utils.responseToast(response.result)
+          for (const torrent of this.torrentList) {
             torrent.status=Utils.actionStatusResult(action,torrent.status,torrent.percentDone);
           }
         })

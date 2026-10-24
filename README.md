@@ -11,7 +11,7 @@
 
 ----
 
-This repository builds the static web UI only. CI uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. It does not tag `v1.9.0` and it does not upload `Transmissionic-webui-v1.9.0.zip`.
+This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.9.0` publishes `Transmissionic-webui-v1.9.0.zip`. The release body contains that file's sha256.
 
 Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
 
@@ -30,6 +30,12 @@ The RPC client sends JSON-RPC 2.0 (`jsonrpc`, snake_case method, `params`, `id`)
 #803: RPC uses the same origin as the page. From `/transmission/web/` the request goes to the sibling `rpc` path, not to a hardcoded host and port. A reverse proxy has to serve that RPC path on the same origin. Add the proxy hostname to `rpc-host-whitelist` and leave the whitelist enabled. This fork does not close the upstream ticket.
 
 Basic authentication on plain HTTP is visible to anyone on that network. The `auth` object in `default.json` is the existing server entry (`username`, `password`) described by upstream PR #1371. That note does not add a new authentication behavior. This fork does not close upstream #1370.
+
+The footer can stop every torrent and start every torrent. Those calls are `torrent-stop` and `torrent-start` with `ids` omitted, which Transmission applies to all torrents. An empty `ids` array is not sent.
+
+The add dialog fills the download directory from the session `download-dir`. The label "Download directory" is not sent as the path. An empty directory field is omitted, and the daemon keeps its own directory.
+
+#1369 and #1352 are the daemon log `utils.cc` `Couldn't read '/webui/default.json'`. The web UI asks for that optional file on load, and this tree ships an empty `default.json` so the request succeeds. The log line is the daemon's. This fork does not close those upstream tickets.
 
 The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 

@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
 permissions:
@@ -50,3 +52,29 @@ jobs:
           name: transmissionic-webui-${{ github.sha }}
           path: transmissionic-webui-*.zip
           if-no-files-found: error
+
+  release:
+    name: Publish Transmissionic-webui-<tag>.zip
+    if: github.ref_type == 'tag'
+    needs: webui
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: transmissionic-webui-${{ github.sha }}
+          path: dist-zip
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          tag="${GITHUB_REF_NAME}"
+          src=$(echo dist-zip/transmissionic-webui-*.zip)
+          file="Transmissionic-webui-${tag}.zip"
+          cp "$src" "$file"
+          sum=$(sha256sum "$file" | awk '{print $1}')
+          printf 'Transmissionic web UI %s\n\nsha256: %s  %s\n' "$tag" "$sum" "$file" > notes.md
+          gh release create "$tag" "$file" --title "$tag" --notes-file notes.md --repo "${GITHUB_REPOSITORY}"

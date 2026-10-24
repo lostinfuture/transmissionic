@@ -415,6 +415,12 @@ class TRPC {
     return this.rpcCall("torrent-"+action, Object.assign({ids:torrentIds}, args))
   }
 
+  // Section 3.1: omitting ids applies the method to every torrent.
+  // An empty ids array is not sent.
+  async torrentActionAll(action: string){
+    return this.rpcCall("torrent-"+action, {})
+  }
+
   async torrentAdd(args: Record<string, any> = {}){
     this.invalidatePersitentData();
     return this.rpcCall("torrent-add", args);
