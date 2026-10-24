@@ -97,6 +97,9 @@
                 <ion-label>{{ Locale.about.about }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
+            <ion-item lines="none">
+              <ion-label class="ion-text-wrap">Copyright (c) 2021 Transmissionic</ion-label>
+            </ion-item>
           </ion-list>
         </ion-footer>
       </ion-menu>

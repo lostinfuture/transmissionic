@@ -4,21 +4,20 @@
 <h3 align="center">Transmissionic</h3>
 
 <p align="center">
-  Transmissionic is a free multi-platform remote for Transmission Daemon built with <a href="https://ionicframework.com/">Ionic</a> and <a href="https://vuejs.org/">Vue.js</a>.<br>
-  It can be used as <a href="https://github.com/transmission/transmission/wiki/Web-Interface">Web Interface</a>, Android/iOS app and Windows/Linux/macOS program.
-</p>
-<p align="center">
-  
+  Maintained fork of <a href="https://github.com/6c65726f79/Transmissionic">6c65726f79/Transmissionic</a> v1.8.0 (<code>9ddef28a48bd9baa8abe52d545d52891cc94a492</code>).<br>
+  Static web UI for Transmission Daemon. The name stays Transmissionic.<br>
+  Copyright (c) 2021 Transmissionic. Copyright (c) 2026 lostinfuture.
 </p>
 
 ----
 
-![Version](https://img.shields.io/github/v/release/6c65726f79/Transmissionic?label=Release)
-![Dev](https://img.shields.io/github/package-json/v/6c65726f79/Transmissionic/dev?color=orange&label=Dev)
-![GitHub all releases](https://img.shields.io/github/downloads/6c65726f79/Transmissionic/total?label=Downloads)
-![Build](https://img.shields.io/github/actions/workflow/status/6c65726f79/Transmissionic/build.yml?label=Build&branch=main)
-[![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/6c65726f79_Transmissionic?label=Quality%20gate&logo=sonarcloud&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/dashboard?id=6c65726f79_Transmissionic)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=6c65726f79_Transmissionic&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=6c65726f79_Transmissionic)
+This repository builds the static web UI only. CI uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. It does not tag `v1.9.0` and it does not upload `Transmissionic-webui-v1.9.0.zip`.
+
+Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
+
+These upstream tickets are native packaging. They are not worked here, and this fork does not close them on upstream: #1398, #1388, #1214, #1236, #1310, #1375. Upstream pull requests #1358 and #1332 are the native shell and are declined here. Capacitor bumps #1362, #1363, #1365, #1368, and #1335 are not merged. Plain HTTP for the web UI (#1340) stays in scope.
+
+The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 
 <a href='https://play.google.com/store/apps/details?id=com.sleroy.transmissionic&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="240" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 

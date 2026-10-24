@@ -12,6 +12,8 @@
       <div class="app-details">
         <img :src="iconSrc" alt="Logo">
         <h4>Transmissionic {{appVersion}}</h4>
+        <p>Maintained fork.</p>
+        <p>Copyright (c) 2021 Transmissionic<br>Copyright (c) 2026 lostinfuture</p>
       </div>
       <p>
         {{Locale.about.description}}

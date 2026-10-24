@@ -1,27 +1,24 @@
 #!/usr/bin/env node
 
 /**
- * This script need to be run after building "dist"
+ * Run after "dist" exists. Synchronous so the zip cannot race the rewrite.
  */
 
 const fs = require('fs');
 
-function updateHTML(filename) {
-  fs.readFile(`${filename}`, 'utf8', function(err, data) {
-    if (err) {
-      return console.log(err);
-    }
-
-    // Set Content-Security-Policy to "script-src 'self'"
-    let result = data.replace("script-src * 'unsafe-eval'", "script-src 'self'");
-
-    // Load all href from the same directory
-    result = result.replace(/="\//g, '="./');
-
-    fs.writeFile(`${filename}`, result, 'utf8', function(error) {
-      if (error) return console.log(error);
-    });
-  });
+const filename = './dist/index.html';
+let data = fs.readFileSync(filename, 'utf8');
+const loose = "script-src * 'unsafe-eval'";
+const tight = "script-src 'self'";
+if (data.includes(loose)) {
+  data = data.replace(loose, tight);
+} else if (!data.includes(tight)) {
+  console.error('postbuild: CSP pattern not found');
+  process.exit(1);
 }
+data = data.replace(/="\//g, '="./');
+fs.writeFileSync(filename, data);
 
-updateHTML('./dist/index.html');
+for (const name of ['LICENSE', 'NOTICE']) {
+  fs.copyFileSync(name, `./dist/${name}`);
+}

@@ -1,0 +1,35 @@
+name: Upstream
+
+on:
+  schedule:
+    - cron: "17 6 1 1,4,7,10 *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  moved:
+    name: Open an issue if upstream moved
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare pushed_at
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          recorded=$(tr -d '[:space:]' < .github/upstream-pushed-at)
+          pushed=$(gh api repos/6c65726f79/Transmissionic --jq .pushed_at)
+          echo "recorded=$recorded pushed=$pushed"
+          if [ "$pushed" = "$recorded" ]; then
+            exit 0
+          fi
+          open=$(gh issue list --state open --search "upstream moved in:title" --json number --jq length)
+          if [ "$open" != "0" ]; then
+            echo "an upstream-moved issue is already open"
+            exit 0
+          fi
+          gh issue create --title "upstream moved" --body "Upstream https://github.com/6c65726f79/Transmissionic pushed_at is ${pushed}. This fork recorded ${recorded} in .github/upstream-pushed-at. Do not auto-merge. Cherry-pick individual commits when they exist."

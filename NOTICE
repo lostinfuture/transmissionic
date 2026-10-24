@@ -1,0 +1,13 @@
+Transmissionic
+
+Copyright (c) 2021 Transmissionic
+Copyright (c) 2026 lostinfuture
+
+This program is released under the MIT license. See LICENSE.
+The 2021 notice and the permission notice stay in this repository,
+in the web UI zip, and in the built web tree.
+
+Upstream: https://github.com/6c65726f79/Transmissionic
+Fork: https://github.com/lostinfuture/transmissionic
+
+This fork is the static web UI. It does not include Flood source.
