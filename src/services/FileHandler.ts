@@ -137,7 +137,7 @@ export const FileHandler = {
       });
     }
     torrentFiles = [];
-    this.newTorrentModal(files,"file");
+    await this.newTorrentModal(files,"file");
   },
   async parseBuffer(buffer: ArrayBuffer): Promise<Record<string,any>|void> {
     try {
@@ -146,7 +146,7 @@ export const FileHandler = {
       Utils.responseToast(error.message);
     }
   },
-  readHashOrMagnet(text: unknown): void {
+  readHashOrMagnet(text: unknown): Promise<void> {
     let match;
     const list = [];
     const magnets = typeof text === "string" ? text : (text == null ? "" : String(text));
@@ -164,7 +164,7 @@ export const FileHandler = {
       list.push(match[0]);
     }
 
-    this.readMagnets(list);
+    return this.readMagnets(list);
   },
   async readMagnets(list: readonly unknown[]): Promise<void> {
     const magnets: Array<any> = [];
@@ -181,7 +181,7 @@ export const FileHandler = {
         Utils.responseToast(error.message);
       }
     }
-    if(magnets.length>0) this.newTorrentModal(magnets,"magnet");
+    if(magnets.length>0) await this.newTorrentModal(magnets,"magnet");
   },
   async readURL(text: string): Promise<void> {
     const list = [];
@@ -195,7 +195,7 @@ export const FileHandler = {
     }
 
     if(list.length>0){
-      this.newTorrentModal(list,"url");
+      await this.newTorrentModal(list,"url");
     }
   },
   isValidUrl(str: string): boolean {
@@ -207,8 +207,8 @@ export const FileHandler = {
     }
     return url!=null;
   },
-  newTorrentModal(files: Array<any>, type: string): void {
-    router.isReady().then(async () => {
+  newTorrentModal(files: Array<any>, type: string): Promise<void> {
+    return router.isReady().then(async () => {
       const modal = await modalController
         .create({
           component: AddTorrent,
@@ -224,7 +224,7 @@ export const FileHandler = {
           currentFile=null;
           Emitter.emit("refresh", false);
         })
-      return modal.present();
+      await modal.present();
     });
   },
   openExplorer(details: Record<string, any>): boolean{

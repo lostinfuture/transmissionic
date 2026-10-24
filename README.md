@@ -19,6 +19,10 @@ These upstream tickets are native packaging. They are not worked here, and this 
 
 #1381 is an iOS `.torrent` URL scheme. It does not reproduce in the browser file picker, so this fork does not add it. #1382 is the Android share sheet. The native sheet is out of scope. Adding a magnet or a `.torrent` file in the web UI is in scope.
 
+#1404: after the add screen, Firefox left the torrent detail pane blank. The detail swiper was created while that pane was `display: none`, and Firefox kept the 0×0 size. The swiper is created only after the pane has a size, and it is destroyed when the modal closes. The add modal is presented after the magnet or URL alert has dismissed.
+
+#1396: Safari on iOS 26 freezes this web UI. That hang was not reproduced here. The back handler called `history.go(1)` from a `popstate` listener, and that call fires `popstate` again. The handler now ignores that re-entry. This fork does not close the upstream ticket.
+
 The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 
 <a href='https://play.google.com/store/apps/details?id=com.sleroy.transmissionic&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="240" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>

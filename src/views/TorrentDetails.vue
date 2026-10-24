@@ -167,6 +167,8 @@ export default defineComponent({
         modified:false,
         connectionStatus: {} as Record<string,any>,
         refreshInterval: null as any,
+        released: false,
+        unmountListener: null as null | (() => void),
         currentDirectory:"",
         optionKeys:[
           "downloadLimit",
@@ -240,11 +242,27 @@ export default defineComponent({
 
     this.tabController.init(this.$refs.swiper, this.$refs.tabs);
 
-    Emitter.on("unmount-torrent-details", () => {
-      clearInterval(this.privateState.refreshInterval);
-    })
+    const release = () => this.releaseDetails();
+    this.privateState.unmountListener = release;
+    Emitter.on("unmount-torrent-details", release);
+  },
+  beforeUnmount() {
+    this.releaseDetails();
   },
   methods: {
+    releaseDetails() {
+      if(this.privateState.released) return;
+      this.privateState.released = true;
+      if(this.privateState.unmountListener){
+        Emitter.off("unmount-torrent-details", this.privateState.unmountListener);
+        this.privateState.unmountListener = null;
+      }
+      if(this.privateState.refreshInterval){
+        clearInterval(this.privateState.refreshInterval);
+        this.privateState.refreshInterval = null;
+      }
+      this.tabController.destroy();
+    },
     addTracker() {
       Emitter.emit("add-tracker");
     },
@@ -277,6 +295,10 @@ export default defineComponent({
       }
       
       this.privateState.connectionStatus.loading=false;
+      // The swiper is v-show hidden while this request runs. Measure it after it is shown.
+      this.$nextTick(() => {
+        this.tabController.layout();
+      });
     },
     optionList(details: Record<string,any>): Record<string,any> {
       // Return torrent options only

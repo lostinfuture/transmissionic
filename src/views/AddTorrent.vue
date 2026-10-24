@@ -367,10 +367,20 @@ export default defineComponent({
       this.selectPreset(UserSettings.state.selectedPreset);
     }
   },
+  watch: {
+    'connectionStatus.connected'(connected: boolean) {
+      if(connected){
+        this.$nextTick(() => this.tabController.layout());
+      }
+    }
+  },
   mounted() {
     Utils.customScrollbar(this.$refs.content);
 
     this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+  },
+  beforeUnmount() {
+    this.tabController.destroy();
   },
   methods: {
     modalClose() {

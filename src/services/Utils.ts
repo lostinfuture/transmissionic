@@ -20,6 +20,7 @@ import Autolinker from 'autolinker';
 import Moment from "moment";
 import { Shortcuts } from './Shortcuts';
 import { Emitter } from './Emitter';
+import { createHistoryGuard } from './historyGuard';
 
 declare global {
   interface Window {
@@ -34,6 +35,10 @@ declare global {
 }
 
 const ipToCountryList: Record<string,any> = {};
+
+const historyGuard = createHistoryGuard(() => {
+  history.go(1);
+});
 
 export const Utils = {
   formatBytes(bytes: number, decimals = 2, speed = false): string|void{
@@ -446,26 +451,29 @@ export const Utils = {
     }
   },
   async popState(e: Event|null=null): Promise<void> {
-    const top = await this.getTop();
-    if(top.hasTop){
+    await historyGuard.run(async () => {
+      const top = await this.getTop();
+      if(!top.hasTop){
+        return false;
+      }
       e?.preventDefault();
-      history.go(1);
-    }
-    if(top.actionsheet){
-      top.actionsheet.dismiss();
-    }
-    else if(top.popover){
-      top.popover.dismiss();
-    }
-    else if(top.alert){
-      top.alert.dismiss();
-    }
-    else if(top.modal){
-      top.modal.dismiss();
-    }
-    else if(top.menu){
-      menuController.close();
-    }
+      if(top.actionsheet){
+        top.actionsheet.dismiss();
+      }
+      else if(top.popover){
+        top.popover.dismiss();
+      }
+      else if(top.alert){
+        top.alert.dismiss();
+      }
+      else if(top.modal){
+        top.modal.dismiss();
+      }
+      else if(top.menu){
+        menuController.close();
+      }
+      return true;
+    });
   },
   pushState(): void {
     if (!window.history.state.modal) {

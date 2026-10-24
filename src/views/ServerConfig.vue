@@ -483,6 +483,9 @@ export default defineComponent({
     
     this.tabController.init(this.$refs.swiper, this.$refs.tabs);
   },
+  beforeUnmount() {
+    this.tabController.destroy();
+  },
   computed: {
     speedUnit:() => {
       return 'K' + (UserSettings.state.useBits ? Locale.units.bit : Locale.units.byte) + Locale.units.perSecond

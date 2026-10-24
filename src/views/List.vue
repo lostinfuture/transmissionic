@@ -725,13 +725,18 @@ export default defineComponent({
             },
             {
               text: Locale.ok,
-              handler: (data: Record<string,any>) => {
-                FileHandler.readHashOrMagnet(data.link);
-              },
+              role: 'ok'
             },
           ],
         });
-      return alert.present();
+      const dismissed = alert.onDidDismiss();
+      await alert.present();
+      const detail = await dismissed;
+      // Present the add modal only after the alert is gone.
+      if(detail.role === 'ok'){
+        const link = detail.data && detail.data.values ? detail.data.values.link : "";
+        await FileHandler.readHashOrMagnet(link);
+      }
     },
     async inputURL() {
       const alert = await alertController
@@ -751,18 +756,23 @@ export default defineComponent({
             },
             {
               text: Locale.ok,
-              handler: (data: Record<string,any>) => {
-                loadingController.create({}).then(loading => {
-                  loading.present();
-                  FileHandler.readURL(data.url).then(() => {
-                    loading.dismiss();
-                  })
-                });
-              },
+              role: 'ok'
             },
           ],
         });
-      return alert.present();
+      const dismissed = alert.onDidDismiss();
+      await alert.present();
+      const detail = await dismissed;
+      if(detail.role !== 'ok') return;
+      const url = detail.data && detail.data.values ? detail.data.values.url : "";
+      if(!url) return;
+      const loading = await loadingController.create({});
+      await loading.present();
+      try {
+        await FileHandler.readURL(url);
+      } finally {
+        await loading.dismiss();
+      }
     }
   }
 })
