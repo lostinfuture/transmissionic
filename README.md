@@ -15,7 +15,7 @@ This repository builds the static web UI only. CI uploads an untagged artifact n
 
 Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
 
-These upstream tickets are native packaging. They are not worked here, and this fork does not close them on upstream: #1398, #1388, #1214, #1236, #1310, #1375. Upstream pull requests #1358 and #1332 are the native shell and are declined here. Capacitor bumps #1362, #1363, #1365, #1368, and #1335 are not merged. Plain HTTP for the web UI (#1340) stays in scope.
+These upstream tickets are native packaging. They are not worked here, and this fork does not close them on upstream: #1398, #1388, #1214, #1236, #1310, #1375. Upstream pull requests #1358 and #1332 are the native shell and are declined here. Capacitor bumps #1362, #1363, #1365, #1368, and #1335 are not merged.
 
 #1381 is an iOS `.torrent` URL scheme. It does not reproduce in the browser file picker, so this fork does not add it. #1382 is the Android share sheet. The native sheet is out of scope. Adding a magnet or a `.torrent` file in the web UI is in scope.
 
@@ -24,6 +24,12 @@ These upstream tickets are native packaging. They are not worked here, and this 
 #1396: Safari on iOS 26 freezes this web UI. That hang was not reproduced here. The back handler called `history.go(1)` from a `popstate` listener, and that call fires `popstate` again. The handler now ignores that re-entry. This fork does not close the upstream ticket.
 
 The RPC client sends JSON-RPC 2.0 (`jsonrpc`, snake_case method, `params`, `id`). Responses are mapped back to the names this UI already reads (`percentDone`, `download-dir`, `cache-size-mb`). A daemon that answers the old envelope is used as-is after one miss. A JSON-RPC error stays on 2.0. The session-id retry is unchanged. #1376: sizes and speeds use the session `units` labels (`kB`, `MB`, `B/s`). #1329 was rechecked on Transmission 4.1.4: `percentDone` stays 0–1 and rates stay bytes per second, so the bit display still multiplies by 8. #1401: queued-to-seed (status 5) uses the seeding progress color and the queued label. This fork does not close those upstream tickets.
+
+#1340: a `.torrent` file gets its info hash from a plain SHA-1, including on `http://` where `crypto.subtle` is missing. The page does not need TLS for that hash. Registering the magnet protocol still needs a secure context. This fork does not close the upstream ticket.
+
+#803: RPC uses the same origin as the page. From `/transmission/web/` the request goes to the sibling `rpc` path, not to a hardcoded host and port. A reverse proxy has to serve that RPC path on the same origin. Add the proxy hostname to `rpc-host-whitelist` and leave the whitelist enabled. This fork does not close the upstream ticket.
+
+Basic authentication on plain HTTP is visible to anyone on that network. The `auth` object in `default.json` is the existing server entry (`username`, `password`) described by upstream PR #1371. That note does not add a new authentication behavior. This fork does not close upstream #1370.
 
 The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 
@@ -209,6 +215,7 @@ Server object:
 | path     | `string`      | Path of Transmission RPC                   |
 | port     | `number`      | Port of Transmission RPC                   |
 | https    | `boolean`     | Use HTTPS                                  |
+| auth     | `object`      | Authentication object                      |
 
 
 Configuration file example:
@@ -227,11 +234,19 @@ Configuration file example:
       "name":"My server",
       "host":"transmission.myserver.com",
       "path":"/my/transmission/rpc",
-      "https":true
+      "https":true,
+      "auth": {
+        "username":"myusername",
+        "password":"mypassword"
+      }
     }
   ]
 }
 ```
+
+`auth` is optional. Those fields are sent as HTTP basic authentication. On plain HTTP that header is visible to anyone who can see the network. Put TLS on the reverse proxy in front of this UI.
+
+Leave `host` unset, or set it to the hostname in the address bar, to call RPC on that same origin. The default path is `/transmission/rpc`. When this UI is loaded from a `web` directory, that request uses the sibling `rpc` path, including when a proxy mounts both under a prefix. A different host is an absolute URL. An `https` entry with no port uses 443, not 9091. Add the name you type in the browser to Transmission's `rpc-host-whitelist`, and leave that whitelist enabled.
 
 ### Magnet protocol
 

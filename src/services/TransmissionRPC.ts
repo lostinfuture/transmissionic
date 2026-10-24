@@ -4,6 +4,7 @@
 
 import * as _ from 'lodash';
 import { buildRequest, normalizeResponse, shouldFallbackToLegacy } from "./rpcProtocol";
+import { PageLocation, resolveEndpoint, rpcRequestUrl } from "./rpcUrl";
 
 declare const Buffer: any
 declare global {
@@ -39,16 +40,22 @@ class TRPC {
   async setServer(options: Record<string, any> = {}, timeout=5): Promise<Record<string, any>> {
     this.useJsonRpc = true;
     this.sessionToken=null;
+    const resolved = resolveEndpoint({
+      host: options.host,
+      port: options.port,
+      https: options.https,
+      path: options.path,
+    }, staticWebPage());
     this.options = {
-      host:'localhost',
-      path:'/transmission/rpc',
-      port:9091,
-      https:false,
-      timeout:timeout
+      host: resolved.host,
+      path: resolved.path,
+      port: resolved.port,
+      https: resolved.https,
+      timeout: timeout
     };
-    
+
     for (const [key, value] of Object.entries(options)) {
-      if(value!=""){
+      if(value!="" && value!=null && key!="host" && key!="port" && key!="https" && key!="path"){
         this.options[key]=value;
       }
     }
@@ -573,9 +580,12 @@ class TRPC {
   }
 
   getRequestUrl(): string {
-    let result = this.options.https ? "https":"http";
-    result += "://"+this.options.host+":"+this.options.port+this.options.path;
-    return result;
+    return rpcRequestUrl({
+      host: this.options.host,
+      port: this.options.port,
+      https: this.options.https,
+      path: this.options.path,
+    }, staticWebPage());
   }
 
   getHeaders(headers: any = {}) {
@@ -595,6 +605,20 @@ class TRPC {
       promise.then(resolve, reject)
     })
   }
+}
+
+function staticWebPage(): PageLocation | undefined {
+  if (typeof window === "undefined" || window.net) return undefined;
+  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+  if (cap && cap.isNativePlatform && cap.isNativePlatform()) return undefined;
+  const protocol = window.location.protocol;
+  if (protocol !== "http:" && protocol !== "https:") return undefined;
+  return {
+    href: window.location.href,
+    protocol,
+    hostname: window.location.hostname,
+    port: window.location.port,
+  };
 }
 
 export const TransmissionRPC = new TRPC();
