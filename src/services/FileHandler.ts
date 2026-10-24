@@ -146,33 +146,36 @@ export const FileHandler = {
       Utils.responseToast(error.message);
     }
   },
-  readHashOrMagnet(text: string): void {
+  readHashOrMagnet(text: unknown): void {
     let match;
     const list = [];
-    let magnets = text;
+    const magnets = typeof text === "string" ? text : (text == null ? "" : String(text));
 
     // Convert hash to magnet
-    if(text.match(/^\b[0-9a-fA-F]{40}\b$/)){
-      magnets = `magnet:?xt=urn:btih:${text}`;
+    let normalized = magnets;
+    if(normalized.match(/^\b[0-9a-fA-F]{40}\b$/)){
+      normalized = `magnet:?xt=urn:btih:${normalized}`;
     }
     
     // Find all magnet links
     const re = /magnet:\?xt=urn:btih:[0-9a-zA-Z]{32,}(?:&\S*)?/g;
     // eslint-disable-next-line
-    while (match = re.exec(magnets)) {
+    while (match = re.exec(normalized)) {
       list.push(match[0]);
     }
 
     this.readMagnets(list);
   },
-  async readMagnets(list: string[]): Promise<void> {
+  async readMagnets(list: readonly unknown[]): Promise<void> {
     const magnets: Array<any> = [];
     for(const magnet of list){
+      // Drag-and-drop and protocol handlers sometimes pass a non-string.
+      const magnetStr = typeof magnet === "string" ? magnet : String(magnet);
       try {
-        const data = await parseTorrent(magnet);
+        const data = await parseTorrent(magnetStr);
         magnets.push({
           data,
-          torrent:magnet
+          torrent: magnetStr
         });
       } catch (error: any) {
         Utils.responseToast(error.message);

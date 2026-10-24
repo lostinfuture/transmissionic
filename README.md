@@ -17,6 +17,8 @@ Native shells are out of scope and are not built: Android, iOS, Electron, F-Droi
 
 These upstream tickets are native packaging. They are not worked here, and this fork does not close them on upstream: #1398, #1388, #1214, #1236, #1310, #1375. Upstream pull requests #1358 and #1332 are the native shell and are declined here. Capacitor bumps #1362, #1363, #1365, #1368, and #1335 are not merged. Plain HTTP for the web UI (#1340) stays in scope.
 
+#1381 is an iOS `.torrent` URL scheme. It does not reproduce in the browser file picker, so this fork does not add it. #1382 is the Android share sheet. The native sheet is out of scope. Adding a magnet or a `.torrent` file in the web UI is in scope.
+
 The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 
 <a href='https://play.google.com/store/apps/details?id=com.sleroy.transmissionic&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="240" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
