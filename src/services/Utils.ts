@@ -21,6 +21,8 @@ import Moment from "moment";
 import { Shortcuts } from './Shortcuts';
 import { Emitter } from './Emitter';
 import { createHistoryGuard } from './historyGuard';
+import { TransmissionRPC } from "./TransmissionRPC";
+import { formatByteCount, readByteUnits } from "./units";
 
 declare global {
   interface Window {
@@ -43,21 +45,24 @@ const historyGuard = createHistoryGuard(() => {
 export const Utils = {
   formatBytes(bytes: number, decimals = 2, speed = false): string|void{
     if(bytes===undefined||bytes<0) return;
-    const useSpeed = speed && UserSettings.state.useBits;
-    const k = useSpeed ? 1000 : 1024;
-    let unit = useSpeed ? Locale.units.bit : Locale.units.byte;
-    if(speed){
-      unit += Locale.units.perSecond
+    // Bits stays a display preference: 4.1.4 rates are bytes per second.
+    if(speed && UserSettings.state.useBits){
+      const k = 1000;
+      const unit = Locale.units.bit + Locale.units.perSecond;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+      if (bytes === 0) return '0 ' + unit;
+      const val = bytes*8;
+      const i = Math.floor(Math.log(val) / Math.log(k));
+      return (val / Math.pow(k, i)).toLocaleString(UserSettings.getLanguage(), {maximumFractionDigits:dm}) + ' ' + sizes[i] + unit;
     }
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-    
-    if (bytes === 0) return '0 ' + unit;
-
-    const val = (useSpeed) ? bytes*8 : bytes
-    const i = Math.floor(Math.log(val) / Math.log(k));
-
-    return (val / Math.pow(k, i)).toLocaleString(UserSettings.getLanguage(), {maximumFractionDigits:dm}) + ' ' + sizes[i] + unit;
+    const units = TransmissionRPC.sessionArguments && TransmissionRPC.sessionArguments.units;
+    return formatByteCount(
+      bytes,
+      readByteUnits(units, speed ? "speed" : "size"),
+      decimals,
+      UserSettings.getLanguage()
+    );
   },
 
   getPercent(percentDone=0): string {
@@ -188,7 +193,7 @@ export const Utils = {
     if(torrent.errorString != "") { // error
       filters.push(6);
     }
-    if(torrent.status == 3) { // queued
+    if(torrent.status == 3 || torrent.status == 5) { // queued to download or seed
       filters.push(7);
     }
     if(torrent.status == 1 || torrent.status == 2) { // verifying

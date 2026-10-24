@@ -3,6 +3,7 @@
 */
 
 import * as _ from 'lodash';
+import { buildRequest, normalizeResponse, shouldFallbackToLegacy } from "./rpcProtocol";
 
 declare const Buffer: any
 declare global {
@@ -28,6 +29,7 @@ class TRPC {
   sessionStats: any;
   statsHistory: Array<Array<number|null>>=[];
   pathMapping: Record<string,string>;
+  useJsonRpc = true;
 
   constructor() {
     this.lastRequestId = 0;
@@ -35,6 +37,7 @@ class TRPC {
   }
 
   async setServer(options: Record<string, any> = {}, timeout=5): Promise<Record<string, any>> {
+    this.useJsonRpc = true;
     this.sessionToken=null;
     this.options = {
       host:'localhost',
@@ -410,7 +413,7 @@ class TRPC {
     return this.rpcCall("torrent-add", args);
   }
 
-  async rpcCall(method: string, args: Record<string, any> = {}, retry=true, ignoreError=false) {
+  async rpcCall(method: string, args: Record<string, any> = {}, retry=true, ignoreError=false): Promise<Record<string, any>> {
     const argsClone = _.cloneDeep(args);
     let ret: Record<string, any>={};
     const token = await this.getToken()
@@ -423,14 +426,19 @@ class TRPC {
 
     if(response.status){
       if(response.status===200){
-        ret = response.data;
+        const raw = response.data;
+        // A pre-4.1 daemon answers the legacy envelope. Stay there after one miss.
+        if(this.useJsonRpc && shouldFallbackToLegacy(raw)){
+          this.useJsonRpc = false;
+          return this.rpcCall(method, args, retry, ignoreError);
+        }
+        ret = normalizeResponse(raw, method);
       }
       else if(response.status===409){
-        // Invalid token 
+        // Invalid token. Retry on the same dialect.
         this.sessionToken=this.readToken(response);
         if(retry){
-          // Try with the new token
-          ret = this.rpcCall(method,args,false);
+          ret = await this.rpcCall(method,args,false);
         }
         else {
           throw Error("Invalid token");
@@ -459,11 +467,7 @@ class TRPC {
       headers["X-Transmission-Session-Id"]=token;
     }
 
-    const datas = {
-      method:action,
-      arguments:args,
-      tag:requestId
-    }
+    const datas = buildRequest(action, args, requestId, this.useJsonRpc);
 
     const options = {
       method: "post" as Method,
@@ -481,8 +485,10 @@ class TRPC {
       ret = await this.browserRequest(requestUrl,options,datas);
     }
 
-    // Don't return result if tags doesn't match or server has been changed
-    if((ret.data && ret.data.tag && ret.data.tag!=requestId) || requestUrl!=this.getRequestUrl()){
+    // Don't return result if tags doesn't match or server has been changed.
+    // JSON-RPC 2.0 uses id. A tag or id of 0 is still a real id.
+    const replyId = ret.data && (ret.data.tag != null ? ret.data.tag : ret.data.id);
+    if((replyId != null && replyId != requestId) || requestUrl!=this.getRequestUrl()){
       throw Error();
     }
 

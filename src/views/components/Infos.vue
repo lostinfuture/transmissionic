@@ -181,7 +181,7 @@ export default defineComponent({
         Locale.filters.verifying,
         Locale.filters.queued,
         Locale.filters.downloading,
-        "5",
+        Locale.filters.queued,
         Locale.filters.seeding
       ]
     }

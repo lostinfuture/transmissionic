@@ -23,6 +23,8 @@ These upstream tickets are native packaging. They are not worked here, and this 
 
 #1396: Safari on iOS 26 freezes this web UI. That hang was not reproduced here. The back handler called `history.go(1)` from a `popstate` listener, and that call fires `popstate` again. The handler now ignores that re-entry. This fork does not close the upstream ticket.
 
+The RPC client sends JSON-RPC 2.0 (`jsonrpc`, snake_case method, `params`, `id`). Responses are mapped back to the names this UI already reads (`percentDone`, `download-dir`, `cache-size-mb`). A daemon that answers the old envelope is used as-is after one miss. A JSON-RPC error stays on 2.0. The session-id retry is unchanged. #1376: sizes and speeds use the session `units` labels (`kB`, `MB`, `B/s`). #1329 was rechecked on Transmission 4.1.4: `percentDone` stays 0–1 and rates stay bytes per second, so the bit display still multiplies by 8. #1401: queued-to-seed (status 5) uses the seeding progress color and the queued label. This fork does not close those upstream tickets.
+
 The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
 
 <a href='https://play.google.com/store/apps/details?id=com.sleroy.transmissionic&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="240" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
