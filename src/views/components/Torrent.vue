@@ -186,7 +186,7 @@ export default defineComponent({
   display: grid;
   place-items: center;
   border: 1px solid var(--control);
-  border-radius: 50%;
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
@@ -194,6 +194,7 @@ export default defineComponent({
 }
 
 .toggle:hover {
+  background: var(--raised);
   border-color: var(--ink);
 }
 

@@ -52,12 +52,12 @@
 
                 <ion-chip @click="addPreset()">
                   <ion-label>{{ Locale.add }}</ion-label>
-                  <ion-icon :ios="addCircleOutline" :md="addCircleSharp"></ion-icon>
+                  <ion-icon :ios="addOutline" :md="addSharp"></ion-icon>
                 </ion-chip>
 
                 <ion-chip v-for="(preset,name) in presets" :key="name" @click="selectPreset(name)" :color="selectedPreset==name ? 'primary' : undefined">
                   <ion-label>{{name}}</ion-label>
-                  <ion-icon :ios="closeCircleOutline" :md="closeCircleSharp" @click="removePreset(name,$event)"></ion-icon>
+                  <ion-icon :ios="closeOutline" :md="closeSharp" @click="removePreset(name,$event)"></ion-icon>
                 </ion-chip>
               </div>
             </ion-list>
@@ -70,14 +70,16 @@
               </ion-list-header>
 
               <ion-item class="autocomplete" v-if="connectionStatus.connected">
-                <autocomplete 
-                  :label="Locale.downloadDir"
-                  label-placement="stacked"
-                  :value="settings.downloadDir"
-                  :items="TransmissionRPC.persistentData.downloadDir"
-                  :placeholder="defaultDownloadDir"
-                  v-on:update="setDownloadDir">
-                </autocomplete>
+                <div class="stacked-field swiper-no-swiping">
+                  <span class="field-label">{{ Locale.downloadDir }}</span>
+                  <autocomplete 
+                    :aria-label="Locale.downloadDir"
+                    :value="settings.downloadDir"
+                    :items="TransmissionRPC.persistentData.downloadDir"
+                    :placeholder="defaultDownloadDir"
+                    v-on:update="setDownloadDir">
+                  </autocomplete>
+                </div>
               </ion-item>
 
               <ion-item>
@@ -101,66 +103,56 @@
               </ion-list-header>
 
               <ion-item v-if="multiple">
-                <ion-label class="label no-wrap">
-                  <div class="text-transform">{{ LocaleController.getForm("torrent","other") }}</div>
-                  <span class="selectable">{{files.length}}</span>
-                </ion-label>
+                <ion-label class="text-transform">{{ LocaleController.getForm("torrent","other") }}</ion-label>
+                <span slot="end" class="info-val tabular selectable">{{files.length}}</span>
               </ion-item>
 
               <ion-item v-if="type=='url' && !multiple">
-                <ion-label class="label no-wrap">
-                  <div>URL</div>
-                  <span class="selectable">{{files[0].torrent}}</span>
-                </ion-label>
+                <div class="stacked-field">
+                  <span class="field-label">URL</span>
+                  <span class="info-block selectable">{{files[0].torrent}}</span>
+                </div>
               </ion-item>
 
               <ion-item v-if="data.name">
-                <ion-label class="label no-wrap">
-                  <div>{{ Locale.name }}</div>
-                  <span class="selectable">{{data.name}}</span>
-                </ion-label>
+                <div class="stacked-field">
+                  <span class="field-label">{{ Locale.name }}</span>
+                  <span class="info-block selectable">{{data.name}}</span>
+                </div>
               </ion-item>
 
               <ion-item v-if="totalSize">
-                <ion-label class="label">
-                  <div>{{ Locale.totalSize }}</div>
-                  <span class="selectable">{{Utils.formatBytes(totalSize)}}</span>
-                </ion-label>
+                <ion-label>{{ Locale.totalSize }}</ion-label>
+                <span slot="end" class="info-val tabular selectable">{{Utils.formatBytes(totalSize)}}</span>
               </ion-item>
 
               <ion-item v-if="data.files">
-                <ion-label class="label">
-                  <div>{{ Locale.files }}</div>
-                  <span class="selectable">{{ data.files.length }}</span>
-                </ion-label>
+                <ion-label>{{ Locale.files }}</ion-label>
+                <span slot="end" class="info-val tabular selectable">{{ data.files.length }}</span>
               </ion-item>
 
               <ion-item v-if="data.length && data.pieceLength">
-                <ion-label class="label">
-                  <div>{{ Locale.pieces }}</div>
-                  <span class="selectable">{{ Math.ceil(data.length/data.pieceLength) }} x {{ Utils.formatBytes(data.pieceLength) }}</span>
-                </ion-label>
+                <ion-label>{{ Locale.pieces }}</ion-label>
+                <span slot="end" class="info-val tabular selectable">{{ Math.ceil(data.length/data.pieceLength) }} × {{ Utils.formatBytes(data.pieceLength) }}</span>
               </ion-item>
               
               <ion-item v-if="data.comment">
-                <ion-label class="label no-wrap">
-                  <div>{{ Locale.comment }}</div>
-                  <span class="selectable" v-html="Utils.autoLink(data.comment)"></span>
-                </ion-label>
+                <div class="stacked-field">
+                  <span class="field-label">{{ Locale.comment }}</span>
+                  <span class="info-block selectable" v-html="Utils.autoLink(data.comment)"></span>
+                </div>
               </ion-item>
 
               <ion-item v-if="data.infoHash">
-                <ion-label class="label no-wrap">
-                  <div>{{ Locale.hash }}</div>
-                  <span class="selectable">{{data.infoHash}}</span>
-                </ion-label>
+                <div class="stacked-field">
+                  <span class="field-label">{{ Locale.hash }}</span>
+                  <span class="info-block code selectable">{{data.infoHash}}</span>
+                </div>
               </ion-item>
 
               <ion-item v-if="data.announce && data.announce.length>0">
-                <ion-label class="label no-wrap">
-                  <div>{{ Locale.tracker.one }}</div>
-                  <span class="selectable">{{ Utils.trackerDomain(data.announce[0]).domain }}</span>
-                </ion-label>
+                <ion-label>{{ Locale.tracker.one }}</ion-label>
+                <span slot="end" class="info-val selectable">{{ Utils.trackerDomain(data.announce[0]).domain }}</span>
               </ion-item>
             </ion-list>
           </ion-content>
@@ -233,10 +225,10 @@ import {
   checkmarkSharp,
   documentOutline,
   documentSharp,
-  closeCircleOutline,
-  closeCircleSharp,
-  addCircleOutline,
-  addCircleSharp,
+  closeOutline,
+  closeSharp,
+  addOutline,
+  addSharp,
   serverOutline,
   serverSharp
 } from 'ionicons/icons';
@@ -336,10 +328,10 @@ export default defineComponent({
       checkmarkSharp,
       documentOutline,
       documentSharp,
-      closeCircleOutline,
-      closeCircleSharp,
-      addCircleOutline,
-      addCircleSharp,
+      closeOutline,
+      closeSharp,
+      addOutline,
+      addSharp,
       serverOutline,
       serverSharp
     }
@@ -596,26 +588,25 @@ p {
   z-index: 100;
 }
 
-.label {
-  margin: 8px 0px;
+.info-val {
+  font-size: var(--fs-body);
+  color: var(--ink);
 }
-.label.no-wrap {
-  white-space: normal;
+
+.info-block {
+  font-size: var(--fs-body);
+  color: var(--muted);
+  overflow-wrap: anywhere;
 }
-.label > div {
-  -webkit-transform: translateY(10%) scale(0.75);
-  transform: translateY(10%) scale(0.75);
-  -webkit-transform-origin: left top;
-  transform-origin: left top;
-}
-.label > span:empty:after {
-  content:" ";
-  white-space: pre;
+
+.info-block.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
 }
 
 .torrent {
   height:64px;
-  border-bottom: 1px solid var(--ion-border-color);
+  border-bottom: 1px solid var(--rule);
   text-align:left;
 }
 
@@ -645,8 +636,9 @@ p {
 }
 
 .name {
-  font-size:1rem;
-  line-height: 1.2rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.25rem;
   height: 38px;
   overflow: hidden;
   display: -webkit-box;
@@ -654,8 +646,8 @@ p {
   -webkit-box-orient: vertical;
 }
 .details {
-  font-size: 14px;
-  color:var(--ion-color-medium);
+  font-size: var(--fs-small);
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

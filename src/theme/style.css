@@ -127,6 +127,22 @@ ion-title {
   letter-spacing: -0.01em;
 }
 
+ion-button,
+ion-back-button,
+ion-menu-button,
+ion-fab-button,
+.sc-ion-buttons-md-s .button-has-icon-only.button-clear,
+.sc-ion-buttons-ios-s .button-has-icon-only.button-clear {
+  --border-radius: var(--radius-control) !important;
+}
+
+ion-button::part(native),
+ion-back-button::part(native),
+ion-menu-button::part(native),
+ion-fab-button::part(native) {
+  border-radius: var(--radius-control) !important;
+}
+
 ion-toolbar ion-button:not(.add-button),
 ion-buttons ion-button:not(.add-button),
 ion-toolbar ion-buttons ion-button.button-clear,
@@ -138,13 +154,31 @@ ion-menu-button {
   --color-hover: var(--ink);
   --color-focused: var(--ink);
   --color-activated: var(--ink);
-  --border-radius: var(--radius-control);
+  --border-radius: var(--radius-control) !important;
   --background-hover: var(--raised) !important;
   --background-hover-opacity: 1 !important;
   --background-focused: var(--raised) !important;
   --background-focused-opacity: 1 !important;
   --background-activated: var(--active) !important;
   --background-activated-opacity: 1 !important;
+  --ripple-color: transparent;
+}
+
+ion-button.button-has-icon-only,
+.sc-ion-buttons-md-s .button-has-icon-only.button-clear,
+.sc-ion-buttons-ios-s .button-has-icon-only.button-clear,
+ion-back-button,
+ion-menu-button {
+  --color: var(--muted);
+  --color-hover: var(--ink);
+  --color-focused: var(--ink);
+  --color-activated: var(--ink);
+  --background-hover: transparent !important;
+  --background-hover-opacity: 0 !important;
+  --background-focused: transparent !important;
+  --background-focused-opacity: 0 !important;
+  --background-activated: transparent !important;
+  --background-activated-opacity: 0 !important;
   --ripple-color: transparent;
 }
 
@@ -165,6 +199,8 @@ ion-segment {
   padding: 3px;
   min-height: 36px;
   gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 ion-segment-button {
@@ -191,6 +227,8 @@ ion-segment-button {
   --margin-start: 0px;
   --margin-end: 0px;
   --ripple-color: transparent;
+  flex: 1 1 0;
+  min-width: max-content;
   text-transform: none;
   letter-spacing: 0;
   font-size: var(--fs-body);
@@ -413,17 +451,22 @@ ion-input, ion-textarea, ion-select {
 
 ion-item ion-input {
   --highlight-height: 0;
-  --padding-top: 6px;
-  --padding-bottom: 6px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  min-height: 34px;
 }
 
 ion-item .sc-ion-input-md-h .label-text-wrapper,
 ion-item .sc-ion-input-ios-h .label-text-wrapper {
   transform: none !important;
+  width: 100% !important;
   max-width: 100% !important;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--muted);
+  font-size: var(--fs-body) !important;
+  font-weight: 400 !important;
+  color: var(--ink) !important;
+  line-height: 1.35 !important;
   margin-bottom: 6px;
 }
 
@@ -453,6 +496,57 @@ ion-item .sc-ion-input-ios-h input.native-input {
   padding: 4px 0 !important;
 }
 
+/* Inline right-aligned control group (number/port/time inputs + optional toggle) */
+ion-item .row-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-inline-start: 12px;
+}
+
+ion-item .row-controls ion-toggle {
+  padding-inline: 0 !important;
+}
+
+ion-item ion-input.compact-input {
+  width: 96px;
+  max-width: 96px;
+  flex: 0 0 96px;
+  min-height: 32px;
+}
+
+ion-item ion-input.compact-input.time-input {
+  width: 112px;
+  max-width: 112px;
+  flex: 0 0 112px;
+}
+
+ion-item ion-input.compact-input .native-wrapper {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+ion-item ion-input.compact-input input.native-input {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stacked full-width field (paths, URLs, hostnames, credentials) */
+ion-item .stacked-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+}
+
+ion-item .stacked-field .field-label {
+  font-size: var(--fs-body);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
 ion-item ion-textarea {
   --highlight-height: 0;
   --background: var(--ground);
@@ -474,13 +568,15 @@ ion-item ion-select {
 ion-item ion-select::part(label) {
   color: var(--ink);
   font-size: var(--fs-body);
+  font-weight: 400;
+  transform: none !important;
 }
 
 ion-item ion-select::part(container) {
   background: var(--ground);
   border: 1px solid var(--control);
   border-radius: var(--radius-control);
-  padding: 5px 10px;
+  padding: 4px 10px;
   min-height: 32px;
 }
 

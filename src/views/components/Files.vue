@@ -499,8 +499,9 @@ export default defineComponent({
 }
 
 .name {
-  font-size:1rem;
-  line-height: 1.2rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.25rem;
   height: 38px;
   overflow: hidden;
   display: -webkit-box;
@@ -508,8 +509,8 @@ export default defineComponent({
   -webkit-box-orient: vertical;
 }
 .details {
-  font-size: 14px;
-  color:var(--ion-color-medium);
+  font-size: var(--fs-small);
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -530,17 +531,18 @@ export default defineComponent({
 .breadcrumb {
   position:relative;
   list-style: none;
-  height: 56px;
-  color: #FFF;
-  font-size: 14px;
-  font-weight: bold;
+  height: 48px;
+  color: var(--ink);
+  font-size: var(--fs-body);
+  font-weight: 500;
   overflow: auto;
   white-space: nowrap;
   margin: 0;
-  padding:0px 15px;
+  padding: 0px 16px;
   text-align: left;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid var(--rule);
 }
 
 .breadcrumb div:last-child {
@@ -550,7 +552,7 @@ export default defineComponent({
 
 .breadcrumb div {
   display: inline-block;
-  color:var(--ion-color-medium);
+  color: var(--muted);
 }
 .breadcrumb a {
   text-decoration: none;
@@ -563,10 +565,11 @@ export default defineComponent({
 }
 .breadcrumb .chevron {
   padding: 0 5px;
-  color:var(--ion-color-medium);
+  color: var(--faint);
 }
 .breadcrumb div.active {
-  color:var(--color);
+  color: var(--ink);
+  font-weight: 600;
   padding-right:15px;
 }
 </style>

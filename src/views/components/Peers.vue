@@ -152,16 +152,18 @@ img.icon {
 
 .peer {
   height:48px;
-  border-bottom: 1px solid var(--ion-border-color);
+  border-bottom: 1px solid var(--rule);
   text-align:left;
-  padding:5px;
+  padding: 6px 16px;
+  box-sizing: border-box;
 }
 
 .main {
   display:flex;
   flex-flow: wrap;
   flex-direction: row;
-  font-size:1rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
   height:20px;
   margin-bottom:2px;
   overflow: hidden;
@@ -187,8 +189,8 @@ img.icon {
 }
 
 .details {
-  font-size: 14px;
-  color:var(--ion-color-medium);
+  font-size: var(--fs-small);
+  color: var(--muted);
   height: 1rem;
   overflow: hidden;
 }

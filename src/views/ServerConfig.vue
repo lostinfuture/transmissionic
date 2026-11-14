@@ -39,11 +39,17 @@
             </ion-list-header>
 
             <ion-item>
-              <ion-input :label="Locale.defaultDownloadDir" label-placement="stacked" v-model="config['download-dir']"></ion-input>
+              <div class="stacked-field swiper-no-swiping">
+                <span class="field-label">{{ Locale.defaultDownloadDir }}</span>
+                <ion-input :aria-label="Locale.defaultDownloadDir" v-model="config['download-dir']"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.cacheSize + ' (M' + Locale.units.byte + ')'" label-placement="stacked" v-model.number="config['cache-size-mb']" type="number"></ion-input>
+              <ion-label>{{ Locale.cacheSize + ' (M' + Locale.units.byte + ')' }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.cacheSize" v-model.number="config['cache-size-mb']" type="number"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
@@ -63,14 +69,18 @@
             </ion-item>
 
             <ion-item :disabled="!config['download-queue-enabled']">
-              <ion-input :label="Locale.queueSize" label-placement="stacked" v-model.number="config['download-queue-size']" type="number"></ion-input>
+              <ion-label>{{ Locale.queueSize }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.queueSize" v-model.number="config['download-queue-size']" type="number"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.stopWhenInactive" label-placement="stacked" v-model.number="config['queue-stalled-minutes']" type="number" :disabled="!config['queue-stalled-enabled']"></ion-input>
-              <span class="swiper-no-swiping" slot="end">
+              <ion-label>{{ Locale.stopWhenInactive }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.stopWhenInactive" v-model.number="config['queue-stalled-minutes']" type="number" :disabled="!config['queue-stalled-enabled']"></ion-input>
                 <ion-toggle v-model="config['queue-stalled-enabled']" :aria-label="Locale.stopWhenInactive"></ion-toggle>
-              </span>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -90,7 +100,10 @@
             </ion-item>
 
             <ion-item :disabled="!config['incomplete-dir-enabled']">
-              <ion-input :label="Locale.tempDirPath" label-placement="stacked" v-model="config['incomplete-dir']"></ion-input>
+              <div class="stacked-field swiper-no-swiping">
+                <span class="field-label">{{ Locale.tempDirPath }}</span>
+                <ion-input :aria-label="Locale.tempDirPath" v-model="config['incomplete-dir']"></ion-input>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -110,17 +123,19 @@
             </ion-list-header>
 
             <ion-item>
-              <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="config['speed-limit-down']" type="number" :disabled="!config['speed-limit-down-enabled']"></ion-input>
-              <span class="swiper-no-swiping" slot="end">
+              <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="config['speed-limit-down']" type="number" :disabled="!config['speed-limit-down-enabled']"></ion-input>
                 <ion-toggle v-model="config['speed-limit-down-enabled']" :aria-label="Locale.downloadLimit"></ion-toggle>
-              </span>
+              </div>
             </ion-item>
             
             <ion-item>
-              <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="config['speed-limit-up']" type="number" :disabled="!config['speed-limit-up-enabled']"></ion-input>
-              <span class="swiper-no-swiping" slot="end">
+              <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="config['speed-limit-up']" type="number" :disabled="!config['speed-limit-up-enabled']"></ion-input>
                 <ion-toggle v-model="config['speed-limit-up-enabled']" :aria-label="Locale.uploadLimit"></ion-toggle>
-              </span>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -136,11 +151,17 @@
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="config['alt-speed-down']" type="number"></ion-input>
+              <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="config['alt-speed-down']" type="number"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="config['alt-speed-up']" type="number"></ion-input>
+              <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="config['alt-speed-up']" type="number"></ion-input>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -156,15 +177,21 @@
             </ion-item>
 
             <ion-item :disabled="!config['alt-speed-time-enabled']">
-              <ion-input :label="Locale.altSpeedBegin" label-placement="stacked" type="time" v-model="altSpeedTimeBegin"/>
+              <ion-label>{{ Locale.altSpeedBegin }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input time-input" :aria-label="Locale.altSpeedBegin" type="time" v-model="altSpeedTimeBegin"/>
+              </div>
             </ion-item>
 
             <ion-item :disabled="!config['alt-speed-time-enabled']">
-              <ion-input :label="Locale.altSpeedEnd" label-placement="stacked" type="time" v-model="altSpeedTimeEnd"/>
+              <ion-label>{{ Locale.altSpeedEnd }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input time-input" :aria-label="Locale.altSpeedEnd" type="time" v-model="altSpeedTimeEnd"/>
+              </div>
             </ion-item>
 
             <ion-item :disabled="!config['alt-speed-time-enabled']">
-              <ion-select :label="Locale.altSpeedDays" label-placement="stacked" :placeholder="Locale.never" :multiple="true" v-model="altSpeedTimeDay">
+              <ion-select :label="Locale.altSpeedDays" label-placement="start" justify="space-between" :placeholder="Locale.never" :multiple="true" v-model="altSpeedTimeDay" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
                 <ion-select-option v-for="(day,id) in getWeekDays" :value="id" :key="id">{{day}}</ion-select-option>
               </ion-select>
             </ion-item>
@@ -178,17 +205,19 @@
             </ion-list-header>
 
             <ion-item>
-              <ion-input :label="Locale.seedRatioLimit" label-placement="stacked" v-model.number="config.seedRatioLimit" type="number" :disabled="!config.seedRatioLimited"></ion-input>
-              <span class="swiper-no-swiping" slot="end">
+              <ion-label>{{ Locale.seedRatioLimit }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.seedRatioLimit" v-model.number="config.seedRatioLimit" type="number" :disabled="!config.seedRatioLimited"></ion-input>
                 <ion-toggle v-model="config.seedRatioLimited" :aria-label="Locale.seedRatioLimit"></ion-toggle>
-              </span>
+              </div>
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.stopWhenInactive" label-placement="stacked" v-model.number="config['idle-seeding-limit']" type="number" :disabled="!config['idle-seeding-limit-enabled']"></ion-input>
-              <span class="swiper-no-swiping" slot="end">
+              <ion-label>{{ Locale.stopWhenInactive }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.stopWhenInactive" v-model.number="config['idle-seeding-limit']" type="number" :disabled="!config['idle-seeding-limit-enabled']"></ion-input>
                 <ion-toggle v-model="config['idle-seeding-limit-enabled']" :aria-label="Locale.stopWhenInactive"></ion-toggle>
-              </span>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -200,11 +229,17 @@
             </ion-list-header>
 
             <ion-item>
-              <ion-input :label="Locale.globalPeerLimit" label-placement="stacked" v-model.number="config['peer-limit-global']" type="number"></ion-input>
+              <ion-label>{{ Locale.globalPeerLimit }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.globalPeerLimit" v-model.number="config['peer-limit-global']" type="number"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
-              <ion-input :label="Locale.peerLimitByTorrent" label-placement="stacked" v-model.number="config['peer-limit-per-torrent']" type="number"></ion-input>
+              <ion-label>{{ Locale.peerLimitByTorrent }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.peerLimitByTorrent" v-model.number="config['peer-limit-per-torrent']" type="number"></ion-input>
+              </div>
             </ion-item>
           </ion-list>
 
@@ -238,7 +273,10 @@
             </ion-list-header>
 
             <ion-item :disabled="config['peer-port-random-on-start']">
-              <ion-input :label="Locale.port" label-placement="stacked" v-model.number="config['peer-port']" type="number"></ion-input>
+              <ion-label>{{ Locale.port }}</ion-label>
+              <div class="row-controls swiper-no-swiping" slot="end">
+                <ion-input class="compact-input" :aria-label="Locale.port" v-model.number="config['peer-port']" type="number"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item>
@@ -294,7 +332,10 @@
             </ion-item>
 
             <ion-item :disabled="!config['blocklist-enabled']">
-              <ion-input :label="Locale.blocklistUrl" label-placement="stacked" v-model="config['blocklist-url']"></ion-input>
+              <div class="stacked-field swiper-no-swiping">
+                <span class="field-label">{{ Locale.blocklistUrl }}</span>
+                <ion-input :aria-label="Locale.blocklistUrl" v-model="config['blocklist-url']"></ion-input>
+              </div>
             </ion-item>
 
             
@@ -556,9 +597,9 @@ div[slot="start"]{
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 26px;
+  height: 28px;
   padding: 0 10px;
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   font-size: var(--fs-small);
   font-weight: 500;
 }

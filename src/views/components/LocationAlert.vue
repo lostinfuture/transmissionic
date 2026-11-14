@@ -386,7 +386,7 @@ export default defineComponent({
 }
 
 .ios .location-alert .alert-checkbox-group .alert-checkbox-icon {
-  border-radius: 50%;
+  border-radius: 4px;
   margin-left: 16px;
   margin-right: 6px;
   margin-top: 10px;

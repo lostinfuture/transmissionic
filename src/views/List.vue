@@ -985,7 +985,7 @@ export default defineComponent({
   align-items: center;
   height: 22px;
   padding: 0 8px;
-  border-radius: 11px;
+  border-radius: var(--radius-control);
   background: var(--pill-warning-bg);
   color: var(--warning);
   font-size: var(--fs-small);

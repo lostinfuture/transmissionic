@@ -23,17 +23,22 @@
             </ion-list-header>
 
             <ion-item>
-                <ion-input :label="Locale.name" label-placement="stacked" v-model="name"></ion-input>
+              <div class="stacked-field">
+                <span class="field-label">{{ Locale.name }}</span>
+                <ion-input :aria-label="Locale.name" v-model="name"></ion-input>
+              </div>
             </ion-item>
 
             <ion-item class="autocomplete" v-if="connectionStatus.connected">
-              <autocomplete 
-                :label="Locale.downloadDir"
-                label-placement="stacked"
-                :items="TransmissionRPC.persistentData.downloadDir"
-                :placeholder="defaultDownloadDir"
-                v-on:update="setDownloadDir">
-              </autocomplete>
+              <div class="stacked-field">
+                <span class="field-label">{{ Locale.downloadDir }}</span>
+                <autocomplete 
+                  :aria-label="Locale.downloadDir"
+                  :items="TransmissionRPC.persistentData.downloadDir"
+                  :placeholder="defaultDownloadDir"
+                  v-on:update="setDownloadDir">
+                </autocomplete>
+              </div>
             </ion-item>
 
             <ion-item>
@@ -55,13 +60,19 @@
             </ion-item>
 
             <ion-item>
-                <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.downloadLimit" type="number" :disabled="!settings.other.downloadLimited"></ion-input>
-                <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
+                <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
+                <div class="row-controls swiper-no-swiping" slot="end">
+                  <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="settings.other.downloadLimit" type="number" :disabled="!settings.other.downloadLimited"></ion-input>
+                  <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit" class="swiper-no-swiping"></ion-toggle>
+                </div>
             </ion-item>
 
             <ion-item>
-                <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.uploadLimit" type="number" :disabled="!settings.other.uploadLimited"></ion-input>
-                <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
+                <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
+                <div class="row-controls swiper-no-swiping" slot="end">
+                  <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="settings.other.uploadLimit" type="number" :disabled="!settings.other.uploadLimited"></ion-input>
+                  <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit" class="swiper-no-swiping"></ion-toggle>
+                </div>
             </ion-item>
         </ion-list>
 

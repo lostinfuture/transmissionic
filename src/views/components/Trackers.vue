@@ -30,12 +30,12 @@
             <strong>{{ Locale.announce }}</strong><br>
             {{ Locale.state }} :
             <template v-if="tracker.announceState==3">
-              <ion-icon color="warning" :ios="syncCircleOutline" :md="syncCircleSharp"></ion-icon>
+              <ion-icon color="warning" :ios="syncOutline" :md="syncSharp"></ion-icon>
               {{ Locale.updating }}
             </template>
             <template v-else>
               <template v-if="tracker.lastAnnounceSucceeded">
-                <ion-icon color="success" :ios="checkmarkCircleOutline" :md="checkmarkCircleSharp"></ion-icon>
+                <ion-icon color="success" :ios="checkmarkOutline" :md="checkmarkSharp"></ion-icon>
                 {{ Locale.working }}
               </template>
               <span v-else class="error selectable">
@@ -54,12 +54,12 @@
             <strong>{{ Locale.scrape }}</strong><br>
             {{ Locale.state }} :
             <template v-if="tracker.scrapeState==3">
-              <ion-icon color="warning" :ios="syncCircleOutline" :md="syncCircleSharp"></ion-icon>
+              <ion-icon color="warning" :ios="syncOutline" :md="syncSharp"></ion-icon>
               {{ Locale.updating }}
             </template>
             <template v-else>
               <template v-if="tracker.lastScrapeSucceeded">
-                <ion-icon color="success" :ios="checkmarkCircleOutline" :md="checkmarkCircleSharp"></ion-icon>
+                <ion-icon color="success" :ios="checkmarkOutline" :md="checkmarkSharp"></ion-icon>
                 {{ Locale.working }}
               </template>
               <span v-else-if="tracker.lastScrapeResult.length>0" class="error selectable">
@@ -122,10 +122,10 @@ import {
 import {
   ellipsisVerticalOutline,
   ellipsisVerticalSharp,
-  syncCircleOutline,
-  syncCircleSharp,
-  checkmarkCircleOutline,
-  checkmarkCircleSharp,
+  syncOutline,
+  syncSharp,
+  checkmarkOutline,
+  checkmarkSharp,
   add
 } from 'ionicons/icons';
 import { LocaleController } from "../../services/LocaleController";
@@ -168,10 +168,10 @@ export default defineComponent({
       LocaleController,
       ellipsisVerticalOutline,
       ellipsisVerticalSharp,
-      syncCircleOutline,
-      syncCircleSharp,
-      checkmarkCircleOutline,
-      checkmarkCircleSharp,
+      syncOutline,
+      syncSharp,
+      checkmarkOutline,
+      checkmarkSharp,
       add
     }
   },
@@ -357,12 +357,24 @@ ion-badge {
   margin-left: 4px;
 }
 
-body:not(.dark) ion-card, body:not(.dark) ion-card ion-item {
-  --background:var(--ion-color-light);
+ion-card {
+  --background: var(--surface);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  box-shadow: none;
+  margin: 8px 16px 12px;
+}
+
+ion-card ion-item {
+  --background: var(--raised);
+  --border-color: var(--rule);
 }
 
 ion-card-content {
   text-align: left;
+  font-size: var(--fs-body);
+  color: var(--ink);
 }
 
 ion-card-content ion-icon {
@@ -374,12 +386,12 @@ ion-card.removed {
 }
 
 .error {
-  color:var(--ion-color-danger);
+  color: var(--negative);
 }
 
 #top {
   text-align: left;
-  color:var(--ion-color-medium);
+  color: var(--muted);
   text-transform: lowercase;
 }
 </style>

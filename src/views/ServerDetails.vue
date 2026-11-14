@@ -27,19 +27,31 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-input :label="Locale.name" label-placement="stacked" v-model="newConf.name"></ion-input>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.name }}</span>
+            <ion-input :aria-label="Locale.name" v-model="newConf.name"></ion-input>
+          </div>
         </ion-item>
 
         <ion-item>
-          <ion-input :label="Locale.hostname" label-placement="stacked" v-model="newConf.host"></ion-input>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.hostname }}</span>
+            <ion-input :aria-label="Locale.hostname" v-model="newConf.host"></ion-input>
+          </div>
         </ion-item>
         
         <ion-item>
-          <ion-input :label="Locale.port" label-placement="stacked" v-model.number="newConf.port" type="number" placeholder="9091"></ion-input>
+          <ion-label>{{ Locale.port }}</ion-label>
+          <div class="row-controls swiper-no-swiping" slot="end">
+            <ion-input class="compact-input" :aria-label="Locale.port" v-model.number="newConf.port" type="number" placeholder="9091"></ion-input>
+          </div>
         </ion-item>
         
         <ion-item>
-          <ion-input :label="Locale.rpcPath" label-placement="stacked" v-model="newConf.path" placeholder="/transmission/rpc"></ion-input>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.rpcPath }}</span>
+            <ion-input :aria-label="Locale.rpcPath" v-model="newConf.path" placeholder="/transmission/rpc"></ion-input>
+          </div>
         </ion-item>
 
         <ion-item>
@@ -55,11 +67,17 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-input :label="Locale.username" label-placement="stacked" v-model="newConf.auth.username"></ion-input>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.username }}</span>
+            <ion-input :aria-label="Locale.username" v-model="newConf.auth.username"></ion-input>
+          </div>
         </ion-item>
 
         <ion-item>
-          <ion-input :label="Locale.password" label-placement="stacked" v-model="newConf.auth.password" type="password"></ion-input>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.password }}</span>
+            <ion-input :aria-label="Locale.password" v-model="newConf.auth.password" type="password"></ion-input>
+          </div>
         </ion-item>
       </ion-list>
 

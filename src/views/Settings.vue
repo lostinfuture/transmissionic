@@ -88,10 +88,16 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-input :label="Locale.refreshInterval" label-placement="stacked" type="number" v-model.number="sharedState.refreshInterval"></ion-input>
+          <ion-label>{{ Locale.refreshInterval }}</ion-label>
+          <div class="row-controls swiper-no-swiping" slot="end">
+            <ion-input class="compact-input" :aria-label="Locale.refreshInterval" type="number" v-model.number="sharedState.refreshInterval"></ion-input>
+          </div>
         </ion-item>
         <ion-item>
-          <ion-input :label="Locale.connectionTimeout" label-placement="stacked" type="number" v-model.number="sharedState.timeout"></ion-input>
+          <ion-label>{{ Locale.connectionTimeout }}</ion-label>
+          <div class="row-controls swiper-no-swiping" slot="end">
+            <ion-input class="compact-input" :aria-label="Locale.connectionTimeout" type="number" v-model.number="sharedState.timeout"></ion-input>
+          </div>
         </ion-item>
       </ion-list>
 
@@ -103,11 +109,11 @@
         </ion-list-header>
         
         <ion-item>
-          <ion-checkbox justify="start" label-placement="end" v-model="sharedState.searchByName">{{ Locale.name }}</ion-checkbox>
+          <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByName">{{ Locale.name }}</ion-checkbox>
         </ion-item>
 
         <ion-item>
-          <ion-checkbox justify="start" label-placement="end" v-model="sharedState.searchByDirectory">{{ Locale.downloadDir }}</ion-checkbox>
+          <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByDirectory">{{ Locale.downloadDir }}</ion-checkbox>
         </ion-item>
       </ion-list>
 
