@@ -275,17 +275,19 @@ ion-list {
 }
 
 ion-list-header {
-  --color: var(--muted);
-  font-size: var(--fs-small);
+  --color: var(--ink);
+  font-size: var(--fs-section);
   font-weight: 600;
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
   text-transform: none;
-  min-height: 36px;
+  min-height: 44px;
 }
 
 ion-list-header ion-label {
-  font-size: var(--fs-small);
+  font-size: var(--fs-section);
   font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
   margin: 12px 0 4px;
 }
 
@@ -316,19 +318,19 @@ ion-content.ion-padding > ion-list:last-child {
 
 ion-content.ion-padding > ion-list > ion-list-header {
   --background: var(--raised);
-  --color: var(--muted);
+  --color: var(--ink);
   border-bottom: 1px solid var(--line);
   padding-inline: 16px;
-  min-height: 36px;
+  min-height: 44px;
   margin: 0;
 }
 
 ion-content.ion-padding > ion-list > ion-list-header ion-label {
   margin: 0;
-  font-size: var(--fs-small);
+  font-size: var(--fs-section);
   font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.01em;
+  color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
 ion-content.ion-padding > ion-list > ion-item {

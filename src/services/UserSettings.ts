@@ -11,7 +11,7 @@ const defaultSettings: Record<string,any> = {
   orderBy:"addedDate",
   reverse:true,
   selectedServer:0,
-  useBits:true,
+  useBits:false,
   expandMenu:true,
   ipFlags:false,
   openMagnetLinks:false,

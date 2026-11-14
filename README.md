@@ -11,7 +11,7 @@
 
 ----
 
-This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.10.2` publishes `Transmissionic-webui-v1.10.2.zip`. The release body contains that file's sha256.
+This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.10.3` publishes `Transmissionic-webui-v1.10.3.zip`. The release body contains that file's sha256.
 
 Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
 
@@ -199,7 +199,7 @@ The file can contain the following key/value pairs:
 | language               | `string`      | An ISO 639-1 language code, example: `en-US` | System default |
 | orderBy                | `string`      | Possible values: `name`, `addedDate`, `sizeWhenDone`, `uploadRatio`, `uploadedEver`, `rateUpload`, `activityDate`, `queuePosition` | `addedDate` |
 | reverse                | `boolean`     | Reversed ordering                     | `true` |
-| useBits                | `boolean`     | Display speed in bit/s                | `true` |
+| useBits                | `boolean`     | Display speed in bit/s                | `false` |
 | expandMenu             | `boolean`     | Expand side menu on large screen      | `true` |
 | searchByName           | `boolean`     | Search torrents by name               | `true` |
 | searchByDirectory      | `boolean`     | Search torrents by download directory | `true` |
