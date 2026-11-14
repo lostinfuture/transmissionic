@@ -20,11 +20,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "16"
+          node-version: "24"
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Typecheck and lint
+        run: |
+          npm run typecheck
+          npm run lint
 
       - name: Build web UI
         run: npm run build:webui
@@ -35,16 +40,24 @@ jobs:
           test -f dist/index.html
           test -f dist/LICENSE
           test -f dist/NOTICE
+          test -f dist/default.json
           grep -q "Copyright (c) 2021 Transmissionic" dist/LICENSE
           grep -q "Copyright (c) 2026 lostinfuture" dist/NOTICE
+          grep -q "script-src 'self'" dist/index.html
+          grep -q 'src="./assets/' dist/index.html
           grep -q "Maintained fork." dist/index.html || grep -R -q "Maintained fork." dist
+          node scripts/check-add-torrent.js
+          node scripts/check-overlay-history.js
+          node scripts/check-rpc.js
+          node scripts/check-rpc-url.js
+          node scripts/check-torrent-actions.js
           rm -rf web
           mkdir web
           cp -a dist/. web/
           sha=$(git rev-parse HEAD)
           name="transmissionic-webui-${sha}.zip"
           zip -r "$name" web
-          test ! -f Transmissionic-webui-v1.9.0.zip
+          test ! -f Transmissionic-webui-v1.10.0.zip
           unzip -p "$name" web/LICENSE | grep -q "Copyright (c) 2021 Transmissionic"
 
       - uses: actions/upload-artifact@v4

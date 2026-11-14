@@ -48,7 +48,11 @@ export const FileHandler = {
 
     // Read hash from URL
     const hash = decodeURIComponent(window.location.hash.substring(1));
-    hash.startsWith("url:") ? this.readURL(hash.substring(4)) : this.readHashOrMagnet(hash);
+    if (hash.startsWith("url:")) {
+      this.readURL(hash.substring(4));
+    } else {
+      this.readHashOrMagnet(hash);
+    }
   },
   async inputFile(): Promise<void> {
     if(!currentFile){
@@ -139,7 +143,7 @@ export const FileHandler = {
     torrentFiles = [];
     await this.newTorrentModal(files,"file");
   },
-  async parseBuffer(buffer: ArrayBuffer): Promise<Record<string,any>|void> {
+  async parseBuffer(buffer: Buffer | Uint8Array | ArrayBuffer): Promise<Record<string,any>|void> {
     try {
       return parseTorrent(buffer);
     } catch (error: any) {
@@ -256,7 +260,7 @@ export const FileHandler = {
 
 const parseRemoteTorrent = (url: string) => {
   return new Promise((resolve) => {
-    remote(url, (err, parsedTorrent) => {
+    remote(url, (err: any, parsedTorrent: any) => {
       resolve(err ? {} : parsedTorrent);
     })
   })

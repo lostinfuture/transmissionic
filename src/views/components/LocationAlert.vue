@@ -4,6 +4,7 @@
   </div>
   <div class="alert-input-group">
     <autocomplete 
+      :aria-label="Locale.actions.setLocation"
       :items="TransmissionRPC.persistentData.downloadDir"
       :value="value"
       v-on:update="setLocation">

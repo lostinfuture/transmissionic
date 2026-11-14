@@ -1,24 +1,28 @@
 <template>
   <ion-content>
-    <div class="placeholder" >
+    <div class="placeholder" role="status" aria-live="polite">
       <template v-if="connectionStatus.error!=''">
-        <strong>{{ Locale.error.error }}</strong>
-        <p>{{ Utils.localizeError(connectionStatus.error) }}</p>
-        <a @click="$emit('retry')">{{ Locale.retry }}</a>
+        <h2>{{ Utils.localizeError(connectionStatus.error) }}</h2>
+        <div class="actions">
+          <button type="button" class="btn" @click="$emit('retry')">{{ Locale.retry }}</button>
+        </div>
       </template>
       <template v-else-if="connectionStatus.loading">
-        <ion-spinner></ion-spinner>
+        <ion-spinner name="crescent" :aria-label="Locale.updating"></ion-spinner>
       </template>
       <template v-else-if="serverCount==0">
-        <strong>{{ Locale.empty }}</strong>
-        <p>{{addServerText().before}}<a @click='addServer()'>{{addServerText().link}}</a>{{addServerText().after}}</p>
+        <h2 translate="no">Transmissionic</h2>
+        <p>{{ Locale.about.shortDescription }}</p>
+        <div class="actions">
+          <button type="button" class="btn primary" @click="addServer()">{{ Locale.newServer }}</button>
+        </div>
       </template>
     </div>
   </ion-content>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import { 
   IonContent,
   IonSpinner
@@ -29,13 +33,16 @@ import { Utils } from '../../services/Utils';
 
 export default defineComponent({
   name: 'ConnectionStatus',
-  inject: ["connectionStatus","serverCount"],
   components: { 
     IonContent,
     IonSpinner
   },
   setup() {
+    const connectionStatus = inject('connectionStatus') as Record<string, any>;
+    const serverCount = inject('serverCount') as any;
     return { 
+      connectionStatus,
+      serverCount,
       Locale,
       Utils
     }

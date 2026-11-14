@@ -27,28 +27,23 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-label position="floating">{{ Locale.name }}</ion-label>
-          <ion-input v-model="newConf.name"></ion-input>
+          <ion-input :label="Locale.name" label-placement="stacked" v-model="newConf.name"></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">{{ Locale.hostname }}</ion-label>
-          <ion-input v-model="newConf.host"></ion-input>
+          <ion-input :label="Locale.hostname" label-placement="stacked" v-model="newConf.host"></ion-input>
         </ion-item>
         
         <ion-item>
-          <ion-label position="floating">{{ Locale.port }}</ion-label>
-          <ion-input v-model.number="newConf.port" type="number" placeholder="9091"></ion-input>
+          <ion-input :label="Locale.port" label-placement="stacked" v-model.number="newConf.port" type="number" placeholder="9091"></ion-input>
         </ion-item>
         
         <ion-item>
-          <ion-label position="floating">{{ Locale.rpcPath }}</ion-label>
-          <ion-input v-model="newConf.path" placeholder="/transmission/rpc"></ion-input>
+          <ion-input :label="Locale.rpcPath" label-placement="stacked" v-model="newConf.path" placeholder="/transmission/rpc"></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label>HTTPS</ion-label>
-          <ion-toggle v-model="newConf.https"></ion-toggle>
+          <ion-toggle v-model="newConf.https" justify="space-between">HTTPS</ion-toggle>
         </ion-item>
       </ion-list>
 
@@ -60,13 +55,11 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-label position="floating">{{ Locale.username }}</ion-label>
-          <ion-input v-model="newConf.auth.username"></ion-input>
+          <ion-input :label="Locale.username" label-placement="stacked" v-model="newConf.auth.username"></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">{{ Locale.password }}</ion-label>
-          <ion-input v-model="newConf.auth.password" type="password"></ion-input>
+          <ion-input :label="Locale.password" label-placement="stacked" v-model="newConf.auth.password" type="password"></ion-input>
         </ion-item>
       </ion-list>
 
@@ -78,7 +71,7 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-textarea rows="3" :placeholder="placeholder" v-model="newConf.pathMapping"></ion-textarea>
+          <ion-textarea :aria-label="Locale.pathMapping" :rows="3" :placeholder="placeholder" v-model="newConf.pathMapping"></ion-textarea>
         </ion-item>
         
       </ion-list>

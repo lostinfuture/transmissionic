@@ -44,9 +44,7 @@
               <ion-item @click="privateState.selectedFilter = index" lines="none" :class="{ selected: privateState.selectedFilter === index }" button>
                 <ion-icon slot="start" :ios="f.iosIcon" :md="f.mdIcon"></ion-icon>
                 <ion-label class="text-transform">{{ f.label() }}</ion-label>
-                <div slot="end">
-                  <ion-badge>{{ privateState.torrentFilters[f.id] }}</ion-badge>
-                </div>
+                <span slot="end" class="count">{{ privateState.torrentFilters[f.id] || 0 }}</span>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
@@ -64,9 +62,7 @@
             <ion-menu-toggle :auto-hide="false" v-for="tracker in trackerList" :key="tracker.id">
               <ion-item @click="selectTracker(tracker)" lines="none" :class="{selected:privateState.selectedTracker==tracker.announce}" button>
                 <ion-label :title="tracker.announce">{{tracker.announce}}</ion-label>
-                <div slot="end">
-                  <ion-badge>{{ tracker.ids.length }}</ion-badge>
-                </div>
+                <span slot="end" class="count">{{ tracker.ids.length }}</span>
               </ion-item>
             </ion-menu-toggle>
             <ion-infinite-scroll
@@ -97,9 +93,6 @@
                 <ion-label>{{ Locale.about.about }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
-            <ion-item lines="none">
-              <ion-label class="ion-text-wrap">Copyright (c) 2021 Transmissionic</ion-label>
-            </ion-item>
           </ion-list>
         </ion-footer>
       </ion-menu>
@@ -126,7 +119,6 @@ import {
   IonMenuToggle, 
   IonSplitPane,
   IonFooter,
-  IonBadge,
   IonInfiniteScroll, 
   IonInfiniteScrollContent
 } from '@ionic/vue';
@@ -192,7 +184,6 @@ export default defineComponent({
     IonMenuToggle, 
     IonSplitPane,
     IonFooter,
-    IonBadge,
     IonInfiniteScroll, 
     IonInfiniteScrollContent
   },
@@ -299,7 +290,12 @@ export default defineComponent({
       serverCount: computed(() => this.privateState.serverList.length),
       torrentList: computed(() => this.privateState.torrentList),
       filter: computed(() => this.privateState.filters[this.privateState.selectedFilter].id),
-      filterIds: computed(() => this.privateState.selectedIds)
+      filterLabel: computed(() => this.privateState.filters[this.privateState.selectedFilter].label()),
+      filterIds: computed(() => this.privateState.selectedIds),
+      serverName: computed(() => {
+        const server = this.privateState.serverList[this.privateState.selectedServer];
+        return server ? server.name : "";
+      })
     } 
   },
   setup() {

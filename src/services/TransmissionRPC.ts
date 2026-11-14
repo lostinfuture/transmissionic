@@ -168,7 +168,7 @@ class TRPC {
   }
 
   async getToken(): Promise<string> {
-    let token="";
+    let token: string;
     if(this.sessionToken){
       token = this.sessionToken
     }
@@ -346,7 +346,7 @@ class TRPC {
   }
 
   async getTorrentDetails(id: number) {
-    let result: any={};
+    let result: any;
     const args = {
       ids:id,
       fields: [
@@ -391,7 +391,8 @@ class TRPC {
         'trackers',
         'trackerStats',
         'peers',
-        'recheckProgress'
+        'recheckProgress',
+        'eta'
       ]
     }
 
@@ -470,7 +471,7 @@ class TRPC {
   }
 
   async request(action: string, token?: string, args: Record<string, any> = {}, ignoreError=false) {
-    let ret: Record<string, any>={};
+    let ret: Record<string, any>;
 
     const requestId = ++this.lastRequestId;
     const headers = this.getHeaders();

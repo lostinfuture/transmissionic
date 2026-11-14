@@ -22,8 +22,7 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-label>{{ Locale.language }}</ion-label>
-          <ion-select placeholder="Select One" v-model="sharedState.language" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+          <ion-select :label="Locale.language" label-placement="start" placeholder="Select One" v-model="sharedState.language" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
             <ion-select-option value="default">{{ Locale.default }}</ion-select-option>
             <ion-select-option value="cs">Čeština</ion-select-option>
             <ion-select-option value="de">Deutsch</ion-select-option>
@@ -50,8 +49,7 @@
         </ion-item>
           
         <ion-item>
-          <ion-label>{{ Locale.theme }}</ion-label>
-          <ion-select placeholder="Select One" v-model="sharedState.colorScheme" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+          <ion-select :label="Locale.theme" label-placement="start" placeholder="Select One" v-model="sharedState.colorScheme" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
             <ion-select-option value="default">{{ Locale.default }}</ion-select-option>
             <ion-select-option value="light">{{ Locale.light }}</ion-select-option>
             <ion-select-option value="dark">{{ Locale.dark }}</ion-select-option>
@@ -59,28 +57,23 @@
         </ion-item>
 
         <ion-item>
-          <ion-label>{{ Locale.speedUnit }}</ion-label>
-          <ion-toggle v-model="sharedState.useBits"></ion-toggle>
+          <ion-toggle v-model="sharedState.useBits" justify="space-between">{{ Locale.speedUnit }}</ion-toggle>
         </ion-item>
         
         <ion-item>
-          <ion-label>{{ Locale.compactMode }}</ion-label>
-          <ion-toggle v-model="sharedState.compactMode"></ion-toggle>
+          <ion-toggle v-model="sharedState.compactMode" justify="space-between">{{ Locale.compactMode }}</ion-toggle>
         </ion-item>
 
         <ion-item>
-          <ion-label>{{ Locale.expandSideMenu }}</ion-label>
-          <ion-toggle v-model="sharedState.expandMenu"></ion-toggle>
+          <ion-toggle v-model="sharedState.expandMenu" justify="space-between">{{ Locale.expandSideMenu }}</ion-toggle>
         </ion-item>
 
         <ion-item>
-          <ion-label>{{ Locale.showTrackerList }}</ion-label>
-          <ion-toggle v-model="sharedState.showTrackerList"></ion-toggle>
+          <ion-toggle v-model="sharedState.showTrackerList" justify="space-between">{{ Locale.showTrackerList }}</ion-toggle>
         </ion-item>
         
         <ion-item>
-          <ion-label>{{ Locale.displayFlag }}*</ion-label>
-          <ion-toggle v-model="sharedState.ipFlags"></ion-toggle>
+          <ion-toggle v-model="sharedState.ipFlags" justify="space-between">{{ Locale.displayFlag }}*</ion-toggle>
         </ion-item>
         <div class="annotation">
           * {{ Locale.formatString(Locale.useIpApi,'country.is') }} <a href="http://country.is/" target="_blank" rel="noopener"><ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon></a>
@@ -95,12 +88,10 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-label position="floating">{{ Locale.refreshInterval }}</ion-label>
-          <ion-input type="number" v-model.number="sharedState.refreshInterval" ></ion-input>
+          <ion-input :label="Locale.refreshInterval" label-placement="stacked" type="number" v-model.number="sharedState.refreshInterval"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ Locale.connectionTimeout }}</ion-label>
-          <ion-input type="number" v-model.number="sharedState.timeout" ></ion-input>
+          <ion-input :label="Locale.connectionTimeout" label-placement="stacked" type="number" v-model.number="sharedState.timeout"></ion-input>
         </ion-item>
       </ion-list>
 
@@ -112,13 +103,11 @@
         </ion-list-header>
         
         <ion-item>
-          <ion-label>{{ Locale.name }}</ion-label>
-          <ion-checkbox slot="start" v-model.boolean="sharedState.searchByName"></ion-checkbox>
+          <ion-checkbox justify="start" label-placement="end" v-model="sharedState.searchByName">{{ Locale.name }}</ion-checkbox>
         </ion-item>
 
         <ion-item>
-          <ion-label>{{ Locale.downloadDir }}</ion-label>
-          <ion-checkbox slot="start" v-model.boolean="sharedState.searchByDirectory"></ion-checkbox>
+          <ion-checkbox justify="start" label-placement="end" v-model="sharedState.searchByDirectory">{{ Locale.downloadDir }}</ion-checkbox>
         </ion-item>
       </ion-list>
 
@@ -130,8 +119,7 @@
         </ion-list-header>
         
         <ion-item>
-          <ion-label>{{ Locale.rememberSelectedPreset }}</ion-label>
-          <ion-toggle v-model="sharedState.rememberSelectedPreset"></ion-toggle>
+          <ion-toggle v-model="sharedState.rememberSelectedPreset" justify="space-between">{{ Locale.rememberSelectedPreset }}</ion-toggle>
         </ion-item>
         
         <div class="ion-padding small">
@@ -149,8 +137,7 @@
         </ion-list-header>
         
         <ion-item>
-          <ion-label>{{ Locale.openMagnetLinks }}</ion-label>
-          <ion-toggle v-model="sharedState.openMagnetLinks"></ion-toggle>
+          <ion-toggle v-model="sharedState.openMagnetLinks" justify="space-between">{{ Locale.openMagnetLinks }}</ion-toggle>
         </ion-item>
       </ion-list>
 
@@ -252,7 +239,11 @@ const bookmarkletFunction = (href: string) => {
       }
     });
   }
-  found ? window.open(href+"#"+encodeURIComponent(selection)) : alert("No torrent or magnet link found.");
+  if (found) {
+    window.open(href+"#"+encodeURIComponent(selection));
+  } else {
+    alert("No torrent or magnet link found.");
+  }
 }
 
 export default defineComponent({
@@ -349,7 +340,7 @@ export default defineComponent({
     async importPreset(e: Event) {
       const files = (e.target as HTMLInputElement).files;
       if(files){
-        let json: Record<string,any> = {};
+        let json: Record<string,any>;
         const content = Buffer.from(await FileHandler.readFile(files[0])).toString();
         try {
           json = JSON.parse(content);

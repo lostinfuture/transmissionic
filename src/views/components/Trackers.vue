@@ -10,8 +10,8 @@
       <ion-card :class="{removed: removed.includes(tracker.announce)}">
         <ion-item>
           <ion-label>
-            <ion-badge color="primary">{{ Locale.tier }} {{ tracker.tier+1 }}</ion-badge>
-            <ion-badge color="dark">{{ Utils.trackerDomain(tracker.host).protocol }}</ion-badge>
+            <ion-badge>{{ Locale.tier }} {{ tracker.tier+1 }}</ion-badge>
+            <ion-badge translate="no">{{ Utils.trackerDomain(tracker.host).protocol }}</ion-badge>
             {{ Utils.trackerDomain(tracker.host).domain }}
           </ion-label>
           <ion-buttons slot="end">

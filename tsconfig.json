@@ -4,27 +4,25 @@
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
-    "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "sourceMap": false,
-    "baseUrl": "/",
     "types": [
-      "webpack-env"
+      "node",
+      "vite/client"
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
+      "dom.iterable"
     ]
   },
   "include": [

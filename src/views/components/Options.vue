@@ -5,38 +5,22 @@
         {{ Locale.bandwidth }}
       </ion-list-header>
       <ion-item>
-        <div class="left">
-          <ion-label position="floating">
-           {{ Locale.downloadLimit }} ({{ speedUnit }})
-          </ion-label>
-          <ion-input v-model.number="details.downloadLimit" type="number" :disabled="!details.downloadLimited"></ion-input>
-        </div>
+        <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="details.downloadLimit" type="number" :disabled="!details.downloadLimited"></ion-input>
         <span class="swiper-no-swiping" slot="end">
-          <ion-toggle v-model="details.downloadLimited" slot="end" class="swiper-no-swiping"></ion-toggle>
+          <ion-toggle v-model="details.downloadLimited" :aria-label="Locale.downloadLimit" class="swiper-no-swiping"></ion-toggle>
         </span>
       </ion-item>
       <ion-item>
-        <div class="left">
-          <ion-label position="floating">
-            {{ Locale.uploadLimit }} ({{ speedUnit }})
-          </ion-label>
-          <ion-input v-model.number="details.uploadLimit" type="number" :disabled="!details.uploadLimited"></ion-input>
-        </div>
+        <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="details.uploadLimit" type="number" :disabled="!details.uploadLimited"></ion-input>
         <span class="swiper-no-swiping" slot="end">
-          <ion-toggle v-model="details.uploadLimited" slot="end" class="swiper-no-swiping"></ion-toggle>
+          <ion-toggle v-model="details.uploadLimited" :aria-label="Locale.uploadLimit" class="swiper-no-swiping"></ion-toggle>
         </span>
       </ion-item>
       <ion-item>
-        <ion-label position="floating">
-          {{ Locale.peersLimit }}
-        </ion-label>
-        <ion-input v-model.number="details['peer-limit']" type="number"></ion-input>
+        <ion-input :label="Locale.peersLimit" label-placement="stacked" v-model.number="details['peer-limit']" type="number"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label>
-          {{ Locale.priority.priority }}
-        </ion-label>
-        <ion-select placeholder="Select One" v-model="details.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+        <ion-select :label="Locale.priority.priority" label-placement="start" placeholder="Select One" v-model="details.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
           <ion-select-option :value="1">{{ Locale.priority.high }}</ion-select-option>
           <ion-select-option :value="0">{{ Locale.priority.normal }}</ion-select-option>
           <ion-select-option :value="-1">{{ Locale.priority.low }}</ion-select-option>
@@ -54,22 +38,17 @@
           {{ Locale.useGlobalLimit }}
         </ion-label>
         <TriToggle
+          :label="Locale.useGlobalLimit"
           :value="details.seedRatioMode"
           :true="0"
           v-on:update="details.seedRatioMode=$event.checked ? 0 : 2"
           slot="end"
         ></TriToggle>
-        
-        
       </ion-item>
       <ion-item :disabled="details.seedRatioMode==0">
-        <div class="left">
-          <ion-label position="floating">
-            {{ Locale.seedRatioLimit }}
-          </ion-label>
-          <ion-input v-model.number="details.seedRatioLimit" type="number" :disabled="details.seedRatioMode==2"></ion-input>
-        </div>
+        <ion-input :label="Locale.seedRatioLimit" label-placement="stacked" v-model.number="details.seedRatioLimit" type="number" :disabled="details.seedRatioMode==2"></ion-input>
         <TriToggle
+          :label="Locale.seedRatioLimit"
           :value="details.seedRatioMode"
           :true="1"
           :false="2"
@@ -89,6 +68,7 @@
           {{ Locale.useGlobalLimit }}
         </ion-label>
         <TriToggle
+          :label="Locale.useGlobalLimit"
           :value="details.seedIdleMode"
           :true="0"
           v-on:update="details.seedIdleMode=$event.checked ? 0 : 2"
@@ -96,20 +76,15 @@
         ></TriToggle>
       </ion-item>
       <ion-item :disabled="details.seedIdleMode==0">
-        <div class="left">
-          <ion-label position="floating">
-            {{ Locale.stopWhenInactive }}
-          </ion-label>
-          <ion-input v-model.number="details.seedIdleLimit" type="number" :disabled="details.seedIdleMode==2"></ion-input>
-        </div>
+        <ion-input :label="Locale.stopWhenInactive" label-placement="stacked" v-model.number="details.seedIdleLimit" type="number" :disabled="details.seedIdleMode==2"></ion-input>
         <TriToggle
+          :label="Locale.stopWhenInactive"
           :value="details.seedIdleMode"
           :true="1"
           :false="2"
           v-on:update="details.seedIdleMode=$event.checked ? 1 : $event.value"
           slot="end"
         ></TriToggle>
-        
       </ion-item>
 
     </ion-list>

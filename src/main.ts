@@ -40,13 +40,10 @@ Shortcuts.listenKeys();
 const app = createApp(App)
   .use(IonicVue, {
     /*mode: "ios",*/
-    backButtonText: isPlatform('ios') ? Locale.actions.back : null
+    backButtonText: isPlatform('ios') ? Locale.actions.back : undefined
   })
   .use(router)
   .use(VueVirtualScroller)
-
-// Temporary fix injected property warn
-app.config.unwrapInjectedRef = true;
 
 Utils.customDirectives(app);
 

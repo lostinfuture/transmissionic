@@ -5,7 +5,6 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const ts = require("typescript");
-const bencode = require("bencode");
 
 function load(rel) {
   const source = fs.readFileSync(path.join(__dirname, "..", rel), "utf8");
@@ -102,9 +101,6 @@ const metainfo = Buffer.from(
   "ZDg6YW5ub3VuY2UyNzpodHRwOi8vMTI3LjAuMC4xOjkvYW5ub3VuY2U0OmluZm9kNjpsZW5ndGhpMWU0Om5hbWU1OmEudHh0MTI6cGllY2UgbGVuZ3RoaTE2Mzg0ZTY6cGllY2VzMjA6hvfkN/qlp/zhXR3cuerq6jd2Z7hlZQ==",
   "base64"
 );
-const info = bencode.encode(bencode.decode(metainfo).info);
-const expected = crypto.createHash("sha1").update(info).digest("hex");
-assert.strictEqual(sha1.sync(info), expected);
 
 const client = read("src/services/TransmissionRPC.ts");
 assert.ok(client.includes("rpcRequestUrl"));
@@ -128,12 +124,23 @@ for (const rel of srcFiles) {
   assert.ok(!read(rel).includes("crypto.subtle"), rel);
 }
 
-let asyncOk = false;
-sha1(info, function (hash) {
-  assert.strictEqual(hash, expected);
-  asyncOk = true;
-});
-setImmediate(function () {
-  assert.strictEqual(asyncOk, true);
-  console.log("rpc url check ok");
+(async () => {
+  const bencodeModule = await import("bencode");
+  const bencode = bencodeModule.default || bencodeModule;
+  const info = bencode.encode(bencode.decode(metainfo).info);
+  const expected = crypto.createHash("sha1").update(info).digest("hex");
+  assert.strictEqual(sha1.sync(info), expected);
+
+  let asyncOk = false;
+  sha1(info, function (hash) {
+    assert.strictEqual(hash, expected);
+    asyncOk = true;
+  });
+  setImmediate(function () {
+    assert.strictEqual(asyncOk, true);
+    console.log("rpc url check ok");
+  });
+})().catch((err) => {
+  console.error(err);
+  process.exit(1);
 });

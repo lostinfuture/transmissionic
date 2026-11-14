@@ -15,20 +15,25 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
 
-    <link rel="icon shortcut" type="image/png" sizes="192x192" href="<%= BASE_URL %>assets/icon/favicon.png" />
+    <link rel="icon shortcut" type="image/png" sizes="192x192" href="./assets/icon/favicon.png" />
 
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Transmissionic" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7f9" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151916" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         
     <link title="ATI" rel="apple-touch-icon" href="./assets/icon/apple-touch-icon.png" />
   
     <style>
       .loading {
-        background-color: #428cff;
+        background-color: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        .loading {
+          background-color: #151916;
+        }
       }
     </style>
 
@@ -36,7 +41,7 @@
 
   <body class="loading">
     <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 
 </html>
-

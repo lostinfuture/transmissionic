@@ -1,42 +1,38 @@
 <template>
-  <ion-list id="stats" lines="none">
-    <ion-item id="title">
-      {{Locale.statistics}}
-    </ion-item>
-    <canvas ref="canvas" width="290" height="150"></canvas>
-    <ion-item>
-      <table aria-describedby="title">
+  <div id="stats">
+    <h2 id="title">{{Locale.statistics}}</h2>
+    <canvas ref="canvas" width="290" height="150" role="img" :aria-label="Locale.statistics"></canvas>
+    <table aria-describedby="title">
+      <thead>
         <tr>
-          <th scope="col"></th>
-          <th scope="col"><strong>{{Locale.current}}</strong></th>
-          <th scope="col"><strong>{{Locale.total}}</strong></th>
+          <th scope="col"><span class="visually-hidden">{{ Locale.name }}</span></th>
+          <th scope="col">{{Locale.current}}</th>
+          <th scope="col">{{Locale.total}}</th>
         </tr>
+      </thead>
+      <tbody>
         <tr>
-          <td>{{Locale.downloaded}}</td>
+          <th scope="row">{{Locale.downloaded}}</th>
           <td>{{Utils.formatBytes(sessionStats["current-stats"].downloadedBytes,1)}}</td>
           <td>{{Utils.formatBytes(sessionStats["cumulative-stats"].downloadedBytes,1)}}</td>
         </tr>
         <tr>
-          <td>{{Locale.uploaded}}</td>
+          <th scope="row">{{Locale.uploaded}}</th>
           <td>{{Utils.formatBytes(sessionStats["current-stats"].uploadedBytes,1)}}</td>
           <td>{{Utils.formatBytes(sessionStats["cumulative-stats"].uploadedBytes,1)}}</td>
         </tr>
         <tr>
-          <td>{{Locale.duration}}</td>
+          <th scope="row">{{Locale.duration}}</th>
           <td>{{Utils.durationToString(sessionStats["current-stats"].secondsActive*1000)}}</td>
           <td>{{Utils.durationToString(sessionStats["cumulative-stats"].secondsActive*1000)}}</td>
         </tr>
-      </table>
-    </ion-item>
-  </ion-list>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { 
-  IonList,
-  IonItem,
-} from '@ionic/vue';
 import {
   arrowDownOutline,
   arrowUpOutline,
@@ -54,7 +50,12 @@ const chartOptions = {
   responsive: false,
   plugins: {
     legend: {
-      position: "bottom" as any
+      position: "bottom" as any,
+      labels: {
+        boxWidth: 10,
+        boxHeight: 10,
+        color: "#545b55"
+      }
     },
     tooltip: {
       callbacks: {
@@ -66,7 +67,7 @@ const chartOptions = {
   },
   elements: {
     line: {
-      borderWidth: 2,
+      borderWidth: 1.5,
       fill:true
     },
     point: {
@@ -81,29 +82,45 @@ const chartOptions = {
       ticks: {
         autoSkip: false,
         maxRotation: 0,
-        minRotation: 0
+        minRotation: 0,
+        color: "#545b55"
       },
       grid: {
         display: false,
       },
+      border: {
+        display: false
+      }
     },
     y: {
       ticks: {
+        maxTicksLimit: 4,
+        color: "#545b55",
         callback: function(value: string|number) {
           return Utils.formatBytes(parseInt(value.toString()),1,true) as string|number;
         }
+      },
+      grid: {
+        color: "rgba(127,127,127,.15)"
+      },
+      border: {
+        display: false
       }
     }
   }   
 };
 
 export default defineComponent({
-  name: 'OrderPopover',
-  components: {
-    IonList,
-    IonItem,
-  },
+  name: 'StatsPopover',
   data() {
+    const css = getComputedStyle(document.body);
+    const token = (name: string, fallback: string) => (css.getPropertyValue(name) || fallback).trim();
+    const down = token('--positive', '#1b7a4b');
+    const up = token('--info', '#2c5fae');
+    chartOptions.scales.y.grid.color = token('--rule', 'rgba(127,127,127,.15)');
+    chartOptions.scales.x.ticks.color = token('--muted', '#545b55');
+    chartOptions.scales.y.ticks.color = token('--muted', '#545b55');
+    chartOptions.plugins.legend.labels.color = token('--muted', '#545b55');
     return {
       data: {
         labels: this.labels(),
@@ -111,14 +128,14 @@ export default defineComponent({
           {
             label: Locale.download,
             data: this.dataset1(),
-            borderColor: "rgb(47,223,117)",
-            backgroundColor: "rgba(47,223,117,.2)"
+            borderColor: down,
+            backgroundColor: down + "22"
           },
           {
             label: Locale.seed,
             data: this.dataset2(),
-            borderColor: "rgb(66,140,255)",
-            backgroundColor: "rgba(66,140,255,.2)"
+            borderColor: up,
+            backgroundColor: up + "22"
           }
         ]
       },
@@ -181,20 +198,50 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#stats {
+  padding: 14px 15px 12px;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: var(--fs-section);
+  font-weight: 600;
+}
+
 canvas {
-  margin: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 table {
   width:100%;
-  margin:5px 0px;
-  font-size:14px;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
-td,th {
-  padding: 2px;
-  text-align: right;
+
+th, td {
+  padding: 6px 0 6px 8px;
+  text-align: end;
+  border-bottom: 1px solid var(--rule);
 }
-tr td:first-child {
-  text-align: left;
+
+thead th {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+tbody th {
+  text-align: start;
+  font-weight: 400;
+  color: var(--muted);
+  padding-inline-start: 0;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 </style>

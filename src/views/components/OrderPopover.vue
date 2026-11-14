@@ -1,6 +1,6 @@
 <template>
   <ion-list lines="none">
-    <ion-item button v-for="order in privateState.orders" :key="order.value" @click="setOrder(order.value)" detail="false">
+    <ion-item button v-for="order in privateState.orders" :key="order.value" @click="setOrder(order.value)" :detail="false">
       {{ order.label }}
       <ion-icon
         v-if="sharedState.orderBy==order.value"

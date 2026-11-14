@@ -86,10 +86,14 @@ export default defineComponent({
   top: 50%;
   transform: translateY(-50%);
   text-align:center;
+  pointer-events: none;
 }
 
-.placeholder strong {
-  font-size: 20px;
-  line-height: 26px;
+.placeholder .capitalize {
+  display: inline-block;
+}
+
+.placeholder .capitalize::first-letter {
+  text-transform: uppercase;
 }
 </style>

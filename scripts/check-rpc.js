@@ -194,7 +194,7 @@ const sessionUnits = units.readByteUnits({
 assert.strictEqual(units.formatByteCount(1024, sessionUnits, 0, 'en-US'), '1 KiB');
 
 const torrentVue = read('src/views/components/Torrent.vue');
-assert.ok(torrentVue.includes('["medium","warning","warning","medium","success","primary","primary"]'));
+assert.ok(torrentVue.includes('case 5:\n          return { tone:"info", label:Locale.filters.queued'));
 assert.ok(!torrentVue.includes('"success",null,'));
 
 const infosVue = read('src/views/components/Infos.vue');

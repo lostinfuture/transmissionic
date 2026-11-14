@@ -10,7 +10,9 @@ declare module 'swiper/vue' {
   export class SwiperSlide extends _Vue {}
 }
 
-declare module '@ionic/core/dist/collection/components/modal/animations/ios.enter';
-declare module '@ionic/core/dist/collection/components/modal/animations/ios.leave';
-declare module '@ionic/core/dist/collection/components/modal/animations/md.enter';
-declare module '@ionic/core/dist/collection/components/modal/animations/md.leave';
+declare module '*.css';
+declare module 'parse-torrent';
+declare module '@ionic/core/dist/collection/components/modal/animations/ios.enter.js';
+declare module '@ionic/core/dist/collection/components/modal/animations/ios.leave.js';
+declare module '@ionic/core/dist/collection/components/modal/animations/md.enter.js';
+declare module '@ionic/core/dist/collection/components/modal/animations/md.leave.js';

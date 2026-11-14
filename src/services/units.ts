@@ -18,6 +18,11 @@ export function readByteUnits(units: Record<string, any> | undefined, kind: "siz
   if (typeof base !== "number" || base <= 1 || !Array.isArray(labels) || labels.length === 0) {
     return fallback;
   }
+  // Transmission 4.0.x lists units from kilo up (["kB", "MB", ...]); 4.1 starts at bytes.
+  // Without a bytes label every value prints one step (1000x) too large.
+  if (!/^B/i.test(String(labels[0]))) {
+    return { base, labels: [fallback.labels[0], ...labels] };
+  }
   return { base, labels };
 }
 

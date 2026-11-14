@@ -23,7 +23,7 @@
       <template v-slot:default="{item}">
         <div :class="{file:true,actions:actions}">
           <div class="side">
-            <ion-checkbox v-bind="checkedAttributes(item.ids)" @ionChange="checboxUpdate($event,item.ids)"></ion-checkbox>
+            <ion-checkbox :aria-label="item.name" v-bind="checkedAttributes(item.ids)" @ionChange="checboxUpdate($event,item.ids)"></ion-checkbox>
           </div>
           <div :class="{ middle: true, click: item.folder }" @click="fileAction(item)" @contextmenu="fileTitle(item.name, $event)">
             <div class="name">

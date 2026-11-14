@@ -28,7 +28,7 @@
           @mousedown="$event.stopPropagation()"
           class="autocomplete-result"
           :class="{ 'is-active': i === arrowCounter }"
-          detail="false">
+          :detail="false">
           <ion-label class="item text-wrap">
             {{ result }}
           </ion-label>

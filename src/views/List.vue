@@ -1,24 +1,56 @@
 <template>
   <ion-page>
 
-    <ion-header :translucent="true">
+    <ion-header>
       <ion-toolbar>
         <template v-if="!privateState.viewSearch">
           <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
           </ion-buttons>
-          <ion-title id="logo">
-            Transmiss<span>ionic</span>
+          <ion-title>
+            <h1 class="screen-title" translate="no">{{ serverName || "Transmissionic" }}</h1>
           </ion-title>
           <ion-buttons slot="end">
-            <ion-button @click="toggleSearch()" fill="clear" :aria-label="Locale.search">
+            <ion-button @click="toggleSearch()" fill="clear" :aria-label="Locale.search" :title="Locale.search">
               <ion-icon slot="icon-only" :ios="searchOutline" :md="searchSharp"></ion-icon>
+            </ion-button>
+            <ion-button
+              v-if="connectionStatus.connected"
+              class="add-button"
+              fill="solid"
+              color="primary"
+              aria-haspopup="menu"
+              @click="openAddMenu($event)">
+              <ion-icon slot="start" :icon="add" aria-hidden="true"></ion-icon>
+              {{ Locale.add }}
             </ion-button>
           </ion-buttons>
         </template>
         <template v-if="privateState.viewSearch">
-          <ion-searchbar id="search" show-cancel-button="always" v-model="privateState.search" @ionCancel="toggleSearch()" :placeholder="Locale.search" :cancel-button-text="Locale.actions.cancel"></ion-searchbar>
+          <ion-searchbar id="search" show-cancel-button="always" v-model="privateState.search" @ionCancel="toggleSearch()" :placeholder="Locale.search + '…'" :cancel-button-text="Locale.actions.cancel" :spellcheck="false" autocapitalize="off" inputmode="search"></ion-searchbar>
         </template>
+      </ion-toolbar>
+
+      <!-- The screen's answer: what the server is moving right now -->
+      <ion-toolbar v-if="connectionStatus.connected" class="summary">
+        <div class="summary-row">
+          <div class="figure down" :title="Locale.download">
+            <span class="arrow" aria-hidden="true">↓</span>
+            <span class="visually-hidden">{{ Locale.download }}</span>
+            <span class="value tabular">{{ Utils.formatBytes(downloadSpeed(),1,true) }}</span>
+          </div>
+          <div class="figure up" :title="Locale.uploadSpeed">
+            <span class="arrow" aria-hidden="true">↑</span>
+            <span class="visually-hidden">{{ Locale.uploadSpeed }}</span>
+            <span class="value tabular">{{ Utils.formatBytes(uploadSpeed(),1,true) }}</span>
+          </div>
+          <span v-if="altSpeedEnabled()" class="pill">{{ Locale.altSpeed }}</span>
+          <button type="button" class="btn sort" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
+            <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
+            <span class="sort-label">{{ orderLabel }}</span>
+            <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
+          </button>
+        </div>
       </ion-toolbar>
     </ion-header>
 
@@ -29,17 +61,18 @@
 
     <VirtualScroll v-else id="torrentList" :fullscreen="true" :items="torrentOrderedList" :item-size="itemSize" key-field="id">
       <template v-slot:start>
-        <ion-list-header id="top">
-          <ion-label>
-            {{ torrentSelectedList.length }}
-            {{ LocaleController.getPlural("torrent",torrentSelectedList.length) }} ·
-            {{ Utils.formatBytes(totalSize) }} ·
-            <span @click="openOrderPopover" tabindex="0" :aria-label="Locale.sort">
-              <ion-icon :ios="filterOutline" :md="filterSharp"></ion-icon>
-              {{ Locale.sort }}
-            </span>
-          </ion-label>
-        </ion-list-header>
+        <div id="top" class="list-head" :class="{ condensed: sharedState.compactMode }">
+          <span class="lead-space" aria-hidden="true"></span>
+          <span class="scope">
+            <strong class="text-transform">{{ filterLabel }}</strong>
+            <span class="tabular">{{ torrentSelectedList.length }} {{ LocaleController.getPlural("torrent",torrentSelectedList.length) }}</span>
+            <span class="tabular">{{ Utils.formatBytes(totalSize,1) }}</span>
+          </span>
+          <span class="col-head">{{ Locale.size }}</span>
+          <span class="col-head" :title="Locale.download"><span aria-hidden="true">↓</span><span class="visually-hidden">{{ Locale.download }}</span></span>
+          <span class="col-head" :title="Locale.uploadSpeed"><span aria-hidden="true">↑</span><span class="visually-hidden">{{ Locale.uploadSpeed }}</span></span>
+          <span class="col-head">{{ Locale.ratio }}</span>
+        </div>
       </template>
 
       <template v-slot:default="{item}">
@@ -48,6 +81,7 @@
           :torrent="item"
           v-on:switch="switchTorrentState"
           @click="torrentClick(item)"
+          @keydown.enter.self="torrentClick(item)"
           @contextmenu="longPress($event,item.id)" 
           v-longpress="longPressFallback"
           :class="{ 
@@ -63,77 +97,105 @@
       </template>
 
       <template v-slot:fab>
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button>
-            <ion-icon :icon="add"></ion-icon>
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="add-fab">
+          <ion-fab-button :aria-label="Locale.addTorrent">
+            <ion-icon :icon="add" aria-hidden="true"></ion-icon>
           </ion-fab-button>
           <ion-fab-list side="top">
-            <ion-fab-button color="light" :data-desc="Locale.torrentFile" @click="inputFile()">
-              <ion-icon :ios="documentOutline" :md="documentSharp"></ion-icon>
+            <ion-fab-button color="light" :data-desc="Locale.torrentFile" :aria-label="Locale.torrentFile" @click="inputFile()">
+              <ion-icon :ios="documentOutline" :md="documentSharp" aria-hidden="true"></ion-icon>
             </ion-fab-button>
-            <ion-fab-button color="light" :data-desc="Locale.magnet" @click="inputMagnet()">
-              <ion-icon :ios="magnetOutline" :md="magnetSharp"></ion-icon>
+            <ion-fab-button color="light" :data-desc="Locale.magnet" :aria-label="Locale.magnet" @click="inputMagnet()">
+              <ion-icon :ios="magnetOutline" :md="magnetSharp" aria-hidden="true"></ion-icon>
             </ion-fab-button>
-            <ion-fab-button color="light" data-desc="URL" @click="inputURL()">
-              <ion-icon :ios="linkOutline" :md="linkSharp"></ion-icon>
+            <ion-fab-button color="light" data-desc="URL" aria-label="URL" @click="inputURL()">
+              <ion-icon :ios="linkOutline" :md="linkSharp" aria-hidden="true"></ion-icon>
             </ion-fab-button>
           </ion-fab-list>
         </ion-fab>
       </template>
     </VirtualScroll>
 
-    <ion-footer v-if="connectionStatus.connected" :translucent="true">
-      <ion-toolbar v-if="privateState.selection.length>0" id="footer" color="primary">
+    <!-- Wide-screen add menu, opened from the header button -->
+    <ion-popover
+      :is-open="privateState.addMenuOpen"
+      :event="privateState.addMenuEvent"
+      :dismiss-on-select="true"
+      alignment="end"
+      class="add-menu"
+      @didDismiss="privateState.addMenuOpen=false">
+      <ion-content>
+        <ion-list lines="none">
+          <ion-item button :detail="false" @click="inputFile()">
+            <ion-icon slot="start" :ios="documentOutline" :md="documentSharp" aria-hidden="true"></ion-icon>
+            <ion-label>{{ Locale.torrentFile }}</ion-label>
+          </ion-item>
+          <ion-item button :detail="false" @click="inputMagnet()">
+            <ion-icon slot="start" :ios="magnetOutline" :md="magnetSharp" aria-hidden="true"></ion-icon>
+            <ion-label>{{ Locale.magnet }}</ion-label>
+          </ion-item>
+          <ion-item button :detail="false" @click="inputURL()">
+            <ion-icon slot="start" :ios="linkOutline" :md="linkSharp" aria-hidden="true"></ion-icon>
+            <ion-label>URL</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-popover>
+
+    <ion-footer v-if="connectionStatus.connected">
+      <ion-toolbar v-if="privateState.selection.length>0" id="footer" class="selection" color="primary">
         <ion-buttons slot="start">
-          <ion-button fill="clear" @click="cancelSelection()">
+          <ion-button fill="clear" @click="cancelSelection()" :aria-label="Locale.actions.cancel" :title="Locale.actions.cancel">
             <ion-icon slot="icon-only" :ios="closeOutline" :md="closeSharp"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <div class="text">
+        <div class="text tabular" role="status">
           {{ privateState.selection.length }}
           {{ LocaleController.getPlural("selected",privateState.selection.length) }}
         </div>
         <ion-buttons slot="end">
-          <ion-button fill="clear" @click="torrentActions(privateState.selection[0])">
+          <ion-button fill="clear" @click="torrentActions(privateState.selection[0])" :aria-label="Locale.selection" :title="Locale.selection">
             <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
 
-      <ion-toolbar v-else id="footer">
+      <ion-toolbar v-else id="footer" class="tools">
         <ion-buttons slot="start">
-          <ion-button fill="clear" @click="serverConfiguration()" :aria-label="Locale.serverConfig">
-            <ion-icon slot="icon-only" :ios="constructOutline" :md="constructSharp"></ion-icon>
+          <ion-button fill="clear" @click="resumeAll()" :aria-label="Locale.resumeAll" :title="Locale.resumeAll">
+            <ion-icon slot="start" :ios="playOutline" :md="playSharp" aria-hidden="true"></ion-icon>
+            <span class="tool-label">{{ Locale.resumeAll }}</span>
           </ion-button>
-          <ion-button fill="clear" id="alt-speed" @click="switchAltSpeed()" aria-label="Alternative speed" :aria-checked="altSpeedEnabled()">
-            <ion-icon 
-              slot="icon-only"
-              :color="altSpeedEnabled() ? 'primary' : undefined"
+          <ion-button fill="clear" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
+            <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
+            <span class="tool-label">{{ Locale.stopAll }}</span>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            id="alt-speed"
+            :class="{ on: altSpeedEnabled() }"
+            @click="switchAltSpeed()"
+            :aria-label="Locale.altSpeed"
+            :title="Locale.altSpeed"
+            :aria-pressed="altSpeedEnabled() ? 'true' : 'false'">
+            <ion-icon
+              slot="start"
               :ios="altSpeedEnabled() ? speedometer : speedometerOutline"
-              :md="speedometerSharp">
+              :md="speedometerSharp"
+              aria-hidden="true">
             </ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="serverInformations()" :aria-label="Locale.serverInformation">
-            <ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="stopAll()" :aria-label="Locale.stopAll">
-            <ion-icon slot="icon-only" :ios="pauseCircleOutline" :md="pauseCircleSharp"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="resumeAll()" :aria-label="Locale.resumeAll">
-            <ion-icon slot="icon-only" :ios="playCircleOutline" :md="playCircleSharp"></ion-icon>
+            <span class="tool-label">{{ Locale.altSpeed }}</span>
           </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <div>
-            <span class="bloc" aria-label="Download speed">
-              <ion-icon :icon="arrowDownOutline" color="success"></ion-icon> {{ Utils.formatBytes(downloadSpeed(),1,true) }}
-            </span>
-            <span class="bloc" aria-label="Upload speed">
-              <ion-icon :icon="arrowUpOutline" color="primary"></ion-icon> {{ Utils.formatBytes(uploadSpeed(),1,true) }}
-            </span>
-          </div>
-          <ion-button fill="clear" @click="openStatsPopover" :aria-label="Locale.statistics">
+          <ion-button fill="clear" @click="openStatsPopover" :aria-label="Locale.statistics" :title="Locale.statistics">
             <ion-icon slot="icon-only" :ios="analyticsOutline" :md="analyticsSharp"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="serverInformations()" :aria-label="Locale.serverInformation" :title="Locale.serverInformation">
+            <ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="serverConfiguration()" :aria-label="Locale.serverConfig" :title="Locale.serverConfig">
+            <ion-icon slot="icon-only" :ios="constructOutline" :md="constructSharp"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -165,13 +227,22 @@ import {
   IonFabButton, 
   IonFabList,
   IonLabel,
-  IonListHeader
+  IonPopover,
+  IonContent,
+  IonList,
+  IonItem
 } from '@ionic/vue';
 import {
   searchOutline,
   searchSharp,
   filterOutline,
   filterSharp,
+  swapVerticalOutline,
+  swapVerticalSharp,
+  playOutline,
+  playSharp,
+  pauseOutline,
+  pauseSharp,
   add,
   documentOutline,
   documentSharp,
@@ -215,10 +286,10 @@ import { Shortcuts } from '../services/Shortcuts';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
 import { Emitter } from "../services/Emitter";
-import { iosEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.enter';
-import { iosLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.leave';
-import { mdEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.enter';
-import { mdLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.leave';
+import { iosEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.enter.js';
+import { iosLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.leave.js';
+import { mdEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.enter.js';
+import { mdLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.leave.js';
 
 import * as _ from 'lodash';
 
@@ -230,6 +301,8 @@ export default defineComponent({
       filter:0,
       filterIds:[] as number[],
       connectionStatus: {} as Record<string,any>,
+      serverName: "" as string,
+      filterLabel: "" as string,
       sharedState: UserSettings.state,
       privateState: {
         viewSearch:false,
@@ -238,7 +311,9 @@ export default defineComponent({
         needFallback:false,
         selection: [] as number[],
         removed: [] as number[],
-        altSpeedEnabled:false
+        altSpeedEnabled:false,
+        addMenuOpen:false,
+        addMenuEvent:null as Event|null
       }
     }
   },
@@ -260,7 +335,10 @@ export default defineComponent({
     IonFabButton,
     IonFabList,
     IonLabel,
-    IonListHeader
+    IonPopover,
+    IonContent,
+    IonList,
+    IonItem
   },
   computed: {
     torrentSelectedList: function(): Array<any> {
@@ -314,7 +392,21 @@ export default defineComponent({
       return () => TransmissionRPC.sessionStats ? TransmissionRPC.sessionStats.downloadSpeed: 0;
     },
     itemSize() {
-      return UserSettings.state.compactMode ? 46 : 72;
+      // Keep in sync with the row heights in components/Torrent.vue
+      return UserSettings.state.compactMode ? 44 : 68;
+    },
+    orderLabel(): string {
+      const labels: Record<string,string> = {
+        name: Locale.name,
+        addedDate: Locale.addedDate,
+        sizeWhenDone: Locale.size,
+        uploadRatio: Locale.ratio,
+        uploadedEver: Locale.uploaded,
+        rateUpload: Locale.uploadSpeed,
+        activityDate: Locale.lastActivity,
+        queuePosition: Locale.queuePosition
+      };
+      return labels[this.sharedState.orderBy] || Locale.sort;
     },
     totalSize: function (): any {
       return this.torrentSelectedList.reduce(function(sum, current) {
@@ -331,6 +423,12 @@ export default defineComponent({
       searchSharp,
       filterOutline,
       filterSharp,
+      swapVerticalOutline,
+      swapVerticalSharp,
+      playOutline,
+      playSharp,
+      pauseOutline,
+      pauseSharp,
       add,
       documentOutline,
       documentSharp,
@@ -364,6 +462,8 @@ export default defineComponent({
     this.filter = inject('filter') as number;
     this.filterIds = inject('filterIds') as Array<number>;
     this.connectionStatus = inject('connectionStatus') as Record<string,any>;
+    this.serverName = inject('serverName') as string;
+    this.filterLabel = inject('filterLabel') as string;
   },
   mounted() {
     Emitter.on('switch', (id: any) => this.switchTorrentState(id) )
@@ -393,6 +493,10 @@ export default defineComponent({
     },
     retry() {
       Emitter.emit("refresh",true);
+    },
+    openAddMenu(ev: Event) {
+      this.privateState.addMenuEvent = ev;
+      this.privateState.addMenuOpen = true;
     },
     async openOrderPopover(ev: Event) {
       Emitter.emit("swipe-enabled",false);
@@ -810,41 +914,187 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#logo span {
-  color:var(--ion-color-primary);
+/* Header
+   ------------------------------------------- */
+
+.screen-title {
+  margin: 0;
+  font-size: var(--fs-section);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-#top {
-  text-align: left;
-  color:var(--ion-color-medium);
+.add-button {
+  --padding-start: 12px;
+  --padding-end: 14px;
+  --background: var(--ink);
+  --background-hover: var(--ink);
+  --background-hover-opacity: 0;
+  --color: var(--surface);
+  height: var(--control-height);
+  margin-inline: 6px 8px;
+  font-size: var(--fs-body);
+  display: none;
 }
 
-#top ion-icon {
-  vertical-align: top;
+/* Summary: live transfer rates, the largest figures on the screen */
+.summary {
+  --min-height: 56px;
+  --padding-start: max(16px, env(safe-area-inset-left));
+  --padding-end: max(16px, env(safe-area-inset-right));
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.figure {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.figure .arrow {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.figure .value {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.figure.down .arrow { color: var(--positive); }
+.figure.up .arrow   { color: var(--info); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: var(--pill-warning-bg);
+  color: var(--warning);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sort {
+  margin-inline-start: auto;
+  min-width: 0;
+  max-width: 50%;
+  padding: 0 10px;
+  color: var(--muted);
+}
+
+.sort ion-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+.sort-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+/* List header: scope of the list, and column titles on wide screens.
+   Uses the same grid as a torrent row so edges line up. */
+.list-head {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-small);
+  color: var(--muted);
+  text-align: start;
+}
+
+.list-head.condensed {
+  column-gap: 12px;
+}
+
+.scope {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.scope strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.col-head {
+  display: none;
 }
 
 #torrentList .removed {
   display:none;
 }
 
-#footer ion-icon {
-  vertical-align: middle;
+/* Footer tools
+   ------------------------------------------- */
+
+#footer.tools {
+  --padding-start: 4px;
+  --padding-end: 4px;
 }
 
-#footer .text {
- padding:0 4px;
+#footer.tools ion-button {
+  --color: var(--muted);
+  --padding-start: 10px;
+  --padding-end: 10px;
+  font-size: var(--fs-body);
+  height: 36px;
 }
 
-#footer  .bloc {
-  white-space: nowrap;
-  margin-right:4px;
+#footer.tools ion-button:hover {
+  --color: var(--ink);
 }
 
-#alt-speed {
+#footer.tools ion-icon[slot="start"] {
+  margin-inline-end: 0;
+}
+
+.tool-label {
+  display: none;
+}
+
+#alt-speed ion-icon {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
 }
 
+#alt-speed.on {
+  --color: var(--warning);
+  --background: var(--pill-warning-bg);
+}
+
+#footer.selection .text {
+  padding: 0 4px;
+  font-weight: 500;
+}
+
+/* Floating add button (narrow screens) */
 ion-fab-button[data-desc] {
   position: relative;
 }
@@ -853,13 +1103,76 @@ ion-fab-button[data-desc]::after {
   position: absolute;
   content: attr(data-desc);
   z-index: 1;
-  right: 55px;
-  bottom: 4px;
-  background: var(--background);
-  padding: 9px;
-  border-radius: 4px;
-  color: var(--color);
-  box-shadow: var(--box-shadow);
+  right: 56px;
+  bottom: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  font-size: var(--fs-body);
+  white-space: nowrap;
 }
 
+.add-menu {
+  --width: 220px;
+}
+
+.add-menu ion-item {
+  --min-height: 40px;
+}
+
+.add-menu ion-icon {
+  font-size: 18px;
+  color: var(--muted);
+  margin-inline-end: 12px;
+}
+
+/* Wide screens
+   ------------------------------------------- */
+
+@media (min-width: 600px) {
+  .tool-label {
+    display: inline;
+    margin-inline-start: 6px;
+  }
+
+  #footer.tools ion-icon[slot="start"] {
+    margin-inline-end: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .add-button {
+    display: inline-flex;
+  }
+
+  .add-fab {
+    display: none;
+  }
+
+  .figure .value {
+    font-size: var(--fs-lead);
+  }
+
+  .summary {
+    --min-height: 64px;
+  }
+
+  .sort {
+    max-width: 320px;
+  }
+
+  .list-head {
+    grid-template-columns: 32px minmax(0, 1fr) 128px 96px 96px 56px;
+  }
+
+  .col-head {
+    display: block;
+    text-align: end;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
 </style>
