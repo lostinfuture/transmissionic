@@ -155,33 +155,42 @@ export default defineComponent({
 
   .autocomplete-results {
     padding: 0;
-    margin: 0;
+    margin: 4px 0 0;
     max-height: 200px;
     overflow: auto;
-    width:100%;
+    width: 100%;
     position: absolute;
     z-index: 10;
     bottom: -1px;
-    background: var(--ion-item-background, var(--ion-background-color, #fff));
+    background: var(--ground);
+    border: 1px solid var(--control);
+    border-radius: var(--radius-control);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
     transform: translateY(100%);
   }
 
-  .md .autocomplete-results {
-    border-radius: 4px;
-    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
-  }
-
-  .ios .autocomplete-results {
-    border-radius: 10px;
+  .autocomplete-results ion-list {
+    padding: 0;
+    margin: 0;
   }
 
   .autocomplete-result {
-    --highlight-background:none;
+    --background: transparent;
+    --background-hover: var(--raised);
+    --highlight-background: none;
+    --min-height: 32px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --inner-padding-end: 0;
+    font-size: var(--fs-body);
   }
 
   .autocomplete-result ion-label {
-    text-overflow:initial;
-    white-space:normal;
-    max-width:none;
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: 1.3;
+    text-overflow: initial;
+    white-space: normal;
+    max-width: none;
   }
 </style>
