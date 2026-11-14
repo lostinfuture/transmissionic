@@ -148,7 +148,7 @@ export default defineComponent({
 
 .lead-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
   flex-wrap: wrap;
 }
@@ -234,7 +234,8 @@ dl > div {
 }
 
 dt {
-  font-size: var(--fs-small);
+  font-size: var(--fs-body);
+  font-weight: 500;
   line-height: 20px;
   color: var(--muted);
 }

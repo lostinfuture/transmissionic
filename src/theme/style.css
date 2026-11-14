@@ -723,35 +723,41 @@ ion-alert .alert-button.sc-ion-alert-md {
   border-radius: var(--radius-control);
 }
 
-ion-alert .alert-title {
-  font-size: var(--fs-section);
-  font-weight: 600;
+ion-alert .alert-title,
+ion-alert .alert-title.sc-ion-alert-md,
+ion-alert .alert-title.sc-ion-alert-ios {
+  font-size: var(--fs-section) !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
 }
 
 ion-alert.server-info-alert .alert-message {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   padding-top: 8px;
+  font-size: var(--fs-body) !important;
   color: var(--ink);
 }
 
 ion-alert.server-info-alert .info-row {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 ion-alert.server-info-alert .info-label {
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--muted);
+  font-size: var(--fs-body) !important;
+  font-weight: 600 !important;
+  line-height: 1.3;
+  color: var(--ink) !important;
 }
 
 ion-alert.server-info-alert .info-value {
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--ink);
+  font-size: var(--fs-body) !important;
+  font-weight: 400 !important;
+  line-height: 1.3;
+  color: var(--muted) !important;
 }
 
 ion-action-sheet .action-sheet-button.action-sheet-destructive,

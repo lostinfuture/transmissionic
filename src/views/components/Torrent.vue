@@ -277,9 +277,10 @@ export default defineComponent({
 
 .meta {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   min-width: 0;
+  height: 16px;
   font-size: var(--fs-small);
   line-height: 16px;
   color: var(--muted);
@@ -290,6 +291,8 @@ export default defineComponent({
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  height: 16px;
+  line-height: 16px;
   color: var(--ink);
   font-weight: 500;
   flex: 0 0 auto;
@@ -300,6 +303,7 @@ export default defineComponent({
   height: 6px;
   border-radius: 50%;
   background: var(--tone);
+  flex: 0 0 6px;
 }
 
 .tone-negative .state {
@@ -308,11 +312,15 @@ export default defineComponent({
 
 .pct {
   flex: 0 0 auto;
+  height: 16px;
+  line-height: 16px;
 }
 
 .note {
   flex: 1 1 auto;
   min-width: 0;
+  height: 16px;
+  line-height: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -325,6 +333,9 @@ export default defineComponent({
   margin-inline-start: auto;
   flex: 0 0 auto;
   display: inline-flex;
+  align-items: center;
+  height: 16px;
+  line-height: 16px;
   gap: 10px;
 }
 

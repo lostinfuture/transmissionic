@@ -217,7 +217,7 @@ table {
   width:100%;
   margin-top: 12px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--fs-body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -228,15 +228,15 @@ th, td {
 }
 
 thead th {
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--muted);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--ink);
 }
 
 tbody th {
   text-align: start;
-  font-weight: 400;
-  color: var(--muted);
+  font-weight: 500;
+  color: var(--ink);
   padding-inline-start: 0;
 }
 
