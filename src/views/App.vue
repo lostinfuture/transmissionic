@@ -5,6 +5,7 @@
 
         <!-- Main menu -->
         <ion-content v-show="!privateState.trackerListOpened || sharedState.showTrackerList" id="navigation" ref="navigation" scrollbar :class="{separator: sharedState.showTrackerList}">
+          <TransferGraph :torrentList="privateState.torrentList" :connected="privateState.connectionStatus.connected" />
           <ion-list id="servers-list">
             <ion-list-header>{{ Locale.servers }}</ion-list-header>
   
@@ -160,6 +161,7 @@ import Settings from './Settings.vue'
 import ServerDetails from './ServerDetails.vue'
 import List from './List.vue'
 import About from './About.vue'
+import TransferGraph from './components/TransferGraph.vue'
 import { TransmissionRPC } from "../services/TransmissionRPC";
 import { UserSettings } from "../services/UserSettings";
 import { Locale } from "../services/Locale";
@@ -173,6 +175,7 @@ export default defineComponent({
   name: 'App',
   components: {
     List,
+    TransferGraph,
     IonApp, 
     IonContent, 
     IonIcon, 

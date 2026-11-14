@@ -3,6 +3,7 @@
 */
 
 import * as _ from 'lodash';
+import { Emitter } from "./Emitter";
 import { buildRequest, normalizeResponse, shouldFallbackToLegacy } from "./rpcProtocol";
 import { PageLocation, resolveEndpoint, rpcRequestUrl } from "./rpcUrl";
 
@@ -95,20 +96,31 @@ class TRPC {
     return result;
   }
 
-  setFreeSpaceRefreshInterval(): void {
-    clearInterval(freeSpaceRefreshInterval);
-    freeSpaceRefreshInterval = setInterval(async () => {
-      const response = await this.rpcCall("free-space",{path:this.sessionArguments["download-dir"]})
-      if(response.result=="success"){
+  async refreshFreeSpace(): Promise<void> {
+    if(!this.sessionArguments || !this.sessionArguments["download-dir"]) return;
+    try {
+      const response = await this.rpcCall("free-space",{path:this.sessionArguments["download-dir"]});
+      if(response.result=="success" && response.arguments){
         this.sessionArguments["download-dir-free-space"]=response.arguments["size-bytes"];
       }
+    } catch {
+      return;
+    }
+  }
+
+  setFreeSpaceRefreshInterval(): void {
+    clearInterval(freeSpaceRefreshInterval);
+    this.refreshFreeSpace();
+    freeSpaceRefreshInterval = setInterval(() => {
+      this.refreshFreeSpace();
     },60000);
   }
 
   async setSessionStatsRefreshInterval(): Promise<void> {
-    this.statsHistory=[];
+    const now = Date.now();
+    this.statsHistory = Array.from({ length: 30 }, (_, i) => [0, 0, now - (29 - i) * 5000]);
     clearInterval(sessionStatsRefreshInterval);
-    sessionStatsRefreshInterval = setInterval(() => this.getSessionStats(),10000);
+    sessionStatsRefreshInterval = setInterval(() => this.getSessionStats(),5000);
     await this.getSessionStats();
   }
 
@@ -150,8 +162,12 @@ class TRPC {
   }
 
   addStatsHistory(downloadSpeed: number|null,uploadSpeed: number|null) {
-    this.statsHistory.push([downloadSpeed,uploadSpeed]);
+    this.statsHistory.push([downloadSpeed,uploadSpeed,Date.now()]);
     this.statsHistory=this.statsHistory.slice(-30);
+    Emitter.emit("session-stats", {
+      sessionStats: this.sessionStats,
+      statsHistory: this.statsHistory
+    });
   }
 
   setSession(args: Record<string, any>): Promise<Record<string, any>> {

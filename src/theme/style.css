@@ -728,6 +728,32 @@ ion-alert .alert-title {
   font-weight: 600;
 }
 
+ion-alert.server-info-alert .alert-message {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  color: var(--ink);
+}
+
+ion-alert.server-info-alert .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+ion-alert.server-info-alert .info-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+ion-alert.server-info-alert .info-value {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+}
+
 ion-action-sheet .action-sheet-button.action-sheet-destructive,
 ion-alert .alert-button-role-destructive {
   color: var(--negative);

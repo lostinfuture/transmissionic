@@ -40,6 +40,7 @@ Shortcuts.listenKeys();
 const app = createApp(App)
   .use(IonicVue, {
     /*mode: "ios",*/
+    innerHTMLTemplatesEnabled: true,
     backButtonText: isPlatform('ios') ? Locale.actions.back : undefined
   })
   .use(router)

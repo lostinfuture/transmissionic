@@ -11,6 +11,12 @@
             <h1 class="screen-title" translate="no">{{ serverName || "Transmissionic" }}</h1>
           </ion-title>
           <ion-buttons slot="end">
+            <span v-if="connectionStatus.connected && altSpeedEnabled()" class="pill header-pill" :class="{ 'menu-expanded': sharedState.expandMenu }">{{ Locale.altSpeed }}</span>
+            <button v-if="connectionStatus.connected" type="button" class="btn sort header-sort" :class="{ 'menu-expanded': sharedState.expandMenu }" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
+              <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
+              <span class="sort-label">{{ orderLabel }}</span>
+              <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
+            </button>
             <ion-button @click="toggleSearch()" fill="clear" :aria-label="Locale.search" :title="Locale.search">
               <ion-icon slot="icon-only" :ios="searchOutline" :md="searchSharp"></ion-icon>
             </ion-button>
@@ -31,8 +37,8 @@
         </template>
       </ion-toolbar>
 
-      <!-- The screen's answer: what the server is moving right now -->
-      <ion-toolbar v-if="connectionStatus.connected" class="summary">
+      <!-- The screen's answer on narrow screens when the menu drawer is closed -->
+      <ion-toolbar v-if="connectionStatus.connected" class="summary" :class="{ 'menu-expanded': sharedState.expandMenu }">
         <div class="summary-row">
           <div class="figure down" :title="Locale.download">
             <span class="arrow" aria-hidden="true">↓</span>
@@ -208,6 +214,7 @@
 import { defineComponent, inject } from 'vue';
 import { 
   isPlatform,
+  IonicSafeString,
   modalController,
   loadingController,
   popoverController,
@@ -313,7 +320,9 @@ export default defineComponent({
         removed: [] as number[],
         altSpeedEnabled:false,
         addMenuOpen:false,
-        addMenuEvent:null as Event|null
+        addMenuEvent:null as Event|null,
+        liveDownloadSpeed:0,
+        liveUploadSpeed:0
       }
     }
   },
@@ -386,10 +395,12 @@ export default defineComponent({
       }
     },
     uploadSpeed: function (): any {
-      return () => TransmissionRPC.sessionStats ? TransmissionRPC.sessionStats.uploadSpeed : 0;
+      const live = this.privateState.liveUploadSpeed;
+      return () => TransmissionRPC.sessionStats ? TransmissionRPC.sessionStats.uploadSpeed : live;
     },
     downloadSpeed: function (): any {
-      return () => TransmissionRPC.sessionStats ? TransmissionRPC.sessionStats.downloadSpeed: 0;
+      const live = this.privateState.liveDownloadSpeed;
+      return () => TransmissionRPC.sessionStats ? TransmissionRPC.sessionStats.downloadSpeed : live;
     },
     itemSize() {
       // Keep in sync with the row heights in components/Torrent.vue
@@ -476,7 +487,12 @@ export default defineComponent({
     Emitter.on('toggle-search', this.toggleSearch);
     Emitter.on('info-server', this.serverInformations);
     Emitter.on('config-server', this.serverConfiguration);
-    
+    Emitter.on('session-stats', (payload: any) => {
+      if(payload && payload.sessionStats){
+        this.privateState.liveDownloadSpeed = payload.sessionStats.downloadSpeed || 0;
+        this.privateState.liveUploadSpeed = payload.sessionStats.uploadSpeed || 0;
+      }
+    });
   },
   methods: {
     toggleSearch() {
@@ -790,24 +806,29 @@ export default defineComponent({
     async serverInformations() {
       if(this.connectionStatus.connected){
         Utils.pushState();
+        if(TransmissionRPC.sessionArguments && TransmissionRPC.sessionArguments["download-dir-free-space"]===undefined){
+          await TransmissionRPC.refreshFreeSpace();
+        }
         const infos = TransmissionRPC.sessionArguments;
+        const freeSpace = Utils.formatBytes(infos["download-dir-free-space"]) || "—";
         const alert = await alertController
           .create({
             header: Locale.serverInformation,
-            message: `
-              <p>
-                <b>${Locale.transmissionVersion}</b><br>
-                ${infos.version}
-              </p>
-              <p>
-                <b>${Locale.freeSpace}</b><br>
-                ${Utils.formatBytes(infos["download-dir-free-space"])}
-              </p>
-              <p>
-                <b>${Locale.port}</b><br>
-                ${infos["peer-port"]}
-              </p>
-            `,
+            cssClass: 'server-info-alert',
+            message: new IonicSafeString(`
+              <div class="info-row">
+                <span class="info-label">${Locale.transmissionVersion}</span>
+                <span class="info-value tabular">${infos.version}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">${Locale.freeSpace}</span>
+                <span class="info-value tabular">${freeSpace}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">${Locale.port}</span>
+                <span class="info-value tabular">${infos["peer-port"]}</span>
+              </div>
+            `),
             buttons: [Locale.ok],
           });
         return alert.present();
@@ -993,6 +1014,11 @@ export default defineComponent({
   white-space: nowrap;
 }
 
+.header-pill,
+.header-sort {
+  display: none;
+}
+
 .sort {
   margin-inline-start: auto;
   min-width: 0;
@@ -1175,6 +1201,23 @@ ion-fab-button[data-desc]::after {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 992px) {
+  .summary.menu-expanded {
+    display: none;
+  }
+
+  .header-pill.menu-expanded {
+    display: inline-flex;
+    margin-inline-end: 8px;
+  }
+
+  .header-sort.menu-expanded {
+    display: inline-flex;
+    margin-inline: 0 6px;
+    max-width: 240px;
   }
 }
 </style>
