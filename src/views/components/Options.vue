@@ -2,7 +2,7 @@
   <ion-content class="ion-padding" ref="content">
     <ion-list>
       <ion-list-header>
-        {{ Locale.bandwidth }}
+        <ion-label>{{ Locale.bandwidth }}</ion-label>
       </ion-list-header>
       <ion-item>
         <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="details.downloadLimit" type="number" :disabled="!details.downloadLimited"></ion-input>
@@ -20,7 +20,7 @@
         <ion-input :label="Locale.peersLimit" label-placement="stacked" v-model.number="details['peer-limit']" type="number"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-select :label="Locale.priority.priority" label-placement="start" placeholder="Select One" v-model="details.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+        <ion-select :label="Locale.priority.priority" label-placement="start" justify="space-between" placeholder="Select One" v-model="details.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
           <ion-select-option :value="1">{{ Locale.priority.high }}</ion-select-option>
           <ion-select-option :value="0">{{ Locale.priority.normal }}</ion-select-option>
           <ion-select-option :value="-1">{{ Locale.priority.low }}</ion-select-option>
@@ -30,7 +30,7 @@
 
     <ion-list>
       <ion-list-header>
-        {{ Locale.ratio }}
+        <ion-label>{{ Locale.ratio }}</ion-label>
       </ion-list-header>
       <ion-item>
         <!-- seedRatioMode : 0 = global settings, 1 = yes, 2 = no -->
@@ -60,7 +60,7 @@
 
     <ion-list>
       <ion-list-header>
-        {{ Locale.inactivity }}
+        <ion-label>{{ Locale.inactivity }}</ion-label>
       </ion-list-header>
       <ion-item>
         <!-- seedIdleMode : 0 = global settings, 1 = yes, 2 = no -->

@@ -22,7 +22,7 @@
         </ion-list-header>
 
         <ion-item>
-          <ion-select :label="Locale.language" label-placement="start" placeholder="Select One" v-model="sharedState.language" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+          <ion-select :label="Locale.language" label-placement="start" justify="space-between" placeholder="Select One" v-model="sharedState.language" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
             <ion-select-option value="default">{{ Locale.default }}</ion-select-option>
             <ion-select-option value="cs">Čeština</ion-select-option>
             <ion-select-option value="de">Deutsch</ion-select-option>
@@ -49,7 +49,7 @@
         </ion-item>
           
         <ion-item>
-          <ion-select :label="Locale.theme" label-placement="start" placeholder="Select One" v-model="sharedState.colorScheme" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+          <ion-select :label="Locale.theme" label-placement="start" justify="space-between" placeholder="Select One" v-model="sharedState.colorScheme" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
             <ion-select-option value="default">{{ Locale.default }}</ion-select-option>
             <ion-select-option value="light">{{ Locale.light }}</ion-select-option>
             <ion-select-option value="dark">{{ Locale.dark }}</ion-select-option>
@@ -165,7 +165,7 @@
         </ion-list-header>
 
         <div class="ion-padding small">
-          <ion-button size="default" @click="resetSettings()">{{ Locale.resetSettings }}</ion-button>
+          <ion-button size="default" class="danger-button" @click="resetSettings()">{{ Locale.resetSettings }}</ion-button>
         </div>
       </ion-list>
     </ion-content>

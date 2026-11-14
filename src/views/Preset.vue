@@ -39,30 +39,30 @@
             <ion-item>
               <ion-toggle v-model="settings.start" justify="space-between" class="swiper-no-swiping">{{ Locale.actions.start }}</ion-toggle>
             </ion-item>
+        </ion-list>
 
-            <p>
-                <ion-list-header>
-                    {{ Locale.bandwidth }}
-                </ion-list-header>
+        <ion-list>
+            <ion-list-header>
+                <ion-label>{{ Locale.bandwidth }}</ion-label>
+            </ion-list-header>
 
-                <ion-item>
-                <ion-select :label="Locale.priority.priority" label-placement="start" placeholder="Select One" v-model="settings.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
-                    <ion-select-option :value="1">{{ Locale.priority.high }}</ion-select-option>
-                    <ion-select-option :value="0">{{ Locale.priority.normal }}</ion-select-option>
-                    <ion-select-option :value="-1">{{ Locale.priority.low }}</ion-select-option>
-                </ion-select>
-                </ion-item>
+            <ion-item>
+            <ion-select :label="Locale.priority.priority" label-placement="start" justify="space-between" placeholder="Select One" v-model="settings.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+                <ion-select-option :value="1">{{ Locale.priority.high }}</ion-select-option>
+                <ion-select-option :value="0">{{ Locale.priority.normal }}</ion-select-option>
+                <ion-select-option :value="-1">{{ Locale.priority.low }}</ion-select-option>
+            </ion-select>
+            </ion-item>
 
-                <ion-item>
-                    <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.downloadLimit" type="number" :disabled="!settings.other.downloadLimited"></ion-input>
-                    <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
-                </ion-item>
+            <ion-item>
+                <ion-input :label="Locale.downloadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.downloadLimit" type="number" :disabled="!settings.other.downloadLimited"></ion-input>
+                <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
+            </ion-item>
 
-                <ion-item>
-                    <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.uploadLimit" type="number" :disabled="!settings.other.uploadLimited"></ion-input>
-                    <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
-                </ion-item>
-            </p>
+            <ion-item>
+                <ion-input :label="Locale.uploadLimit + ' (' + speedUnit + ')'" label-placement="stacked" v-model.number="settings.other.uploadLimit" type="number" :disabled="!settings.other.uploadLimited"></ion-input>
+                <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit" slot="end" class="swiper-no-swiping"></ion-toggle>
+            </ion-item>
         </ion-list>
 
     </ion-content>

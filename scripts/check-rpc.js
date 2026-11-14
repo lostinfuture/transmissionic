@@ -157,6 +157,14 @@ const freeSpace = rpc.normalizeResponse({
 assert.strictEqual(freeSpace.arguments['size-bytes'], 9);
 assert.strictEqual(freeSpace.arguments.total_size, 10);
 
+const portTest = rpc.normalizeResponse({
+  jsonrpc: '2.0',
+  result: { port_is_open: true, ip_protocol: 'ipv4' },
+  id: 14
+}, 'port-test');
+assert.strictEqual(portTest.arguments['port-is-open'], true);
+assert.strictEqual(portTest.arguments.ip_protocol, 'ipv4');
+
 assert.strictEqual(rpc.shouldFallbackToLegacy({ result: 'no method name' }), true);
 assert.strictEqual(rpc.shouldFallbackToLegacy({
   jsonrpc: '2.0',

@@ -85,84 +85,83 @@
               </ion-item>
 
               <ion-item>
-                <ion-select :label="Locale.priority.priority" label-placement="start" placeholder="Select One" v-model="settings.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
+                <ion-select :label="Locale.priority.priority" label-placement="start" justify="space-between" placeholder="Select One" v-model="settings.bandwidthPriority" :okText="Locale.ok" :cancelText="Locale.actions.cancel">
                   <ion-select-option :value="1">{{ Locale.priority.high }}</ion-select-option>
                   <ion-select-option :value="0">{{ Locale.priority.normal }}</ion-select-option>
                   <ion-select-option :value="-1">{{ Locale.priority.low }}</ion-select-option>
                 </ion-select>
               </ion-item>
+            </ion-list>
 
-              <p>
-                <ion-list-header>
-                  <ion-label>
-                    {{ Locale.information }}
-                  </ion-label>
-                </ion-list-header>
+            <ion-list>
+              <ion-list-header>
+                <ion-label>
+                  {{ Locale.information }}
+                </ion-label>
+              </ion-list-header>
 
-                <ion-item v-if="multiple">
-                  <ion-label class="label no-wrap">
-                    <div class="text-transform">{{ LocaleController.getForm("torrent","other") }}</div>
-                    <span class="selectable">{{files.length}}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="multiple">
+                <ion-label class="label no-wrap">
+                  <div class="text-transform">{{ LocaleController.getForm("torrent","other") }}</div>
+                  <span class="selectable">{{files.length}}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="type=='url' && !multiple">
-                  <ion-label class="label no-wrap">
-                    <div>URL</div>
-                    <span class="selectable">{{files[0].torrent}}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="type=='url' && !multiple">
+                <ion-label class="label no-wrap">
+                  <div>URL</div>
+                  <span class="selectable">{{files[0].torrent}}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="data.name">
-                  <ion-label class="label no-wrap">
-                    <div>{{ Locale.name }}</div>
-                    <span class="selectable">{{data.name}}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="data.name">
+                <ion-label class="label no-wrap">
+                  <div>{{ Locale.name }}</div>
+                  <span class="selectable">{{data.name}}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="totalSize">
-                  <ion-label class="label">
-                    <div>{{ Locale.totalSize }}</div>
-                    <span class="selectable">{{Utils.formatBytes(totalSize)}}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="totalSize">
+                <ion-label class="label">
+                  <div>{{ Locale.totalSize }}</div>
+                  <span class="selectable">{{Utils.formatBytes(totalSize)}}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="data.files">
-                  <ion-label class="label">
-                    <div>{{ Locale.files }}</div>
-                    <span class="selectable">{{ data.files.length }}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="data.files">
+                <ion-label class="label">
+                  <div>{{ Locale.files }}</div>
+                  <span class="selectable">{{ data.files.length }}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="data.length && data.pieceLength">
-                  <ion-label class="label">
-                    <div>{{ Locale.pieces }}</div>
-                    <span class="selectable">{{ Math.ceil(data.length/data.pieceLength) }} x {{ Utils.formatBytes(data.pieceLength) }}</span>
-                  </ion-label>
-                </ion-item>
-                
-                <ion-item v-if="data.comment">
-                  <ion-label class="label no-wrap">
-                    <div>{{ Locale.comment }}</div>
-                    <span class="selectable" v-html="Utils.autoLink(data.comment)"></span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="data.length && data.pieceLength">
+                <ion-label class="label">
+                  <div>{{ Locale.pieces }}</div>
+                  <span class="selectable">{{ Math.ceil(data.length/data.pieceLength) }} x {{ Utils.formatBytes(data.pieceLength) }}</span>
+                </ion-label>
+              </ion-item>
+              
+              <ion-item v-if="data.comment">
+                <ion-label class="label no-wrap">
+                  <div>{{ Locale.comment }}</div>
+                  <span class="selectable" v-html="Utils.autoLink(data.comment)"></span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="data.infoHash">
-                  <ion-label class="label no-wrap">
-                    <div>{{ Locale.hash }}</div>
-                    <span class="selectable">{{data.infoHash}}</span>
-                  </ion-label>
-                </ion-item>
+              <ion-item v-if="data.infoHash">
+                <ion-label class="label no-wrap">
+                  <div>{{ Locale.hash }}</div>
+                  <span class="selectable">{{data.infoHash}}</span>
+                </ion-label>
+              </ion-item>
 
-                <ion-item v-if="data.announce && data.announce.length>0">
-                  <ion-label class="label no-wrap">
-                    <div>{{ Locale.tracker.one }}</div>
-                    <span class="selectable">{{ Utils.trackerDomain(data.announce[0]).domain }}</span>
-                  </ion-label>
-                </ion-item>
-              </p>
-
+              <ion-item v-if="data.announce && data.announce.length>0">
+                <ion-label class="label no-wrap">
+                  <div>{{ Locale.tracker.one }}</div>
+                  <span class="selectable">{{ Utils.trackerDomain(data.announce[0]).domain }}</span>
+                </ion-label>
+              </ion-item>
             </ion-list>
           </ion-content>
 

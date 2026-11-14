@@ -931,8 +931,10 @@ export default defineComponent({
   --padding-start: 12px;
   --padding-end: 14px;
   --background: var(--ink);
-  --background-hover: var(--ink);
-  --background-hover-opacity: 0;
+  --background-hover: var(--surface);
+  --background-hover-opacity: 0.12;
+  --background-focused: var(--surface);
+  --background-focused-opacity: 0.12;
   --color: var(--surface);
   height: var(--control-height);
   margin-inline: 6px 8px;

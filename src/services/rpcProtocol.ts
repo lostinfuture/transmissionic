@@ -98,6 +98,7 @@ const STATS_BUCKET_NAMES = [
 const ADD_NAMES = ["torrent-added", "torrent-duplicate"];
 const ADD_TORRENT_NAMES = ["hashString", "id", "name"];
 const FREE_SPACE_NAMES = ["path", "size-bytes", "total_size"];
+const PORT_TEST_NAMES = ["port-is-open", "ip_protocol"];
 
 const sessionMap = reverseMap(SESSION_NAMES);
 const unitsMap = reverseMap(UNIT_NAMES);
@@ -111,6 +112,7 @@ const statsBucketMap = reverseMap(STATS_BUCKET_NAMES);
 const addMap = reverseMap(ADD_NAMES);
 const addTorrentMap = reverseMap(ADD_TORRENT_NAMES);
 const freeSpaceMap = reverseMap(FREE_SPACE_NAMES);
+const portTestMap = reverseMap(PORT_TEST_NAMES);
 
 function isRecord(value: unknown): value is Record<string, any> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -182,6 +184,7 @@ export function restoreArguments(method: string, result: any): any {
     });
   }
   if (method === "free-space") return renameObject(result, freeSpaceMap);
+  if (method === "port-test") return renameObject(result, portTestMap);
   if (method === "torrent-get") return restoreTorrentGet(result);
   if (method === "torrent-add") {
     return renameObject(result, addMap, {

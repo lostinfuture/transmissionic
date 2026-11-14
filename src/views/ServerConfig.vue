@@ -222,7 +222,7 @@
             </ion-list-header>
 
             <ion-item>
-              <ion-select :label="Locale.encryption" label-placement="start" placeholder="Select One" v-model="config.encryption" :okText="Locale.ok" :cancelText="Locale.actions.cancel"> 
+              <ion-select :label="Locale.encryption" label-placement="start" justify="space-between" placeholder="Select One" v-model="config.encryption" :okText="Locale.ok" :cancelText="Locale.actions.cancel"> 
                 <ion-select-option value="required">{{ Locale.required }}</ion-select-option>
                 <ion-select-option value="preferred">{{ Locale.preferred }}</ion-select-option>
                 <ion-select-option value="tolerated">{{ Locale.tolerated }}</ion-select-option>
@@ -251,6 +251,10 @@
 
             <div class="ion-padding small">
               <ion-button size="default" @click="testPort()">{{ Locale.testPort }}</ion-button>
+              <span v-if="portStatus !== null" class="port-status" :class="portStatus ? 'open' : 'closed'" role="status">
+                <span class="dot" aria-hidden="true"></span>
+                <span class="tabular">{{ config['peer-port'] }}: {{ portStatus ? Locale.success : Locale.error.error }}</span>
+              </span>
             </div>
           </ion-list>
 
@@ -366,6 +370,7 @@ export default defineComponent({
   data() {
     return {
       config: _.clone(TransmissionRPC.sessionArguments),
+      portStatus: null as null | boolean,
     }
   },
   setup() {
@@ -490,9 +495,12 @@ export default defineComponent({
       await loading.present();
       await TransmissionRPC.rpcCall("port-test")
         .then((response) => {
-          Utils.responseToast(response.arguments['port-is-open'] ? Locale.success : Locale.error.error);
+          const isOpen = Boolean(response.arguments && (response.arguments['port-is-open'] ?? response.arguments['port_is_open']));
+          this.portStatus = isOpen;
+          Utils.responseToast(isOpen ? "success" : Locale.error.error);
         })
         .catch((error) => {
+          this.portStatus = null;
           Utils.responseToast(error.message);
         })
       loading.dismiss();
@@ -542,5 +550,33 @@ ion-content {
 div[slot="start"]{
   max-width: calc(100% - 68px);
   margin-inline-end:0px;
+}
+
+.port-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.port-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.port-status.open {
+  color: var(--positive);
+  background: rgba(108, 199, 149, 0.14);
+}
+
+.port-status.closed {
+  color: var(--negative);
+  background: var(--pill-negative-bg);
 }
 </style>
