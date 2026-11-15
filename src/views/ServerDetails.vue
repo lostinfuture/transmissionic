@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="#" @click="modalClose()"></ion-back-button>
+          <ion-back-button defaultHref="#" text="" @click="modalClose()"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ add ? Locale.newServer : Locale.serverDetails }}</ion-title>
         <ion-buttons slot="end">

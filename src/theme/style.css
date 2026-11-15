@@ -213,6 +213,15 @@ ion-fab-button ion-icon {
   height: 18px !important;
 }
 
+ion-back-button::part(text) {
+  display: none !important;
+}
+
+ion-toolbar ion-back-button::part(icon),
+ion-back-button::part(icon) {
+  margin: 0 !important;
+}
+
 ion-chip ion-icon {
   font-size: 16px !important;
   width: 16px !important;
@@ -386,6 +395,41 @@ ion-searchbar .searchbar-cancel-button.sc-ion-searchbar-ios {
 ion-searchbar .searchbar-cancel-button:hover,
 ion-searchbar .searchbar-clear-button:hover {
   color: var(--ink);
+}
+
+ion-header ion-searchbar,
+.ios ion-header ion-searchbar,
+.md ion-header ion-searchbar {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-inline: 8px !important;
+  min-height: 36px !important;
+  height: 36px !important;
+}
+
+ion-header ion-searchbar .searchbar-input-container {
+  min-height: 36px !important;
+  height: 36px !important;
+}
+
+ion-searchbar .searchbar-search-icon,
+ion-searchbar .searchbar-search-icon.sc-ion-searchbar-md,
+ion-searchbar .searchbar-search-icon.sc-ion-searchbar-ios,
+ion-searchbar .searchbar-clear-icon,
+ion-searchbar .searchbar-clear-icon.sc-ion-searchbar-md,
+ion-searchbar .searchbar-clear-icon.sc-ion-searchbar-ios,
+ion-searchbar .searchbar-cancel-button ion-icon {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 18px !important;
+}
+
+ion-searchbar .searchbar-search-icon,
+ion-searchbar .searchbar-search-icon.sc-ion-searchbar-md,
+ion-searchbar .searchbar-search-icon.sc-ion-searchbar-ios {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin-top: 0 !important;
 }
 
 /* Lists, settings panels, and form controls
@@ -1171,10 +1215,6 @@ input[type=number] {
   appearance: textfield !important;
 }
 
-.stats-popover::part(content) {
-  width: 320px;
-}
-
 .text-transform::first-letter {
   text-transform: uppercase;
 }
@@ -1184,18 +1224,8 @@ input[type=number] {
   padding-bottom: 4px;
 }
 
-.ios ion-header ion-searchbar {
-  padding-bottom: 0;
-  padding-top: 0;
-  height: 44px;
-}
-
 ion-infinite-scroll-content {
   padding: 8px;
-}
-
-.plt-electron ion-popover {
-  top: -30px;
 }
 
 .trackers-popover .popover-viewport {

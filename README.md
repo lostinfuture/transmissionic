@@ -1,438 +1,74 @@
-<p align="center">
-  <img src="public/assets/icon/favicon.png" width="96">
-</p>
-<h3 align="center">Transmissionic</h3>
+# Transmissionic Web UI
 
-<p align="center">
-  Maintained fork of <a href="https://github.com/6c65726f79/Transmissionic">6c65726f79/Transmissionic</a> v1.8.0 (<code>9ddef28a48bd9baa8abe52d545d52891cc94a492</code>).<br>
-  Static web UI for Transmission Daemon. The name stays Transmissionic.<br>
-  Copyright (c) 2021 Transmissionic. Copyright (c) 2026 lostinfuture.
-</p>
+Transmissionic is a static web interface for `transmission-daemon`, built with Vue 3 and Ionic. It is a maintained fork of [`6c65726f79/Transmissionic`](https://github.com/6c65726f79/Transmissionic) focused on the browser UI.
 
-----
+## Features
 
-This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.10.14` publishes `Transmissionic-webui-v1.10.14.zip`. The release body contains that file's sha256.
+- Works with Transmission 3.00 through 4.1.x (JSON-RPC 2.0 `session_get`, `torrent_get`, `session_stats` with automatic fallback to the legacy `session-get` protocol).
+- Runs over both HTTPS and plain HTTP on a LAN without requiring `crypto.subtle`.
+- Resolves same-origin RPC requests relative to the page URL, so reverse proxies and custom ports work without per-browser setup.
+- Supports multiple server profiles, download path presets, tracker filtering, file tree selection, live transfer rate graphs, dark and light themes, and 21 locales.
 
-Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
+## Installation
 
-These upstream tickets are native packaging. They are not worked here, and this fork does not close them on upstream: #1398, #1388, #1214, #1236, #1310, #1375. Upstream pull requests #1358 and #1332 are the native shell and are declined here. Capacitor bumps #1362, #1363, #1365, #1368, and #1335 are not merged.
+Download `Transmissionic-webui-v1.10.15.zip` from [Releases](https://github.com/lostinfuture/transmissionic/releases), extract the `web/` directory, and point `transmission-daemon` to it with the `TRANSMISSION_WEB_HOME` environment variable:
 
-#1381 is an iOS `.torrent` URL scheme. It does not reproduce in the browser file picker, so this fork does not add it. #1382 is the Android share sheet. The native sheet is out of scope. Adding a magnet or a `.torrent` file in the web UI is in scope.
-
-#1404: after the add screen, Firefox left the torrent detail pane blank. The detail swiper was created while that pane was `display: none`, and Firefox kept the 0×0 size. The swiper is created only after the pane has a size, and it is destroyed when the modal closes. The add modal is presented after the magnet or URL alert has dismissed.
-
-#1396: Safari on iOS 26 freezes this web UI. That hang was not reproduced here. The back handler called `history.go(1)` from a `popstate` listener, and that call fires `popstate` again. The handler now ignores that re-entry. This fork does not close the upstream ticket.
-
-The RPC client sends JSON-RPC 2.0 (`jsonrpc`, snake_case method, `params`, `id`). Responses are mapped back to the names this UI already reads (`percentDone`, `download-dir`, `cache-size-mb`). A daemon that answers the old envelope is used as-is after one miss. A JSON-RPC error stays on 2.0. The session-id retry is unchanged. #1376: sizes and speeds use the session `units` labels (`kB`, `MB`, `B/s`). #1329 was rechecked on Transmission 4.1.4: `percentDone` stays 0–1 and rates stay bytes per second, so the bit display still multiplies by 8. #1401: queued-to-seed (status 5) uses the seeding progress color and the queued label. This fork does not close those upstream tickets.
-
-#1340: a `.torrent` file gets its info hash from a plain SHA-1, including on `http://` where `crypto.subtle` is missing. The page does not need TLS for that hash. Registering the magnet protocol still needs a secure context. This fork does not close the upstream ticket.
-
-#803: RPC uses the same origin as the page. From `/transmission/web/` the request goes to the sibling `rpc` path, not to a hardcoded host and port. A reverse proxy has to serve that RPC path on the same origin. Add the proxy hostname to `rpc-host-whitelist` and leave the whitelist enabled. This fork does not close the upstream ticket.
-
-Basic authentication on plain HTTP is visible to anyone on that network. The `auth` object in `default.json` is the existing server entry (`username`, `password`) described by upstream PR #1371. That note does not add a new authentication behavior. This fork does not close upstream #1370.
-
-The footer can stop every torrent and start every torrent. Those calls are `torrent-stop` and `torrent-start` with `ids` omitted, which Transmission applies to all torrents. An empty `ids` array is not sent.
-
-The add dialog fills the download directory from the session `download-dir`. The label "Download directory" is not sent as the path. An empty directory field is omitted, and the daemon keeps its own directory.
-
-#1369 and #1352 are the daemon log `utils.cc` `Couldn't read '/webui/default.json'`. The web UI asks for that optional file on load, and this tree ships an empty `default.json` so the request succeeds. The log line is the daemon's. This fork does not close those upstream tickets.
-
-The text below is the upstream v1.8.0 readme. Its store links and native install steps describe the upstream project, not this fork.
-
-<a href='https://play.google.com/store/apps/details?id=com.sleroy.transmissionic&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="240" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
-
-# About
-
-## Main features
-
-* Manage multiple servers
-* Add torrent from local file or magnet link
-* Drag & drop torrent file
-* Magnet protocol support
-* Start/stop/reannounce/verify/delete one or more torrents
-* Modify torrent's options
-* Set the location of a torrent
-* Select and rename torrent's files
-* Edit tracker list
-* View the list of peers with country flags
-* Sort torrents by trackers
-* Open files in explorer
-* Use presets when adding torrents
-
-## Screenshots
-
-<img src="https://i.imgur.com/STtzxrY.png" width="300"> <img src="https://i.imgur.com/5Y9ML4s.png" width="300">
-
-## Translation
-
-Available languages:
-- **Czech** (Cyril Veverka, Ti)
-- **German** (Alain Nussbaumer)
-- **Austrian German** (Alain Nussbaumer, Tobias W)
-- **Greek** (Dtheofilopoulos)
-- **English**
-- **Chilean Spanish** (Sebastian)
-- **Costa Rican Spanish** (Zenón Monge)
-- **French**
-- **Swiss French** (Alain Nussbaumer, ZertyCraft)
-- **Hungarian** (Daniel)
-- **Italian** (Emanuele Ruzza)
-- **Korean** (Mild_Coffee)
-- **Dutch** (John)
-- **Polish** (Matthew)
-- **Portuguese** (Humberto Faria)
-- **Brazilian Portuguese** (JFSilvaBr)
-- **Russian** (Alek Depler)
-- **Slovak** (Tomas)
-- **Ukrainian** (Oleksandr Popov, stanol)
-- **Chinese (simplified)** (Cuiweiqiang dlnu, xiatian)
-- **Chinese (traditional)** (Steven F)
-
-You can help with the translation by joining the project on [POEditor](https://poeditor.com/join/project?hash=sbVnI9eo3d). If your language is not availaible, feel free to add it.
-
-Thanks to all contributors.
-
-## Compatibility
-
-### Web UI
-
-| Browser         | Chrome    | Firefox   | Safari    | Edge      | IE        | Chrome for Android | Safari on iOS  |
-| --------------- | --------- | --------- | --------- | --------- | --------- | ------------------ | -------------- |
-| Version         | ≥23 ✔     | ≥21 ✔     | ≥6 ✔      | ≥79 ✔     | ❌         | ≥90 ✔              | ≥6 ✔           |
-
-### Application
-
-| OS              | Windows   | Linux     | macOS     | Android   | iOS       |
-| --------------- | --------- | --------- | --------- | --------- | --------- |
-| Version         | ≥10 ✔     | ✔        | ≥10.11 ✔  | ≥5.0 ✔    | ≥12 ✔     |
-
-## Motivations
-
-* Provide a unified interface for all platforms
-* Improve myself on Vue.js and Ionic
-* Get familiar with GitHub
-
-## Inspirations
-
-Interface and features inspired by [Transmission Remote](https://github.com/y-polek/TransmissionRemote) and [Transmission Remote GUI](https://github.com/transmission-remote-gui/transgui).
-
-# Installation
-
-You must first [enable remote access](https://github.com/transmission/transmission/blob/main/docs/Web-Interface.md#enabling-the-web-interface) in Transmission settings.
-
-## Web UI
-
-Download `Transmissionic-webui-[version].zip` from the [latest release](https://github.com/6c65726f79/Transmissionic/releases/latest) page and unzip it.
-
-### Method 1
-
-Set an [environment variable](https://github.com/transmission/transmission/blob/main/docs/Environment-Variables.md) named `TRANSMISSION_WEB_HOME` with the path of the extracted folder as value.
-
-Example:
-```bash
-export TRANSMISSION_WEB_HOME=/path/to/transmissionic/folder
+```sh
+unzip Transmissionic-webui-v1.10.15.zip -d /path/to/transmissionic
+export TRANSMISSION_WEB_HOME=/path/to/transmissionic/web
 ```
 
-### Method 2
+Alternatively, rename the extracted `web/` folder to `public_html` and place it in one of Transmission's standard search paths:
 
-> Note: On older versions of Transmission, the `public_html` folder is named `web`
+- Linux / BSD: `$XDG_DATA_HOME/transmission/public_html` (`~/.local/share/transmission/public_html`)
+- macOS: `~/Library/Application Support/Transmission/public_html`
+- Windows: `%APPDATA%\Transmission\public_html`
 
-Copy the content of the extracted folder to the `public_html` folder of Transmission, whose location varies depending on your operating system:
+If you reach the daemon by hostname or through a reverse proxy, add that hostname to `rpc-host-whitelist` in Transmission's `settings.json`.
 
-Windows
+## Default Server Configuration
 
-```
-C:\Program Files\Transmission\public_html
-```
-
-Linux
-
-```
-/usr/share/transmission/public_html
-```
-
-macOS
-
-```
-/Applications/Transmission.app/Contents/Resources/public_html
-```
-
-Don't forget to save your current `public_html` folder if you want to switch back.
-
-## Linux
-
-Download the [AppImage](https://appimage.org/) from the [latest release](https://github.com/6c65726f79/Transmissionic/releases/latest) page.
-
-It's recommended to use [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher) to take advantage of the torrent file assosiation and magnet link handling.
-
-## macOS
-
-Download the DMG from the [latest release](https://github.com/6c65726f79/Transmissionic/releases/latest) page.
-
-When you try to install it, you will get an error. After getting the error, go to `System Preferences > Security & Privacy` and click on `Open Anyway`.
-
-## iOS
-
-Download the IPA from the [latest release](https://github.com/6c65726f79/Transmissionic/releases/latest) page.
-
-Use a tool like [AltStore](https://altstore.io/) to sideload the app on your device.
-
-## Other
-
-Simply download the installer for the desired platform from the [latest release](https://github.com/6c65726f79/Transmissionic/releases/latest) page and install it.
-
-# Configuration
-
-## Web UI
-
-You don't need to specify the server details as they will be automatically detected from the URL of the Web UI.
-
-### Default settings
-
-The settings are stored on the client side, but you can overwrite the default settings by creating a file named `default.json` in the root folder of the Web UI.
-
-The file can contain the following key/value pairs:
-
-| Key                    | Type          | Description                           | Default |
-| ---------------------- | ------------- | ------------------------------------- | ------------------------ |
-| colorScheme            | `string`      | Possible values: `light` or `dark`    | System default |
-| language               | `string`      | An ISO 639-1 language code, example: `en-US` | System default |
-| orderBy                | `string`      | Possible values: `name`, `addedDate`, `sizeWhenDone`, `uploadRatio`, `uploadedEver`, `rateUpload`, `activityDate`, `queuePosition` | `addedDate` |
-| reverse                | `boolean`     | Reversed ordering                     | `true` |
-| useBits                | `boolean`     | Display speed in bit/s                | `false` |
-| expandMenu             | `boolean`     | Expand side menu on large screen      | `true` |
-| searchByName           | `boolean`     | Search torrents by name               | `true` |
-| searchByDirectory      | `boolean`     | Search torrents by download directory | `true` |
-| ipFlags                | `boolean`     | Display peer flag                     | `false` |
-| openMagnetLinks        | `boolean`     | Open magnet links with Transmissionic | `false` |
-| rememberSelectedPreset | `boolean`     | Remember selected preset when adding torrents | `false` |
-| compactMode            | `boolean`     | Compact torrent list                  | `false` |
-| showTrackerList        | `boolean`     | Always show the list of trackers in the side menu | `false` |
-| refreshInterval        | `number`      | Refresh interval in seconds           | `5` |
-| timeout                | `number`      | Connection timeout in seconds         | `10` |
-| servers                | `array`       | Default servers                       | `[]` |
-
-Server object:
-
-| Key      | Type          | Description                                |
-| -------- | ------------- | ------------------------------------------ |
-| name     | `string`      | Name to display                            |
-| host     | `string`      | Hostname or IP address of Transmission RPC |
-| path     | `string`      | Path of Transmission RPC                   |
-| port     | `number`      | Port of Transmission RPC                   |
-| https    | `boolean`     | Use HTTPS                                  |
-| auth     | `object`      | Authentication object                      |
-
-
-Configuration file example:
+Edit `default.json` in the `web/` directory to prefill connection settings for any browser that has not saved its own server list in `localStorage`. An empty `{}` connects to the same origin that served the web UI at `../rpc` (`/transmission/rpc`).
 
 ```json
 {
-  "colorScheme":"dark",
-  "language":"en",
-  "orderBy":"name",
-  "reverse":false,
-  "ipFlags":true,
-  "refreshInterval":10,
-  "timeout":20,
-  "servers":[
-    {
-      "name":"My server",
-      "host":"transmission.myserver.com",
-      "path":"/my/transmission/rpc",
-      "https":true,
-      "auth": {
-        "username":"myusername",
-        "password":"mypassword"
-      }
-    }
-  ]
+  "host": "192.168.1.15",
+  "port": 9091,
+  "https": false,
+  "path": "/transmission/rpc",
+  "auth": {
+    "username": "user",
+    "password": "password"
+  }
 }
 ```
 
-`auth` is optional. Those fields are sent as HTTP basic authentication. On plain HTTP that header is visible to anyone who can see the network. Put TLS on the reverse proxy in front of this UI.
+Any field may be omitted. Wait to put `"auth"` in `default.json` unless you trust every user who can fetch `/transmission/web/default.json`, since the file is served without authentication if the web root is exposed outside `transmission-daemon`.
 
-Leave `host` unset, or set it to the hostname in the address bar, to call RPC on that same origin. The default path is `/transmission/rpc`. When this UI is loaded from a `web` directory, that request uses the sibling `rpc` path, including when a proxy mounts both under a prefix. A different host is an absolute URL. An `https` entry with no port uses 443, not 9091. Add the name you type in the browser to Transmission's `rpc-host-whitelist`, and leave that whitelist enabled.
+## Keyboard Shortcuts
 
-### Magnet protocol
+| Action | Shortcut |
+| --- | --- |
+| Add torrent file | `Ctrl + O` |
+| Add magnet link | `Ctrl + M` |
+| Add torrent URL | `Ctrl + U` |
+| Search torrents | `Ctrl + F` |
+| Select all torrents | `Ctrl + A` |
+| Clear selection or close dialog | `Esc` |
 
-You can handle magnet links directly with the Web UI, but this feature is only available in secure contexts (HTTPS) or from localhost.
+## Building from Source
 
-To use the Web UI in HTTPS, you must set up a reverse proxy: [[GUIDE] Transmission web in SSL (https) - using nginx as a reverse proxy](https://discourse.osmc.tv/t/guide-transmission-web-in-ssl-https-using-nginx-as-a-reverse-proxy/22549)
+Building requires Node.js 24 and npm:
 
-List of supported browsers: [Browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/registerProtocolHandler#browser_compatibility)
-
-### Bookmarklet
-
-When using the Web UI, you can import magnet and torrent links using a [bookmarklet](https://en.wikipedia.org/wiki/Bookmarklet). To set up the bookmarklet, open the Web UI settings and simply drag and drop the corresponding button into your bookmarks bar.
-
-You can use the text selection to highlight a magnet link or a hash before cliking on the bookmarklet, otherwise the script will look for a clickable magnet or torrent link in the page.
-
-For mobile users:
-1. Long-press the bookmarklet button and select "Copy link address".
-2. Add the current page to your favorites and edit the bookmark.
-3. Replace the address with the one you previously copied and change the name to "Download with Transmissionic".
-4. Go on a torrent page.
-5. Tap on the address bar, search for "Download with Transmissionic" and select the bookmark. ([Screenshot](https://i.imgur.com/xcFA4Ez.png))
-
-## Electron
-
-### Magnet protocol
-
-To handle magnet links in Windows, you need to set Transmissionic as the default program.
-
-To do so, go to "Choose default apps by protocol" in the Windows settings, scroll down to "MAGNET" then select Transmissionic.
-
-### Path mapping
-
-You can configure path mapping on computer, this allow you to match remote paths with local paths to open the file explorer. This parameter works exactly the same way as [Transmission Remote GUI](https://github.com/transmission-remote-gui/transgui).
-
-Example:
-```
-/mnt/ssd = \\192.168.1.1\ssd
-```
-`/mnt/ssd` = Remote path on the server where Transmission daemon is running.
-
-`\\192.168.1.1\ssd` = Local path to access the shared folder.
-
-In this case, the remote server IP is `192.168.1.1`, and the folder `/mnt/ssd` must be shared on the network as `ssd`.
-
-# Keyboard shortcuts
-
-| Keys                    | Action               |
-| ----------------------- | -------------------- |
-| `Alt` `T`               | Open torrent         |
-| `Alt` `M`               | Open magnet          |
-| `Alt` `U`               | Open URL             |
-| `Alt` `S`               | Settings             |
-| `Alt` `N`               | New server           |
-| `Alt` `I`               | Server information   |
-| `Alt` `C`               | Server configuration |
-| `Alt` `A`               | About                |
-| `Alt` `1`-`9`           | Select filter        |
-| `Cmd/Ctrl` `Alt` `S`    | Search               |
-| `Cmd/Ctrl` `Alt` `T`    | Toggle side menu     |
-| `Cmd/Ctrl` `RightArrow` | Next tab             |
-| `Cmd/Ctrl` `LeftArrow`  | Previous tab         |
-| `Shift` `Click`         | Select torrent       |
-| `Ctrl` `A`              | Select all           |
-| `Esc`                   | Cancel selection     |
-
-# Build
-
-## Requirements
-
-You must have [Node.js](https://nodejs.org/) installed, then you can clone this repo and install dependencies by running this in the root folder of the project:
-
-```
-npm install
-```
-
-If you want to build the APK, you must install [Android Studio](https://developer.android.com/studio) or [JDK](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html).
-
-If you want to build the IPA, you must install [Xcode](https://apps.apple.com/app/xcode/id497799835).
-
-## Web UI
-
-Simply run the following command:
-
-```
+```sh
+npm ci
+npm run typecheck
+npm run lint
 npm run build:webui
 ```
 
-This will build the Web UI inside the `dist` folder.
+The static bundle is written to `dist/`.
 
-## Electron
+## License
 
-First, synchronize Electron content by running this in the root folder of the project:
-
-```
-npm run sync:electron
-```
-
-Then place your terminal in the `electron` folder and run this:
-
-```
-npm install
-```
-
-### Windows
-
-```
-npm run electron:build-windows
-```
-
-### Linux
-
-```
-npm run electron:build-linux
-```
-
-### macOS
-
-```
-npm run electron:build-mac
-```
-
-The installer will be located in the `electron/dist` folder.
-
-## Android
-
-Start by running this in the root folder of the project:
-
-```
-npm run sync:android
-```
-
-### With Android Studio
-
-Open Android Studio by running:
-
-```
-npx cap open android
-```
-
-Once Android Studio has loaded the project, build the app from `Build > Make Project`
-
-### Without Android Studio
-
-Place your terminal in the `android` folder and run this:
-
-```
-./gradlew build
-```
-
-The APK will be located in the `android/app/build/outputs/apk` folder.
-
-## iOS
-
-Start by running this in the root folder of the project:
-
-```
-npm run sync:ios
-```
-
-Then open Xcode by running:
-
-```
-npx cap open ios
-```
-
-# Development
-
-You can start a local dev server using Ionic, but you need to disable same origin policy in your browser to connect to Transmission RPC from a different host. For example, run a new instance of chrome with these flags : `--disable-web-security --disable-gpu --user-data-dir=~/chromeTemp`
-
-Then start the dev server by running this in the root folder of the project: 
-
-```
-npm run serve
-```
-
-If you want to contribute and pull your changes to this project, please work on the `dev` branch as it contains all the latest changes.
-
-# TODO
-
-- [x] Add iOS/macOS support
-- [x] Add server configurations modal
-- [x] Add magnet url handling on Windows
-- [ ] ~~Use ion-virtual-scroll when availaible for Vue.js~~
+MIT. Original work Copyright (c) 2021 Transmissionic (`6c65726f79`). Fork changes Copyright (c) 2026 lostinfuture.

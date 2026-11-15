@@ -1,4 +1,5 @@
 import { IonicVue, isPlatform } from '@ionic/vue';
+import { arrowBackSharp } from 'ionicons/icons';
 import { createApp } from 'vue'
 import App from './views/App.vue'
 import router from './router';
@@ -8,7 +9,6 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 import { FileHandler } from "./services/FileHandler";
 import { Shortcuts } from "./services/Shortcuts";
-import { Locale } from "./services/Locale";
 import { Utils } from "./services/Utils";
 
 /* Core CSS required for Ionic components to work properly */
@@ -39,18 +39,15 @@ Shortcuts.listenKeys();
 
 const app = createApp(App)
   .use(IonicVue, {
-    /*mode: "ios",*/
     innerHTMLTemplatesEnabled: true,
-    backButtonText: isPlatform('ios') ? Locale.actions.back : undefined
+    swipeBackEnabled: false,
+    backButtonText: "",
+    backButtonIcon: arrowBackSharp
   })
   .use(router)
   .use(VueVirtualScroller)
 
 Utils.customDirectives(app);
-
-if(isPlatform("electron")){
-  Utils.customTitlebar();
-}
 
 if(isPlatform("ios") && isPlatform("mobileweb")){
   Utils.loadAppleTouchIcon();

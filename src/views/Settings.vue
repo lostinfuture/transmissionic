@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="#" @click="modalClose()"></ion-back-button>
+          <ion-back-button defaultHref="#" text="" @click="modalClose()"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ Locale.settings }}</ion-title>
         <ion-buttons slot="end">

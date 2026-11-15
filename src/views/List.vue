@@ -19,65 +19,64 @@
         </ion-buttons>
       </ion-toolbar>
 
-      <ion-toolbar v-else>
-        <template v-if="!privateState.viewSearch">
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>
-            <h1 class="screen-title" translate="no">{{ serverName || "Transmissionic" }}</h1>
-          </ion-title>
-          <ion-buttons slot="end" class="header-tools">
-            <template v-if="connectionStatus.connected">
-              <ion-button fill="clear" class="tool-btn" @click="resumeAll()" :aria-label="Locale.resumeAll" :title="Locale.resumeAll">
-                <ion-icon slot="start" :ios="playOutline" :md="playSharp" aria-hidden="true"></ion-icon>
-                <span class="tool-label">{{ Locale.resumeAll }}</span>
-              </ion-button>
-              <ion-button fill="clear" class="tool-btn" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
-                <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
-                <span class="tool-label">{{ Locale.stopAll }}</span>
-              </ion-button>
-              <ion-button
-                fill="clear"
-                id="alt-speed"
-                class="tool-btn"
-                :class="{ on: altSpeedEnabled() }"
-                @click="switchAltSpeed()"
-                :aria-label="Locale.altSpeed"
-                :title="Locale.altSpeed"
-                :aria-pressed="altSpeedEnabled() ? 'true' : 'false'">
-                <ion-icon
-                  slot="start"
-                  :ios="altSpeedEnabled() ? speedometer : speedometerOutline"
-                  :md="speedometerSharp"
-                  aria-hidden="true">
-                </ion-icon>
-                <span class="tool-label">{{ Locale.altSpeed }}</span>
-              </ion-button>
-              <button type="button" class="btn sort header-sort" :class="{ 'menu-expanded': sharedState.expandMenu }" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
-                <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
-                <span class="sort-label">{{ orderLabel }}</span>
-                <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
-              </button>
-            </template>
-            <ion-button @click="toggleSearch()" fill="clear" class="tool-btn" :aria-label="Locale.search" :title="Locale.search">
-              <ion-icon slot="start" :ios="searchOutline" :md="searchSharp" aria-hidden="true"></ion-icon>
+      <ion-toolbar v-else-if="privateState.viewSearch" key="search-toolbar" class="search-toolbar">
+        <ion-searchbar id="search" show-cancel-button="always" v-model="privateState.search" @ionCancel="toggleSearch()" :placeholder="Locale.search + '…'" :cancel-button-text="Locale.actions.cancel" :spellcheck="false" autocapitalize="off" inputmode="search"></ion-searchbar>
+      </ion-toolbar>
+
+      <ion-toolbar v-else key="main-toolbar">
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>
+          <h1 class="screen-title" translate="no">{{ serverName || "Transmissionic" }}</h1>
+        </ion-title>
+        <ion-buttons slot="end" class="header-tools">
+          <template v-if="connectionStatus.connected">
+            <ion-button fill="clear" class="tool-btn" @click="resumeAll()" :aria-label="Locale.resumeAll" :title="Locale.resumeAll">
+              <ion-icon slot="start" :ios="playOutline" :md="playSharp" aria-hidden="true"></ion-icon>
+              <span class="tool-label">{{ Locale.resumeAll }}</span>
+            </ion-button>
+            <ion-button fill="clear" class="tool-btn" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
+              <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
+              <span class="tool-label">{{ Locale.stopAll }}</span>
             </ion-button>
             <ion-button
-              v-if="connectionStatus.connected"
-              class="add-button"
-              fill="solid"
-              color="primary"
-              aria-haspopup="menu"
-              @click="openAddMenu($event)">
-              <ion-icon slot="start" :icon="add" aria-hidden="true"></ion-icon>
-              {{ Locale.add }}
+              fill="clear"
+              id="alt-speed"
+              class="tool-btn"
+              :class="{ on: altSpeedEnabled() }"
+              @click="switchAltSpeed()"
+              :aria-label="Locale.altSpeed"
+              :title="Locale.altSpeed"
+              :aria-pressed="altSpeedEnabled() ? 'true' : 'false'">
+              <ion-icon
+                slot="start"
+                :ios="altSpeedEnabled() ? speedometer : speedometerOutline"
+                :md="speedometerSharp"
+                aria-hidden="true">
+              </ion-icon>
+              <span class="tool-label">{{ Locale.altSpeed }}</span>
             </ion-button>
-          </ion-buttons>
-        </template>
-        <template v-if="privateState.viewSearch">
-          <ion-searchbar id="search" show-cancel-button="always" v-model="privateState.search" @ionCancel="toggleSearch()" :placeholder="Locale.search + '…'" :cancel-button-text="Locale.actions.cancel" :spellcheck="false" autocapitalize="off" inputmode="search"></ion-searchbar>
-        </template>
+            <button type="button" class="btn sort header-sort" :class="{ 'menu-expanded': sharedState.expandMenu }" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
+              <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
+              <span class="sort-label">{{ orderLabel }}</span>
+              <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
+            </button>
+          </template>
+          <ion-button @click="toggleSearch()" fill="clear" class="tool-btn" :aria-label="Locale.search" :title="Locale.search">
+            <ion-icon slot="start" :ios="searchOutline" :md="searchSharp" aria-hidden="true"></ion-icon>
+          </ion-button>
+          <ion-button
+            v-if="connectionStatus.connected"
+            class="add-button"
+            fill="solid"
+            color="primary"
+            aria-haspopup="menu"
+            @click="openAddMenu($event)">
+            <ion-icon slot="start" :icon="add" aria-hidden="true"></ion-icon>
+            {{ Locale.add }}
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
 
       <!-- The screen's answer on narrow screens when the menu drawer is closed -->
