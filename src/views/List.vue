@@ -37,7 +37,7 @@
               <span class="tool-label">{{ Locale.resumeAll }}</span>
             </ion-button>
             <ion-button fill="clear" class="tool-btn" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
-              <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
+              <ion-icon slot="start" :ios="stopOutline" :md="stopSharp" aria-hidden="true"></ion-icon>
               <span class="tool-label">{{ Locale.stopAll }}</span>
             </ion-button>
             <ion-button
@@ -228,8 +228,8 @@ import {
   swapVerticalSharp,
   playOutline,
   playSharp,
-  pauseOutline,
-  pauseSharp,
+  stopOutline,
+  stopSharp,
   add,
   documentOutline,
   documentSharp,
@@ -246,10 +246,6 @@ import {
   arrowUpOutline,
   linkOutline,
   linkSharp,
-  pauseCircleOutline,
-  pauseCircleSharp,
-  playCircleOutline,
-  playCircleSharp,
 } from 'ionicons/icons';
 import ConnectionStatus from './components/ConnectionStatus.vue';
 import TorrentDetails from './TorrentDetails.vue'
@@ -409,8 +405,8 @@ export default defineComponent({
       swapVerticalSharp,
       playOutline,
       playSharp,
-      pauseOutline,
-      pauseSharp,
+      stopOutline,
+      stopSharp,
       add,
       documentOutline,
       documentSharp,
@@ -427,10 +423,6 @@ export default defineComponent({
       arrowUpOutline,
       linkOutline,
       linkSharp,
-      pauseCircleOutline,
-      pauseCircleSharp,
-      playCircleOutline,
-      playCircleSharp,
     }
   },
   async created() {

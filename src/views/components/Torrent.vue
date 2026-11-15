@@ -16,7 +16,7 @@
         :title="paused ? Locale.actions.start : Locale.actions.stop"
         @click="switchTorrentState($event)">
         <svg v-if="paused" viewBox="0 0 16 16" aria-hidden="true"><path class="fill" d="M5.5 3.8v8.4a.5.5 0 0 0 .77.42l6.4-4.2a.5.5 0 0 0 0-.84l-6.4-4.2a.5.5 0 0 0-.77.42z" /></svg>
-        <svg v-else viewBox="0 0 16 16" aria-hidden="true"><rect class="fill" x="4.5" y="3.5" width="2.6" height="9" rx=".6" /><rect class="fill" x="8.9" y="3.5" width="2.6" height="9" rx=".6" /></svg>
+        <svg v-else viewBox="0 0 16 16" aria-hidden="true"><rect class="fill" x="4" y="4" width="8" height="8" rx="1" /></svg>
       </button>
     </div>
 

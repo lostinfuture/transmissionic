@@ -13,8 +13,8 @@
             :aria-label="privateState.details.status==0 ? Locale.actions.start : Locale.actions.stop">
             <ion-icon 
               slot="icon-only"
-              :ios="privateState.details.status==0 ? playOutline : pauseOutline"
-              :md="privateState.details.status==0 ? playSharp : pauseSharp">
+              :ios="privateState.details.status==0 ? playOutline : stopOutline"
+              :md="privateState.details.status==0 ? playSharp : stopSharp">
             </ion-icon>
           </ion-button>
           <ion-button @click="saveDetails()" fill="clear" v-if="privateState.modified" aria-label="Save">
@@ -104,9 +104,9 @@ import {
 } from '@ionic/vue';
 import {
   playOutline,
-  pauseOutline,
+  stopOutline,
   playSharp,
-  pauseSharp,
+  stopSharp,
   saveOutline,
   saveSharp,
   ellipsisVerticalOutline,
@@ -213,9 +213,9 @@ export default defineComponent({
       Utils,
       tabController,
       playOutline,
-      pauseOutline,
+      stopOutline,
       playSharp,
-      pauseSharp,
+      stopSharp,
       saveOutline,
       saveSharp,
       ellipsisVerticalOutline,
