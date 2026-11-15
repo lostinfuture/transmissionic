@@ -121,4 +121,8 @@ for (const key of Object.keys(lock.packages || {})) {
   assert.ok(!key.includes("swiper"), key);
 }
 
+const styleSource = read("src/theme/style.css");
+assert.ok(styleSource.includes("--background-hover-opacity: 0 !important;"));
+assert.ok(!list.includes('class="add-button"\n            fill="solid"\n            color="primary"'));
+
 console.log("torrent actions check ok");

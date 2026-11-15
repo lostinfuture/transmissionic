@@ -303,6 +303,18 @@ ion-menu-button:hover::part(native) {
   color: var(--ink) !important;
 }
 
+ion-button.add-button {
+  --background: var(--ink);
+  --background-hover: var(--ink);
+  --background-hover-opacity: 0 !important;
+  --background-focused: var(--ink);
+  --background-focused-opacity: 0 !important;
+  --background-activated: var(--ink);
+  --background-activated-opacity: 0 !important;
+  --ripple-color: transparent;
+  --color: var(--surface);
+}
+
 ion-button.add-button::part(native) {
   background: var(--ink) !important;
   color: var(--surface) !important;
@@ -316,9 +328,16 @@ ion-button.add-button:focus-visible::part(native) {
   opacity: 1;
 }
 
+body.dark ion-button.add-button:hover,
+body.dark ion-button.add-button:focus-visible {
+  --background: #ffffff;
+  --background-hover: #ffffff;
+}
+
 body.dark ion-button.add-button:hover::part(native),
 body.dark ion-button.add-button:focus-visible::part(native) {
   background: #ffffff !important;
+  color: var(--surface) !important;
 }
 
 /* Segmented tab bar in modal/detail headers */
@@ -1417,33 +1436,51 @@ ion-fab-button {
   --background: var(--ink);
   --background-activated: var(--ink);
   --background-hover: var(--ink);
+  --background-hover-opacity: 0 !important;
+  --background-focused-opacity: 0 !important;
+  --background-activated-opacity: 0 !important;
+  --ripple-color: transparent;
   --color: var(--surface);
   --box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
 }
 
 ion-fab-button:not([color="light"])::part(native) {
+  background: var(--ink) !important;
+  color: var(--surface) !important;
   opacity: 0.78;
 }
 
 ion-fab-button:not([color="light"]):hover::part(native),
 ion-fab-button:not([color="light"]):focus-visible::part(native) {
+  background: var(--ink) !important;
+  color: var(--surface) !important;
   opacity: 1;
 }
 
 body.dark ion-fab-button:not([color="light"]):hover::part(native),
 body.dark ion-fab-button:not([color="light"]):focus-visible::part(native) {
   background: #ffffff !important;
+  color: var(--surface) !important;
 }
 
 ion-fab-button[color="light"] {
   --background: var(--surface);
   --background-hover: var(--raised);
+  --background-hover-opacity: 0 !important;
+  --background-focused-opacity: 0 !important;
+  --background-activated-opacity: 0 !important;
   --color: var(--ink);
   --box-shadow: 0 2px 8px rgba(0, 0, 0, .14);
 }
 
+ion-fab-button[color="light"]::part(native) {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+}
+
 ion-fab-button[color="light"]:hover::part(native) {
   background: var(--raised) !important;
+  color: var(--ink) !important;
 }
 
 ion-fab {
