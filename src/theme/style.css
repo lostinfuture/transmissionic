@@ -271,17 +271,25 @@ ion-searchbar.sc-ion-searchbar-ios-h {
   --cancel-button-color: var(--muted);
   --clear-button-color: var(--muted);
   --color: var(--ink);
+  font-size: var(--fs-body) !important;
   box-shadow: none !important;
 }
 
 ion-searchbar .searchbar-input-container,
 ion-searchbar .searchbar-input,
+ion-searchbar .searchbar-input.sc-ion-searchbar-md,
+ion-searchbar .searchbar-input.sc-ion-searchbar-ios,
 ion-searchbar .searchbar-input:focus,
 ion-searchbar .searchbar-input:focus-visible {
+  font-size: var(--fs-body) !important;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
   outline: none !important;
   background: transparent !important;
+}
+
+ion-searchbar .searchbar-cancel-button.sc-ion-searchbar-ios {
+  font-size: var(--fs-body) !important;
 }
 
 ion-searchbar .searchbar-cancel-button:hover,
