@@ -11,10 +11,10 @@ Transmissionic is a static web interface for `transmission-daemon`, built with V
 
 ## Installation
 
-Download `Transmissionic-webui-v1.10.20.zip` from [Releases](https://github.com/lostinfuture/transmissionic/releases), extract the `web/` directory, and point `transmission-daemon` to it with the `TRANSMISSION_WEB_HOME` environment variable:
+Download `Transmissionic-webui-v1.10.21.zip` from [Releases](https://github.com/lostinfuture/transmissionic/releases), extract the `web/` directory, and point `transmission-daemon` to it with the `TRANSMISSION_WEB_HOME` environment variable:
 
 ```sh
-unzip Transmissionic-webui-v1.10.20.zip -d /path/to/transmissionic
+unzip Transmissionic-webui-v1.10.21.zip -d /path/to/transmissionic
 export TRANSMISSION_WEB_HOME=/path/to/transmissionic/web
 ```
 

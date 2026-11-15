@@ -70,6 +70,7 @@
             v-if="connectionStatus.connected"
             class="add-button"
             fill="solid"
+            color="primary"
             aria-haspopup="menu"
             @click="openAddMenu($event)">
             <ion-icon slot="start" :icon="add" aria-hidden="true"></ion-icon>
@@ -855,18 +856,12 @@ export default defineComponent({
 .add-button {
   --padding-start: 12px;
   --padding-end: 14px;
-  --background: var(--raised);
-  --background-hover: var(--active);
+  --background: var(--ink);
+  --background-hover: var(--ink);
   --background-hover-opacity: 1;
-  --background-focused: var(--active);
+  --background-focused: var(--ink);
   --background-focused-opacity: 1;
-  --background-activated: var(--control);
-  --background-activated-opacity: 1;
-  --color: var(--ink);
-  --border-width: 1px;
-  --border-style: solid;
-  --border-color: var(--line);
-  --box-shadow: none;
+  --color: var(--surface);
   height: var(--control-height);
   margin-inline: 6px 0;
   font-size: var(--fs-body);

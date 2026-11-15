@@ -304,16 +304,21 @@ ion-menu-button:hover::part(native) {
 }
 
 ion-button.add-button::part(native) {
-  background: var(--raised) !important;
-  color: var(--ink) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: none !important;
+  background: var(--ink) !important;
+  color: var(--surface) !important;
+  opacity: 0.78;
 }
 
-ion-button.add-button:hover::part(native) {
-  background: var(--active) !important;
-  color: var(--ink) !important;
-  border-color: var(--control) !important;
+ion-button.add-button:hover::part(native),
+ion-button.add-button:focus-visible::part(native) {
+  background: var(--ink) !important;
+  color: var(--surface) !important;
+  opacity: 1;
+}
+
+body.dark ion-button.add-button:hover::part(native),
+body.dark ion-button.add-button:focus-visible::part(native) {
+  background: #ffffff !important;
 }
 
 /* Segmented tab bar in modal/detail headers */
@@ -1390,19 +1395,25 @@ ion-item .swiper-no-swiping ion-toggle {
 }
 
 ion-fab-button {
-  --background: var(--raised);
-  --background-activated: var(--control);
-  --background-hover: var(--active);
-  --color: var(--ink);
-  --border-width: 1px;
-  --border-style: solid;
-  --border-color: var(--line);
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, .28);
+  --background: var(--ink);
+  --background-activated: var(--ink);
+  --background-hover: var(--ink);
+  --color: var(--surface);
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
 }
 
-ion-fab-button:not([color="light"]):hover::part(native) {
-  background: var(--active) !important;
-  border-color: var(--control) !important;
+ion-fab-button:not([color="light"])::part(native) {
+  opacity: 0.78;
+}
+
+ion-fab-button:not([color="light"]):hover::part(native),
+ion-fab-button:not([color="light"]):focus-visible::part(native) {
+  opacity: 1;
+}
+
+body.dark ion-fab-button:not([color="light"]):hover::part(native),
+body.dark ion-fab-button:not([color="light"]):focus-visible::part(native) {
+  background: #ffffff !important;
 }
 
 ion-fab-button[color="light"] {
