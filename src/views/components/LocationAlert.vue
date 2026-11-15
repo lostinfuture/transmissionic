@@ -83,11 +83,11 @@ export default defineComponent({
 .md .location-alert {
   --background: var(--ion-overlay-background-color, var(--ion-background-color, #fff));
   --backdrop-opacity: var(--ion-backdrop-opacity, 0.32) !important;
-  --width: 350px;
+  --width: min(440px, 92vw);
   --min-height:250px;
   --height: auto;
   --max-height: 90%;
-  --max-width: 90%;
+  --max-width: 92vw;
   font-size: 14px;
   font-family: var(--ion-font-family, inherit);
 }
@@ -256,11 +256,11 @@ export default defineComponent({
 .ios .location-alert {
   --background: var(--ion-overlay-background-color, var(--ion-background-color, #fff));
   --backdrop-opacity: var(--ion-backdrop-opacity, 0.3) !important;
-  --width: 350px;
+  --width: min(440px, 92vw);
   --min-height:206px;
   --height: auto;
   --max-height: 90%;
-  --max-width: 90%;
+  --max-width: 92vw;
   font-size: 14px;
   font-family: var(--ion-font-family, inherit);
 }

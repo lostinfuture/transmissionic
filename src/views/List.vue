@@ -2,7 +2,24 @@
   <ion-page>
 
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar v-if="connectionStatus.connected && privateState.selection.length>0" id="selection-toolbar" class="selection" color="primary">
+        <ion-buttons slot="start">
+          <ion-button fill="clear" @click="cancelSelection()" :aria-label="Locale.actions.cancel" :title="Locale.actions.cancel">
+            <ion-icon slot="icon-only" :ios="closeOutline" :md="closeSharp"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <div class="text tabular" role="status">
+          {{ privateState.selection.length }}
+          {{ LocaleController.getPlural("selected",privateState.selection.length) }}
+        </div>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" @click="torrentActions(privateState.selection[0])" :aria-label="Locale.selection" :title="Locale.selection">
+            <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+
+      <ion-toolbar v-else>
         <template v-if="!privateState.viewSearch">
           <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
@@ -10,13 +27,39 @@
           <ion-title>
             <h1 class="screen-title" translate="no">{{ serverName || "Transmissionic" }}</h1>
           </ion-title>
-          <ion-buttons slot="end">
-            <span v-if="connectionStatus.connected && altSpeedEnabled()" class="pill header-pill" :class="{ 'menu-expanded': sharedState.expandMenu }">{{ Locale.altSpeed }}</span>
-            <button v-if="connectionStatus.connected" type="button" class="btn sort header-sort" :class="{ 'menu-expanded': sharedState.expandMenu }" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
-              <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
-              <span class="sort-label">{{ orderLabel }}</span>
-              <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
-            </button>
+          <ion-buttons slot="end" class="header-tools">
+            <template v-if="connectionStatus.connected">
+              <ion-button fill="clear" class="tool-btn" @click="resumeAll()" :aria-label="Locale.resumeAll" :title="Locale.resumeAll">
+                <ion-icon slot="start" :ios="playOutline" :md="playSharp" aria-hidden="true"></ion-icon>
+                <span class="tool-label">{{ Locale.resumeAll }}</span>
+              </ion-button>
+              <ion-button fill="clear" class="tool-btn" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
+                <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
+                <span class="tool-label">{{ Locale.stopAll }}</span>
+              </ion-button>
+              <ion-button
+                fill="clear"
+                id="alt-speed"
+                class="tool-btn"
+                :class="{ on: altSpeedEnabled() }"
+                @click="switchAltSpeed()"
+                :aria-label="Locale.altSpeed"
+                :title="Locale.altSpeed"
+                :aria-pressed="altSpeedEnabled() ? 'true' : 'false'">
+                <ion-icon
+                  slot="start"
+                  :ios="altSpeedEnabled() ? speedometer : speedometerOutline"
+                  :md="speedometerSharp"
+                  aria-hidden="true">
+                </ion-icon>
+                <span class="tool-label">{{ Locale.altSpeed }}</span>
+              </ion-button>
+              <button type="button" class="btn sort header-sort" :class="{ 'menu-expanded': sharedState.expandMenu }" @click="openOrderPopover" :aria-label="Locale.sort + ': ' + orderLabel">
+                <ion-icon :ios="swapVerticalOutline" :md="swapVerticalSharp" aria-hidden="true"></ion-icon>
+                <span class="sort-label">{{ orderLabel }}</span>
+                <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
+              </button>
+            </template>
             <ion-button @click="toggleSearch()" fill="clear" :aria-label="Locale.search" :title="Locale.search">
               <ion-icon slot="icon-only" :ios="searchOutline" :md="searchSharp"></ion-icon>
             </ion-button>
@@ -148,54 +191,6 @@
       </ion-content>
     </ion-popover>
 
-    <ion-footer v-if="connectionStatus.connected">
-      <ion-toolbar v-if="privateState.selection.length>0" id="footer" class="selection" color="primary">
-        <ion-buttons slot="start">
-          <ion-button fill="clear" @click="cancelSelection()" :aria-label="Locale.actions.cancel" :title="Locale.actions.cancel">
-            <ion-icon slot="icon-only" :ios="closeOutline" :md="closeSharp"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <div class="text tabular" role="status">
-          {{ privateState.selection.length }}
-          {{ LocaleController.getPlural("selected",privateState.selection.length) }}
-        </div>
-        <ion-buttons slot="end">
-          <ion-button fill="clear" @click="torrentActions(privateState.selection[0])" :aria-label="Locale.selection" :title="Locale.selection">
-            <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-
-      <ion-toolbar v-else id="footer" class="tools">
-        <ion-buttons slot="start">
-          <ion-button fill="clear" @click="resumeAll()" :aria-label="Locale.resumeAll" :title="Locale.resumeAll">
-            <ion-icon slot="start" :ios="playOutline" :md="playSharp" aria-hidden="true"></ion-icon>
-            <span class="tool-label">{{ Locale.resumeAll }}</span>
-          </ion-button>
-          <ion-button fill="clear" @click="stopAll()" :aria-label="Locale.stopAll" :title="Locale.stopAll">
-            <ion-icon slot="start" :ios="pauseOutline" :md="pauseSharp" aria-hidden="true"></ion-icon>
-            <span class="tool-label">{{ Locale.stopAll }}</span>
-          </ion-button>
-          <ion-button
-            fill="clear"
-            id="alt-speed"
-            :class="{ on: altSpeedEnabled() }"
-            @click="switchAltSpeed()"
-            :aria-label="Locale.altSpeed"
-            :title="Locale.altSpeed"
-            :aria-pressed="altSpeedEnabled() ? 'true' : 'false'">
-            <ion-icon
-              slot="start"
-              :ios="altSpeedEnabled() ? speedometer : speedometerOutline"
-              :md="speedometerSharp"
-              aria-hidden="true">
-            </ion-icon>
-            <span class="tool-label">{{ Locale.altSpeed }}</span>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-footer>
-
   </ion-page>
 </template>
 
@@ -217,7 +212,6 @@ import {
   IonIcon,
   IonButton,
   IonSearchbar,
-  IonFooter,
   IonFab, 
   IonFabButton, 
   IonFabList,
@@ -319,7 +313,6 @@ export default defineComponent({
     IonIcon,
     IonButton,
     IonSearchbar,
-    IonFooter,
     IonFab, 
     IonFabButton,
     IonFabList,
@@ -998,28 +991,25 @@ export default defineComponent({
   display:none;
 }
 
-/* Footer tools
+/* Header tools
    ------------------------------------------- */
 
-#footer.tools {
-  --padding-start: 4px;
-  --padding-end: 4px;
-}
-
-#footer.tools ion-button {
+.header-tools .tool-btn {
   --color: var(--muted);
   --padding-start: 10px;
   --padding-end: 10px;
   font-size: var(--fs-body);
-  height: 36px;
+  height: var(--control-height);
+  margin-inline: 0 2px;
 }
 
-#footer.tools ion-button:hover {
+.header-tools .tool-btn:hover {
   --color: var(--ink);
 }
 
-#footer.tools ion-icon[slot="start"] {
+.header-tools .tool-btn ion-icon[slot="start"] {
   margin-inline-end: 0;
+  font-size: 16px;
 }
 
 .tool-label {
@@ -1036,8 +1026,8 @@ export default defineComponent({
   --background: var(--pill-warning-bg);
 }
 
-#footer.selection .text {
-  padding: 0 4px;
+#selection-toolbar.selection .text {
+  padding: 0 8px;
   font-weight: 500;
 }
 
@@ -1078,13 +1068,13 @@ ion-fab-button[data-desc]::after {
 /* Wide screens
    ------------------------------------------- */
 
-@media (min-width: 600px) {
+@media (min-width: 1100px) {
   .tool-label {
     display: inline;
     margin-inline-start: 6px;
   }
 
-  #footer.tools ion-icon[slot="start"] {
+  .header-tools .tool-btn ion-icon[slot="start"] {
     margin-inline-end: 0;
   }
 }
@@ -1135,7 +1125,7 @@ ion-fab-button[data-desc]::after {
 
   .header-sort.menu-expanded {
     display: inline-flex;
-    margin-inline: 0 6px;
+    margin-inline: 4px 6px;
     max-width: 240px;
   }
 }
