@@ -624,7 +624,7 @@ p {
 }
 
 .side ion-icon {
-  font-size:20px;
+  font-size: 18px;
   margin: 18px 0px;
 }
 

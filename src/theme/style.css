@@ -150,6 +150,24 @@ ion-toolbar ion-title {
   pointer-events: auto !important;
 }
 
+ion-modal ion-toolbar ion-title,
+.ios ion-modal ion-toolbar ion-title,
+.md ion-modal ion-toolbar ion-title {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding-inline: 88px !important;
+  padding-block: 0 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+}
+
 ion-toolbar ion-buttons {
   display: flex !important;
   align-items: center !important;
@@ -172,6 +190,30 @@ ion-toolbar ion-buttons .button-has-icon-only,
   --padding-end: 0 !important;
   --padding-top: 0 !important;
   --padding-bottom: 0 !important;
+}
+
+ion-toolbar ion-button ion-icon,
+ion-toolbar ion-buttons ion-button ion-icon,
+ion-toolbar ion-buttons ion-button ion-icon[slot="icon-only"],
+ion-toolbar ion-buttons ion-button ion-icon[slot="start"],
+.sc-ion-buttons-md-s ion-button ion-icon[slot="icon-only"],
+.sc-ion-buttons-ios-s ion-button ion-icon[slot="icon-only"],
+ion-toolbar ion-back-button::part(icon),
+ion-toolbar ion-menu-button::part(icon),
+ion-back-button::part(icon),
+ion-menu-button::part(icon),
+ion-popover ion-item ion-icon,
+ion-card ion-item ion-button ion-icon,
+ion-fab-button ion-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+ion-chip ion-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 ion-button,
@@ -824,12 +866,19 @@ ion-alert .alert-button.sc-ion-alert-md {
   border-radius: var(--radius-control);
 }
 
+ion-alert .alert-head,
+ion-alert .alert-head.sc-ion-alert-md,
+ion-alert .alert-head.sc-ion-alert-ios {
+  text-align: center !important;
+}
+
 ion-alert .alert-title,
 ion-alert .alert-title.sc-ion-alert-md,
 ion-alert .alert-title.sc-ion-alert-ios {
   font-size: var(--fs-section) !important;
   font-weight: 600 !important;
   color: var(--ink) !important;
+  text-align: center !important;
 }
 
 ion-alert.server-info-alert .alert-message {

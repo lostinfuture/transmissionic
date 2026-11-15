@@ -110,12 +110,14 @@ export default defineComponent({
   padding-inline-start: 23px;
   -webkit-padding-end: 23px;
   padding-inline-end: 23px;
+  text-align: center;
 }
 
 .md .location-alert .alert-title {
   color: var(--ion-text-color, #000);
-  font-size: 20px;
-  font-weight: 500;
+  font-size: var(--fs-section);
+  font-weight: 600;
+  text-align: center;
 }
 
 .md .location-alert .alert-input-group {

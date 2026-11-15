@@ -111,7 +111,6 @@
     <VirtualScroll v-else id="torrentList" :fullscreen="true" :items="torrentOrderedList" :item-size="itemSize" key-field="id">
       <template v-slot:start>
         <div id="top" class="list-head" :class="{ condensed: sharedState.compactMode }">
-          <span class="lead-space" aria-hidden="true"></span>
           <span class="scope">
             <strong class="text-transform">{{ filterLabel }}</strong>
             <span class="tabular">{{ torrentSelectedList.length }} {{ LocaleController.getPlural("torrent",torrentSelectedList.length) }}</span>
@@ -944,7 +943,9 @@ export default defineComponent({
 
 .sort ion-icon {
   flex: 0 0 auto;
-  font-size: 16px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .sort-label {
@@ -959,7 +960,7 @@ export default defineComponent({
 .list-head {
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   column-gap: 14px;
   align-items: center;
   min-height: 40px;
@@ -1014,9 +1015,9 @@ export default defineComponent({
 .header-tools .tool-btn ion-icon[slot="start"],
 .header-tools .tool-btn ion-icon[slot="icon-only"] {
   margin-inline-end: 0;
-  font-size: 16px !important;
-  width: 16px !important;
-  height: 16px !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
 }
 
 .tool-label {
@@ -1108,7 +1109,7 @@ ion-fab-button[data-desc]::after {
   }
 
   .list-head {
-    grid-template-columns: 32px minmax(0, 1fr) 128px 96px 96px 56px;
+    grid-template-columns: minmax(0, 1fr) 128px 96px 96px 56px;
   }
 
   .col-head {
