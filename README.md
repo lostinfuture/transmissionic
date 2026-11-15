@@ -11,7 +11,7 @@
 
 ----
 
-This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.10.8` publishes `Transmissionic-webui-v1.10.8.zip`. The release body contains that file's sha256.
+This repository builds the static web UI only. A push to `main` uploads an untagged artifact named `transmissionic-webui-<gitsha>.zip`. Tag `v1.10.9` publishes `Transmissionic-webui-v1.10.9.zip`. The release body contains that file's sha256.
 
 Native shells are out of scope and are not built: Android, iOS, Electron, F-Droid, a Debian package, and a container of the Transmissionic app itself. Capacitor major bumps are not merged. Flood source is not in this tree. `upstream` is `https://github.com/6c65726f79/Transmissionic`. A quarterly workflow opens an issue if upstream `pushed_at` moves. It does not merge.
 

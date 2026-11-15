@@ -15,6 +15,25 @@
         <p>Maintained fork.</p>
         <p>Copyright (c) 2021 Transmissionic<br>Copyright (c) 2026 lostinfuture</p>
       </div>
+
+      <ion-list v-if="sessionArguments">
+        <ion-list-header>
+          <ion-label>{{ Locale.serverInformation }}</ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-label>{{ Locale.transmissionVersion }}</ion-label>
+          <span slot="end" class="info-value tabular selectable">{{ sessionArguments.version || "—" }}</span>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ Locale.freeSpace }}</ion-label>
+          <span slot="end" class="info-value tabular selectable">{{ freeSpaceFormatted }}</span>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ Locale.port }}</ion-label>
+          <span slot="end" class="info-value tabular selectable">{{ sessionArguments["peer-port"] ?? "—" }}</span>
+        </ion-item>
+      </ion-list>
+
       <p>
         {{Locale.about.description}}
       </p>
@@ -28,7 +47,7 @@
         <a href="https://poeditor.com/join/project?hash=sbVnI9eo3d" target="_blank" rel="noopener">https://poeditor.com/join/project?hash=sbVnI9eo3d</a>
         {{formatText(Locale.about.poeditor).after}}
       </p>
-      
+
       <p v-if="isWebUI">
         <ion-button size="default" @click="checkForUpdates()">{{ Locale.checkUpdates }}</ion-button>
       </p>
@@ -43,21 +62,26 @@
 </template>
 
 <script lang="ts">
-import { 
+import {
   isPlatform,
   modalController,
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
+  IonContent,
+  IonHeader,
+  IonTitle,
   IonToolbar,
   IonButton,
   IonButtons,
   IonPage,
-  IonBackButton
+  IonBackButton,
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonLabel
 } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
+import { TransmissionRPC } from "../services/TransmissionRPC";
 
 declare global {
   interface Window {
@@ -67,33 +91,47 @@ declare global {
 
 export default defineComponent({
   name: 'About',
-  components: { 
-    IonContent, 
-    IonHeader, 
-    IonTitle, 
+  components: {
+    IonContent,
+    IonHeader,
+    IonTitle,
     IonToolbar,
     IonButton,
     IonButtons,
     IonPage,
-    IonBackButton
+    IonBackButton,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonLabel
   },
   data() {
     return {
-      updateAvailable:false,
-      newVersion:"",
-      downloadUrl:""
+      updateAvailable: false,
+      newVersion: "",
+      downloadUrl: "",
+      sessionArguments: TransmissionRPC.sessionArguments ? { ...TransmissionRPC.sessionArguments } : null as Record<string, any> | null
     }
   },
   setup() {
     Utils.pushState();
 
-    return { 
+    return {
       Locale,
-      iconSrc:"./assets/icon/favicon.png" // Force Vue.js to load relative path without transformAssetUrls
+      Utils,
+      iconSrc: "./assets/icon/favicon.png" // Force Vue.js to load relative path without transformAssetUrls
     }
   },
-  mounted() {
+  async mounted() {
     Utils.customScrollbar(this.$refs.content);
+    if (TransmissionRPC.sessionArguments) {
+      try {
+        await TransmissionRPC.refreshFreeSpace();
+        this.sessionArguments = { ...TransmissionRPC.sessionArguments };
+      } catch (e) {
+        this.sessionArguments = { ...TransmissionRPC.sessionArguments };
+      }
+    }
   },
   computed: {
     appVersion: function(): string {
@@ -101,6 +139,11 @@ export default defineComponent({
     },
     isWebUI: function() {
       return !isPlatform("electron") && !isPlatform("capacitor")
+    },
+    freeSpaceFormatted(): string {
+      if (!this.sessionArguments) return "—";
+      const bytes = this.sessionArguments["download-dir-free-space"];
+      return (Utils.formatBytes(bytes) as string) || "—";
     }
   },
   methods: {
@@ -126,7 +169,6 @@ export default defineComponent({
             this.downloadUrl = `https://github.com/6c65726f79/Transmissionic/releases/tag/${result.name}`;
           }
         })
-      
     },
     isNewerVersion(current: string, latest: string) {
       if(current==latest) return false;
@@ -155,14 +197,21 @@ export default defineComponent({
 
 <style scoped>
 h4 {
-  margin-top:0px;
+  margin-top: 0px;
 }
+
 .app-details {
   text-align: center;
-  margin:40px 0px;
+  margin: 28px 0px 24px;
 }
+
 .app-details img {
-  height:60px;
-  margin-bottom:10px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.info-value {
+  font-size: var(--fs-body);
+  color: var(--muted);
 }
 </style>

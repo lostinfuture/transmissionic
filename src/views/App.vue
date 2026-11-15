@@ -375,7 +375,9 @@ export default defineComponent({
     Emitter.on('add-server', this.addServer);
     Emitter.on('swipe-enabled', (value: any) => this.privateState.swipeEnabled=value );
     Emitter.on('about', this.openAboutModal);
+    Emitter.on('info-server', this.openAboutModal);
     Emitter.on('settings', this.openSettingsModal);
+    Emitter.on('config-server', this.openSettingsModal);
     Emitter.on('toggle-menu', () => { menuController.toggle("left") });
     Emitter.on('select-filter', (index: any) => {
       this.privateState.selectedFilter=index-1;

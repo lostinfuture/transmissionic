@@ -253,5 +253,6 @@
     "showTrackerList": "Always show tracker list",
     "testPort": "Test if the port is open",
     "stopAll": "Stop all",
-    "resumeAll": "Resume all"
+    "resumeAll": "Resume all",
+    "client": "Client"
 }

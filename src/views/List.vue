@@ -193,17 +193,6 @@
             <span class="tool-label">{{ Locale.altSpeed }}</span>
           </ion-button>
         </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button fill="clear" @click="openStatsPopover" :aria-label="Locale.statistics" :title="Locale.statistics">
-            <ion-icon slot="icon-only" :ios="analyticsOutline" :md="analyticsSharp"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="serverInformations()" :aria-label="Locale.serverInformation" :title="Locale.serverInformation">
-            <ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="serverConfiguration()" :aria-label="Locale.serverConfig" :title="Locale.serverConfig">
-            <ion-icon slot="icon-only" :ios="constructOutline" :md="constructSharp"></ion-icon>
-          </ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-footer>
 
@@ -214,7 +203,6 @@
 import { defineComponent, inject } from 'vue';
 import { 
   isPlatform,
-  IonicSafeString,
   modalController,
   loadingController,
   popoverController,
@@ -262,16 +250,10 @@ import {
   speedometer,
   speedometerOutline,
   speedometerSharp,
-  informationCircleOutline,
-  informationCircleSharp,
   arrowDownOutline,
   arrowUpOutline,
-  constructOutline,
-  constructSharp,
   linkOutline,
   linkSharp,
-  analyticsOutline,
-  analyticsSharp,
   pauseCircleOutline,
   pauseCircleSharp,
   playCircleOutline,
@@ -280,11 +262,9 @@ import {
 import ConnectionStatus from './components/ConnectionStatus.vue';
 import TorrentDetails from './TorrentDetails.vue'
 import LocationAlert from './components/LocationAlert.vue';
-import ServerConfig from './ServerConfig.vue'
 import VirtualScroll from './components/VirtualScroll.vue'
 import Torrent from './components/Torrent.vue'
 import OrderPopover from './components/OrderPopover.vue'
-import StatsPopover from './components/StatsPopover.vue'
 import { TransmissionRPC } from "../services/TransmissionRPC";
 import { UserSettings } from "../services/UserSettings";
 import { FileHandler } from "../services/FileHandler";
@@ -452,16 +432,10 @@ export default defineComponent({
       speedometer,
       speedometerOutline,
       speedometerSharp,
-      informationCircleOutline,
-      informationCircleSharp,
       arrowDownOutline,
       arrowUpOutline,
-      constructOutline,
-      constructSharp,
       linkOutline,
       linkSharp,
-      analyticsOutline,
-      analyticsSharp,
       pauseCircleOutline,
       pauseCircleSharp,
       playCircleOutline,
@@ -485,8 +459,6 @@ export default defineComponent({
     Emitter.on('add-url', this.inputURL);
     Emitter.on('select-all', this.selectAll);
     Emitter.on('toggle-search', this.toggleSearch);
-    Emitter.on('info-server', this.serverInformations);
-    Emitter.on('config-server', this.serverConfiguration);
     Emitter.on('session-stats', (payload: any) => {
       if(payload && payload.sessionStats){
         this.privateState.liveDownloadSpeed = payload.sessionStats.downloadSpeed || 0;
@@ -521,19 +493,6 @@ export default defineComponent({
           component: OrderPopover,
           event: ev,
           translucent: true,
-          showBackdrop: isPlatform("ios")
-        })
-      popover.onDidDismiss().then(() => Emitter.emit("swipe-enabled",true));
-      return popover.present();
-    },
-    async openStatsPopover(ev: Event) {
-      Emitter.emit("swipe-enabled",false);
-      const popover = await popoverController
-        .create({
-          component: StatsPopover,
-          event: ev,
-          translucent: true,
-          cssClass: 'stats-popover',
           showBackdrop: isPlatform("ios")
         })
       popover.onDidDismiss().then(() => Emitter.emit("swipe-enabled",true));
@@ -801,46 +760,6 @@ export default defineComponent({
           .catch((error) => {
             Utils.responseToast(error.message);
           })
-      }
-    },
-    async serverInformations() {
-      if(this.connectionStatus.connected){
-        Utils.pushState();
-        if(TransmissionRPC.sessionArguments && TransmissionRPC.sessionArguments["download-dir-free-space"]===undefined){
-          await TransmissionRPC.refreshFreeSpace();
-        }
-        const infos = TransmissionRPC.sessionArguments;
-        const freeSpace = Utils.formatBytes(infos["download-dir-free-space"]) || "—";
-        const alert = await alertController
-          .create({
-            header: Locale.serverInformation,
-            cssClass: 'server-info-alert',
-            message: new IonicSafeString(`
-              <div class="info-row">
-                <span class="info-label">${Locale.transmissionVersion}</span>
-                <span class="info-value tabular">${infos.version}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">${Locale.freeSpace}</span>
-                <span class="info-value tabular">${freeSpace}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">${Locale.port}</span>
-                <span class="info-value tabular">${infos["peer-port"]}</span>
-              </div>
-            `),
-            buttons: [Locale.ok],
-          });
-        return alert.present();
-      }
-    },
-    async serverConfiguration() {
-      if(this.connectionStatus.connected){
-        const modal = await modalController
-        .create({
-          component: ServerConfig
-        })
-        return modal.present();
       }
     },
     longPress(e: Event, id: number) {

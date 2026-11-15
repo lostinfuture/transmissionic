@@ -20,9 +20,8 @@
           <span class="value tabular">{{ downloadRateParts.value }}</span>
           <span class="unit tabular">{{ downloadRateParts.unit }}</span>
         </div>
-        <div class="rate-sub tabular">
-          <span>{{ totalDownloadedFormatted }}</span>
-          <span v-if="downloadLimitFormatted" class="limit">[{{ downloadLimitFormatted }}]</span>
+        <div v-if="downloadLimitFormatted" class="rate-sub tabular">
+          <span class="limit">[{{ downloadLimitFormatted }}]</span>
         </div>
       </div>
 
@@ -41,9 +40,8 @@
           <span class="value tabular">{{ uploadRateParts.value }}</span>
           <span class="unit tabular">{{ uploadRateParts.unit }}</span>
         </div>
-        <div class="rate-sub tabular">
-          <span>{{ totalUploadedFormatted }}</span>
-          <span v-if="uploadLimitFormatted" class="limit">[{{ uploadLimitFormatted }}]</span>
+        <div v-if="uploadLimitFormatted" class="rate-sub tabular">
+          <span class="limit">[{{ uploadLimitFormatted }}]</span>
         </div>
       </div>
     </div>
@@ -105,6 +103,35 @@
           r="3.5"
         />
       </svg>
+    </div>
+
+    <div class="stats-wrap">
+      <table class="stats-table tabular" :aria-label="Locale.statistics">
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">{{ Locale.name }}</span></th>
+            <th scope="col">{{ Locale.current }}</th>
+            <th scope="col">{{ Locale.total }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{ Locale.downloaded }}</th>
+            <td>{{ currentDownloadedFormatted }}</td>
+            <td>{{ totalDownloadedFormatted }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ Locale.uploaded }}</th>
+            <td>{{ currentUploadedFormatted }}</td>
+            <td>{{ totalUploadedFormatted }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ Locale.duration }}</th>
+            <td>{{ currentDurationFormatted }}</td>
+            <td>{{ totalDurationFormatted }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -282,6 +309,11 @@ export default defineComponent({
       void this.sharedState.useBits;
       return splitRate(Utils.formatBytes(this.activeUploadSpeed, 1, true));
     },
+    currentDownloadedFormatted(): string {
+      const current = this.sessionStats?.["current-stats"]?.downloadedBytes;
+      const bytes = typeof current === "number" ? current : 0;
+      return (Utils.formatBytes(bytes, 1, false) as string) || "0 B";
+    },
     totalDownloadedFormatted(): string {
       const current = this.sessionStats?.["current-stats"]?.downloadedBytes;
       const cumulative = this.sessionStats?.["cumulative-stats"]?.downloadedBytes;
@@ -291,6 +323,11 @@ export default defineComponent({
           : typeof current === "number"
           ? current
           : 0;
+      return (Utils.formatBytes(bytes, 1, false) as string) || "0 B";
+    },
+    currentUploadedFormatted(): string {
+      const current = this.sessionStats?.["current-stats"]?.uploadedBytes;
+      const bytes = typeof current === "number" ? current : 0;
       return (Utils.formatBytes(bytes, 1, false) as string) || "0 B";
     },
     totalUploadedFormatted(): string {
@@ -303,6 +340,18 @@ export default defineComponent({
           ? current
           : 0;
       return (Utils.formatBytes(bytes, 1, false) as string) || "0 B";
+    },
+    currentDurationFormatted(): string {
+      void this.sharedState.language;
+      const sec = this.sessionStats?.["current-stats"]?.secondsActive;
+      if (typeof sec !== "number" || sec <= 0) return "—";
+      return Utils.durationToString(sec * 1000) || "—";
+    },
+    totalDurationFormatted(): string {
+      void this.sharedState.language;
+      const sec = this.sessionStats?.["cumulative-stats"]?.secondsActive;
+      if (typeof sec !== "number" || sec <= 0) return this.currentDurationFormatted;
+      return Utils.durationToString(sec * 1000) || "—";
     },
     downloadLimitFormatted(): string {
       const args = TransmissionRPC.sessionArguments;
@@ -574,5 +623,43 @@ export default defineComponent({
   fill: var(--info);
   stroke: var(--ground);
   stroke-width: 1.5px;
+}
+
+.stats-wrap {
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+  line-height: 1.3;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 3px 0 3px 8px;
+  text-align: end;
+}
+
+.stats-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faint);
+  padding-bottom: 4px;
+}
+
+.stats-table tbody th {
+  text-align: start;
+  font-weight: 500;
+  color: var(--muted);
+  padding-inline-start: 0;
+}
+
+.stats-table tbody td {
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
 }
 </style>
