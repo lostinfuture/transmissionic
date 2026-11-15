@@ -8,8 +8,6 @@ import AddTorrent from '../views/AddTorrent.vue'
 import { Utils } from './Utils';
 import { Emitter } from "./Emitter";
 import { TransmissionRPC } from "./TransmissionRPC";
-import { Capacitor } from '@capacitor/core'; 
-import { App } from '@capacitor/app';
 
 declare global {
   interface Window {
@@ -23,26 +21,6 @@ let torrentFiles: Array<ArrayBuffer> = [];
 
 export const FileHandler = {
   listenFileOpen(): void {
-    if(isPlatform("electron") && window.fileOpen){
-      window.fileOpen.receive((files: Array<ArrayBuffer>) => {
-        torrentFiles = files;
-        this.filesLoaded();
-      });
-      window.magnetOpen.receive((magnet: string) => {
-        this.readMagnets([magnet]);
-      });
-    }
-    else if(isPlatform("capacitor")){
-      App.addListener('appUrlOpen', async (data: Record<string,any>) => {
-        if(data.url.startsWith("magnet:")){
-          this.readMagnets([data.url]);
-        }
-        else {
-          const src = Capacitor.convertFileSrc(data.url)
-          this.loadFiles([src]);
-        }
-      })
-    }
     document.body.addEventListener("dragover", (e) => e.preventDefault(), false);
     document.body.addEventListener("drop",(e) => this.handleFilesDrop(e), false);
 

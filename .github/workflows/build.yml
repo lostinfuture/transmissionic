@@ -16,20 +16,21 @@ jobs:
     name: Build untagged web UI zip
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "24"
+          node-version: "26"
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Typecheck and lint
+      - name: Typecheck, lint, and test
         run: |
           npm run typecheck
           npm run lint
+          npm test
 
       - name: Build web UI
         run: npm run build:webui
@@ -46,21 +47,16 @@ jobs:
           grep -q "script-src 'self'" dist/index.html
           grep -q 'src="./assets/' dist/index.html
           grep -q "Maintained fork." dist/index.html || grep -R -q "Maintained fork." dist
-          node scripts/check-add-torrent.js
-          node scripts/check-overlay-history.js
-          node scripts/check-rpc.js
-          node scripts/check-rpc-url.js
-          node scripts/check-torrent-actions.js
           rm -rf web
           mkdir web
           cp -a dist/. web/
           sha=$(git rev-parse HEAD)
           name="transmissionic-webui-${sha}.zip"
           zip -r "$name" web
-          test ! -f Transmissionic-webui-v1.10.24.zip
+          test ! -f Transmissionic-webui-v1.10.25.zip
           unzip -p "$name" web/LICENSE | grep -q "Copyright (c) 2021 Transmissionic"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: transmissionic-webui-${{ github.sha }}
           path: transmissionic-webui-*.zip
@@ -74,7 +70,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: transmissionic-webui-${{ github.sha }}
           path: dist-zip

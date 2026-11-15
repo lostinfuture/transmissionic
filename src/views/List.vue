@@ -266,10 +266,6 @@ import { Shortcuts } from '../services/Shortcuts';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
 import { Emitter } from "../services/Emitter";
-import { iosEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.enter.js';
-import { iosLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/ios.leave.js';
-import { mdEnterAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.enter.js';
-import { mdLeaveAnimation } from '@ionic/core/dist/collection/components/modal/animations/md.leave.js';
 
 import * as _ from 'lodash';
 
@@ -706,8 +702,6 @@ export default defineComponent({
         .create({
           component: LocationAlert,
           cssClass:"location-alert",
-          enterAnimation:isPlatform("ios") ? iosEnterAnimation : mdEnterAnimation,
-          leaveAnimation:isPlatform("ios") ? iosLeaveAnimation : mdLeaveAnimation,
           componentProps: {
             value:downloadDir,
           }

@@ -151,7 +151,6 @@ import { Locale } from "../services/Locale";
 import { LocaleController } from "../services/LocaleController";
 import { Utils } from "../services/Utils";
 import { Emitter } from "../services/Emitter";
-import { SplashScreen } from '@capacitor/splash-screen';
 import * as _ from 'lodash';
 
 export default defineComponent({
@@ -331,7 +330,6 @@ export default defineComponent({
         this.privateState.serverList = result;
         this.privateState.connectionStatus.loading=false;
       })
-    SplashScreen.hide();
     document.body.classList.toggle("loading",false);
   },
   created() {

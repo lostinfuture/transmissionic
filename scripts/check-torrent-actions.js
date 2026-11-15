@@ -74,6 +74,25 @@ const defaults = JSON.parse(read("public/default.json"));
 assert.deepStrictEqual(defaults, {});
 
 const pkg = JSON.parse(read("package.json"));
-assert.strictEqual(pkg.version, "1.10.24");
+assert.strictEqual(pkg.version, "1.10.25");
+assert.ok(pkg.scripts && pkg.scripts.test);
+assert.ok(!("chart.js" in pkg.dependencies));
+assert.ok(!("swiper" in pkg.dependencies));
+assert.ok(!("@capacitor/core" in pkg.dependencies));
+assert.ok(!("capacitor-secure-storage-plugin" in pkg.dependencies));
+assert.ok(!("@capacitor-community/electron" in (pkg.devDependencies || {})));
+
+const mainTs = read("src/main.ts");
+assert.ok(mainTs.includes('mode: "md"'));
+assert.ok(!mainTs.includes("@ionic/pwa-elements"));
+
+const userSettingsSource = read("src/services/UserSettings.ts");
+assert.ok(!userSettingsSource.includes("@capacitor"));
+assert.ok(!userSettingsSource.includes("capacitor-secure-storage-plugin"));
+assert.ok(userSettingsSource.includes("sanitizeServersForStorage"));
+
+const detailsSource = read("src/views/TorrentDetails.vue");
+assert.ok(!detailsSource.includes("@ionic/core/dist/collection"));
+assert.ok(!list.includes("@ionic/core/dist/collection"));
 
 console.log("torrent actions check ok");

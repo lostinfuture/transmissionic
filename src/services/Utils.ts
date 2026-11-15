@@ -5,30 +5,18 @@ import {
   popoverController,
   actionSheetController,
   menuController,
-  useBackButton
+  toastController
 } from '@ionic/vue';
-import { App } from '@capacitor/app';
-import { Clipboard } from '@capacitor/clipboard';
-import { Toast } from '@capacitor/toast';
-import { ScreenReader } from '@capacitor/screen-reader';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { FileSharer } from '@byteowls/capacitor-filesharer';
-import { Keyboard, KeyboardStyle } from '@capacitor/keyboard';
 import { UserSettings } from "./UserSettings";
 import { Locale } from "./Locale";
 import Autolinker from 'autolinker';
 import Moment from "moment";
-import { Shortcuts } from './Shortcuts';
 import { Emitter } from './Emitter';
 import { createHistoryGuard } from './historyGuard';
 import { TransmissionRPC } from "./TransmissionRPC";
 import { formatByteCount, readByteUnits } from "./units";
 
 declare global {
-  interface Window {
-    Titlebar: any;
-  }
-
   interface Navigator
   {
     registerProtocolHandler : (scheme: string, url: string, title: string) => void;
@@ -106,26 +94,19 @@ export const Utils = {
   },
 
   async clipboardCopy(text: string): Promise<any> {
-    let promise;
-    if(isPlatform("capacitor")){
-      promise = Clipboard.write({string: text})
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
     }
-    else if(navigator.clipboard && navigator.clipboard.writeText) {
-      promise = navigator.clipboard.writeText(text)
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.value = text;
+    input.focus();
+    input.select();
+    const result = document.execCommand('copy');
+    input.remove();
+    if (!result) {
+      throw Error('Failed to copy text.');
     }
-    else {
-      const input = document.createElement('input');
-      document.body.appendChild(input);
-      input.value = text;
-      input.focus();
-      input.select();
-      const result = document.execCommand('copy');
-      input.remove();
-      if (!result) {
-        throw Error('Failed to copy text.')
-      }
-    }
-    return promise;
   },
 
   async ipToCountry(ip: string): Promise<any>{
@@ -217,10 +198,6 @@ export const Utils = {
         break;
     }
     document.body.classList.toggle('dark', dark);
-    if(isPlatform("ios")){
-      Keyboard.setStyle({ style: dark ? KeyboardStyle.Dark : KeyboardStyle.Light});
-    }
-    this.setStatusBarColor(dark);
   },
 
   async responseToast(result: string): Promise<void> {
@@ -236,14 +213,12 @@ export const Utils = {
         text = this.localizeError(result);
         break;
     }
-    await Toast.show({text});
-    try {
-      if(await ScreenReader.isEnabled()){
-        await ScreenReader.speak({ value: text, language: UserSettings.getLanguage() });
-      }
-    } catch (e) {
-      return;
-    }
+    const toast = await toastController.create({
+      message: text,
+      duration: 2000,
+      position: 'bottom'
+    });
+    await toast.present();
   },
 
   localizeError(error: string): string{
@@ -372,29 +347,6 @@ export const Utils = {
     }
   },
 
-  customTitlebar(): void {
-    if(window.Titlebar){
-      window.Titlebar.new();
-
-      window.Titlebar.shortcuts((shortcut: string) => {
-        Shortcuts.call(shortcut);
-      });
-    }
-  },
-
-  setStatusBarColor(isDark: boolean): void {
-    const statusBarColor = getComputedStyle(document.body).getPropertyValue('--ion-toolbar-background') || getComputedStyle(document.body).getPropertyValue('--ion-color-light') // --ion-color-primary
-    if(isPlatform("capacitor") && (isPlatform("android") ||  isPlatform("ios"))){
-      StatusBar.setStyle({style: isDark ? Style.Dark : Style.Light});
-      StatusBar.setBackgroundColor({color:statusBarColor});
-    }
-    else if(isPlatform("electron")){
-      if(window.Titlebar){
-        window.Titlebar.updateBackground(statusBarColor)
-      }
-    }
-  },
-
   customDirectives(app: Record<string, any>): void {
     app.directive('longpress', {
       beforeMount(el: any, binding: any) {
@@ -438,15 +390,7 @@ export const Utils = {
   backButtonHandle(): void {
     Emitter.on('back', () => { this.popState() });
 
-    if(isPlatform('capacitor')){
-      useBackButton(-1, async () => {
-        const top = await this.getTop();
-        if(!top.hasTop){
-          App.exitApp();
-        }
-      });
-    }
-    else if(!isPlatform('ios')) {
+    if(!isPlatform('ios')) {
       window.addEventListener('popstate', (e: any) => {
         if (e.origin && e.origin !== window.location.origin)
           return;
@@ -517,40 +461,29 @@ export const Utils = {
     document.querySelector("link[title=ATI]")?.setAttribute("href",data);
   },
   registerMagnetLinkProtocol(): void {
-    if(!isPlatform("electron") && !isPlatform("capacitor")){
-      const href = window.location.href.replace(window.location.hash,"");
-      if(UserSettings.state.openMagnetLinks){
-        if(navigator.registerProtocolHandler){
-          navigator.registerProtocolHandler("magnet", `${href}#%s`, "Transmissionic Magnet Handler" );
-        }
+    const href = window.location.href.replace(window.location.hash,"");
+    if(UserSettings.state.openMagnetLinks){
+      if(navigator.registerProtocolHandler){
+        navigator.registerProtocolHandler("magnet", `${href}#%s`, "Transmissionic Magnet Handler" );
       }
-      else if(navigator.unregisterProtocolHandler){
-        navigator.unregisterProtocolHandler("magnet", `${href}#%s`);
-      }
+    }
+    else if(navigator.unregisterProtocolHandler){
+      navigator.unregisterProtocolHandler("magnet", `${href}#%s`);
     }
   },
   downloadFile(content: string, filename: string, type: string) {
     const base64 = Buffer.from(content, 'utf-8').toString('base64');
-    if(isPlatform("capacitor")){
-      FileSharer.share({
-        filename: filename,
-        base64Data: base64,
-        contentType: type,
+    fetch(`data:${type};base64,${base64}`)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
       });
-    }
-    else {
-      fetch(`data:${type};base64,${base64}`)
-        .then(res => res.blob())
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-        })
-    }
   }
 }

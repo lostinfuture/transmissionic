@@ -5,8 +5,6 @@ import App from './views/App.vue'
 import router from './router';
 import VueVirtualScroller from 'vue-virtual-scroller'
 
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
-
 import { FileHandler } from "./services/FileHandler";
 import { Shortcuts } from "./services/Shortcuts";
 import { Utils } from "./services/Utils";
@@ -31,14 +29,13 @@ import '@ionic/vue/css/display.css';
 import './theme/variables.css';
 import './theme/style.css';
 
-defineCustomElements(window);
-
 FileHandler.listenFileOpen();
 
 Shortcuts.listenKeys();
 
 const app = createApp(App)
   .use(IonicVue, {
+    mode: "md",
     innerHTMLTemplatesEnabled: true,
     swipeBackEnabled: false,
     backButtonText: "",
