@@ -7,14 +7,6 @@ import parseTorrent, { remote } from 'parse-torrent'
 import AddTorrent from '../views/AddTorrent.vue'
 import { Utils } from './Utils';
 import { Emitter } from "./Emitter";
-import { TransmissionRPC } from "./TransmissionRPC";
-
-declare global {
-  interface Window {
-      fileOpen: any;
-      magnetOpen: any;
-  }
-}
 
 let currentFile: HTMLInputElement|null;
 let torrentFiles: Array<ArrayBuffer> = [];
@@ -208,31 +200,6 @@ export const FileHandler = {
         })
       await modal.present();
     });
-  },
-  openExplorer(details: Record<string, any>): boolean{
-    let isFile = false;
-    let path = details.name;
-    const dir = details.downloadDir;
-
-    if(details.files.length===1){
-      path = details.files[0].name
-      isFile = true;
-    }
-    
-    if(window.fileOpen){
-      return window.fileOpen.open(this.pathMapping(dir),path,isFile);
-    }
-    return false;
-  },
-  pathMapping(path: string): string{
-    const list = TransmissionRPC.pathMapping;
-    let result = path
-    for(const map in list){
-      if(path.startsWith(map)){
-        result = list[map] + path.substring(map.length)
-      }
-    }
-    return result;
   }
 }
 

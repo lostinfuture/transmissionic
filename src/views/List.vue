@@ -200,7 +200,6 @@
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
 import { 
-  isPlatform,
   modalController,
   loadingController,
   popoverController,
@@ -477,7 +476,7 @@ export default defineComponent({
           component: OrderPopover,
           event: ev,
           translucent: true,
-          showBackdrop: isPlatform("ios")
+          showBackdrop: false
         })
       popover.onDidDismiss().then(() => Emitter.emit("swipe-enabled",true));
       return popover.present();
@@ -660,17 +659,6 @@ export default defineComponent({
           handler: () => this.setLocation(selection)
         },
         {
-          text: Locale.actions.openInExplorer,
-          handler: () => {
-            TransmissionRPC.getTorrentDetails(torrent.id).then((details) => {
-              const success = FileHandler.openExplorer(details);
-              if(!success){
-                Utils.responseToast(Locale.error.notFound);
-              }
-            });
-          }
-        },
-        {
           text: Locale.actions.remove,
           role: 'destructive',
           handler: async ()  => {
@@ -683,10 +671,6 @@ export default defineComponent({
           role: 'cancel'
         },
       ];
-
-      if(!isPlatform("electron") || selection.length>1){
-        buttons.splice(7, 1);
-      }
 
       const actionSheet = await actionSheetController
         .create({

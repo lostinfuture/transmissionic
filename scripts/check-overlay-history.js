@@ -70,17 +70,6 @@ async function testNestedDuringAwait() {
   assert.strictEqual(restores, 1);
 }
 
-function testSwiperSize() {
-  const { swiperAction } = load('src/services/swiperLayout.ts');
-  assert.strictEqual(swiperAction(0, 0, false, 0, 0), 'wait');
-  assert.strictEqual(swiperAction(0, 400, false, 0, 0), 'wait');
-  assert.strictEqual(swiperAction(320, 480, false, 0, 0), 'mount');
-  assert.strictEqual(swiperAction(320, 480, true, 320, 480), 'wait');
-  assert.strictEqual(swiperAction(320, 500, true, 320, 480), 'update');
-  assert.strictEqual(swiperAction(0, 0, true, 320, 480), 'wait');
-}
-
-testSwiperSize();
 testReentry()
   .then(() => testNestedDuringAwait())
   .then(() => testNoRestoreStaysOpen())

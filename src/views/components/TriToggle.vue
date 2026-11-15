@@ -3,7 +3,7 @@
 -->
 
 <template>
-    <span class="swiper-no-swiping">
+    <span class="tri-toggle">
         <ion-toggle v-model="checked" :aria-label="label || 'Toggle'"></ion-toggle>
     </span>
 </template>

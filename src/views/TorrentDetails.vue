@@ -51,23 +51,21 @@
       v-on:retry="loadDetails()">
     </ConnectionStatus>
 
-    <div class="swiper" ref="swiper" v-show="!privateState.connectionStatus.loading && privateState.connectionStatus.error==''">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=0">
-          <Infos v-if="tabController.isVisible(0)"></Infos>
-        </div>
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
-          <Options v-if="tabController.isVisible(1)"></Options>
-        </div>
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=2">
-          <Files v-if="tabController.isVisible(2)" v-on:changeDirectory="changeDirectory"></Files>
-        </div>
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab4" :aria-hidden="tabController.state.selectedTab!=3">
-          <Trackers v-if="tabController.isVisible(3)"></Trackers>
-        </div>
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab5" :aria-hidden="tabController.state.selectedTab!=4">
-          <Peers v-if="tabController.isVisible(4)"></Peers>
-        </div>
+    <div class="tab-views" v-show="!privateState.connectionStatus.loading && privateState.connectionStatus.error==''">
+      <div class="tab-pane" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=0">
+        <Infos v-if="tabController.isVisible(0)"></Infos>
+      </div>
+      <div class="tab-pane" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
+        <Options v-if="tabController.isVisible(1)"></Options>
+      </div>
+      <div class="tab-pane" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=2">
+        <Files v-if="tabController.isVisible(2)" v-on:changeDirectory="changeDirectory"></Files>
+      </div>
+      <div class="tab-pane" role="tabpanel" aria-labelledby="tab4" :aria-hidden="tabController.state.selectedTab!=3">
+        <Trackers v-if="tabController.isVisible(3)"></Trackers>
+      </div>
+      <div class="tab-pane" role="tabpanel" aria-labelledby="tab5" :aria-hidden="tabController.state.selectedTab!=4">
+        <Peers v-if="tabController.isVisible(4)"></Peers>
       </div>
     </div>
 
@@ -76,7 +74,6 @@
 <script lang="ts">
 import { defineComponent, computed, inject} from 'vue';
 import { 
-  isPlatform,
   modalController,
   loadingController,
   alertController,
@@ -107,7 +104,6 @@ import { Locale } from "../services/Locale";
 import { LocaleController } from "../services/LocaleController";
 import { Utils } from "../services/Utils";
 import { UserSettings } from "../services/UserSettings";
-import { FileHandler } from '../services/FileHandler';
 import LocationAlert from './components/LocationAlert.vue';
 import ConnectionStatus from './components/ConnectionStatus.vue';
 import Infos from './components/Infos.vue';
@@ -220,11 +216,10 @@ export default defineComponent({
     },this.sharedState.refreshInterval*1000);
   },
   mounted() {
-    // Custom scrollbar for Web Browser and Electron
     Utils.customScrollbar(this.$refs.tabs, false, false);
     Utils.customScrollbar(this.$refs.content);
 
-    this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+    this.tabController.init(this.$refs.tabs);
 
     const release = () => this.releaseDetails();
     this.privateState.unmountListener = release;
@@ -279,7 +274,6 @@ export default defineComponent({
       }
       
       this.privateState.connectionStatus.loading=false;
-      // The swiper is v-show hidden while this request runs. Measure it after it is shown.
       this.$nextTick(() => {
         this.tabController.layout();
       });
@@ -381,15 +375,6 @@ export default defineComponent({
           }
         },
         {
-          text: Locale.actions.openInExplorer,
-          handler: () => {
-            const success = FileHandler.openExplorer(this.privateState.details)
-            if(!success){
-              Utils.responseToast(Locale.error.notFound);
-            }
-          }
-        },
-        {
           text: Locale.actions.copyMagnet,
           handler: () => this.copyMagnet()
         },
@@ -414,10 +399,6 @@ export default defineComponent({
           role: 'cancel'
         },
       ]
-
-      if(!isPlatform("electron")){
-        buttons.splice(2, 1);
-      }
 
       const actionSheet = await actionSheetController
         .create({

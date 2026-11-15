@@ -31,7 +31,7 @@
             </p>
           </div>
         </ion-item>
-        <div class="ion-padding small" v-if="isWebUI">
+        <div class="ion-padding small">
           <ion-button size="default" @click="checkForUpdates()">{{ Locale.checkUpdates }}</ion-button>
           <span v-if="updateAvailable && downloadUrl" class="update-note">
             <strong>{{formatText(Locale.updateAvailable).before}}</strong>
@@ -47,7 +47,6 @@
 
 <script lang="ts">
 import {
-  isPlatform,
   modalController,
   IonContent,
   IonHeader,
@@ -65,12 +64,6 @@ import {
 import { defineComponent } from 'vue';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
-
-declare global {
-  interface Window {
-      updates: any;
-  }
-}
 
 export default defineComponent({
   name: 'About',
@@ -111,9 +104,6 @@ export default defineComponent({
   computed: {
     appVersion: function(): string {
       return `v${process.env.PACKAGE_VERSION||"1.0.0"}`;
-    },
-    isWebUI: function() {
-      return !isPlatform("electron") && !isPlatform("capacitor")
     }
   },
   methods: {

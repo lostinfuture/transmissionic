@@ -58,7 +58,7 @@ Any field may be omitted. Wait to put `"auth"` in `default.json` unless you trus
 
 ## Building from Source
 
-Building requires Node.js 24 and npm:
+Building requires Node.js 26 and npm:
 
 ```sh
 npm ci

@@ -42,7 +42,7 @@
             </ion-item>
 
             <ion-item>
-              <ion-toggle v-model="settings.start" justify="space-between" class="swiper-no-swiping">{{ Locale.actions.start }}</ion-toggle>
+              <ion-toggle v-model="settings.start" justify="space-between">{{ Locale.actions.start }}</ion-toggle>
             </ion-item>
         </ion-list>
 
@@ -61,17 +61,17 @@
 
             <ion-item>
                 <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="settings.other.downloadLimit" type="number" :disabled="!settings.other.downloadLimited"></ion-input>
-                  <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit" class="swiper-no-swiping"></ion-toggle>
+                  <ion-toggle v-model="settings.other.downloadLimited" :aria-label="Locale.downloadLimit"></ion-toggle>
                 </div>
             </ion-item>
 
             <ion-item>
                 <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="settings.other.uploadLimit" type="number" :disabled="!settings.other.uploadLimited"></ion-input>
-                  <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit" class="swiper-no-swiping"></ion-toggle>
+                  <ion-toggle v-model="settings.other.uploadLimited" :aria-label="Locale.uploadLimit"></ion-toggle>
                 </div>
             </ion-item>
         </ion-list>
@@ -111,12 +111,6 @@ import { TransmissionRPC } from "../services/TransmissionRPC";
 import { UserSettings } from '../services/UserSettings';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
-
-declare global {
-  interface Window {
-      updates: any;
-  }
-}
 
 export default defineComponent({
     name: 'Preset',

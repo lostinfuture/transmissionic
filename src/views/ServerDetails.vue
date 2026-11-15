@@ -42,7 +42,7 @@
         
         <ion-item>
           <ion-label>{{ Locale.port }}</ion-label>
-          <div class="row-controls swiper-no-swiping" slot="end">
+          <div class="row-controls" slot="end">
             <ion-input class="compact-input" :aria-label="Locale.port" v-model.number="newConf.port" type="number" placeholder="9091"></ion-input>
           </div>
         </ion-item>
@@ -80,19 +80,6 @@
           </div>
         </ion-item>
       </ion-list>
-
-      <ion-list v-if="pathMappingEnabled">
-        <ion-list-header>
-          <ion-label>
-            {{ Locale.pathMapping }}
-          </ion-label>
-        </ion-list-header>
-
-        <ion-item>
-          <ion-textarea :aria-label="Locale.pathMapping" :rows="3" :placeholder="placeholder" v-model="newConf.pathMapping"></ion-textarea>
-        </ion-item>
-        
-      </ion-list>
       
     </ion-content>
   </ion-page>
@@ -101,7 +88,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { 
-  isPlatform,
   modalController,
   alertController,
   IonContent, 
@@ -118,8 +104,7 @@ import {
   IonToggle,
   IonInput,
   IonPage,
-  IonBackButton,
-  IonTextarea
+  IonBackButton
 } from '@ionic/vue';
 import {
   trashOutline,
@@ -168,17 +153,13 @@ export default defineComponent({
     IonToggle,
     IonInput,
     IonPage,
-    IonBackButton,
-    IonTextarea
+    IonBackButton
   },
   setup() {
     Utils.pushState();
 
-    const placeholder = `${Locale.example}\r/mnt/ssd = \\\\192.168.1.1\\ssd\r/home/user/Downloads = Z:\\Downloads`;
-
     return { 
       Locale,
-      placeholder,
       trashOutline,
       trashSharp,
       saveOutline,
@@ -188,7 +169,6 @@ export default defineComponent({
     }
   },
   mounted() {
-    // Custom scrollbar for Web Browser and Electron
     Utils.customScrollbar(this.$refs.content);
   },
   computed: {
@@ -202,9 +182,6 @@ export default defineComponent({
         conf = {auth:{}}
       }
       return conf;
-    },
-    pathMappingEnabled: function () {
-      return isPlatform("electron");
     }
   },
   methods: {

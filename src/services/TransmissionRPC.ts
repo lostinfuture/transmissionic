@@ -1,5 +1,5 @@
 /**
- * Transmission RPC Client for Ionic/Capacitor, inspired by kkito-transmission-rpc
+ * Transmission RPC Client, inspired by kkito-transmission-rpc
 */
 
 import * as _ from 'lodash';
@@ -8,11 +8,6 @@ import { buildRequest, normalizeResponse, shouldFallbackToLegacy } from "./rpcPr
 import { PageLocation, resolveEndpoint, rpcRequestUrl } from "./rpcUrl";
 
 declare const Buffer: any
-declare global {
-  interface Window {
-    net: any;
-  }
-}
 
 type Method = "get" | "post" | "put" | "patch" | "head" | "delete" | "options" | "upload" | "download";
 type Serializer = "json" | "urlencoded" | "utf8" | "multipart" | "raw" | undefined;
@@ -30,12 +25,10 @@ class TRPC {
   persistentDataValid=false;
   sessionStats: any;
   statsHistory: Array<Array<number|null>>=[];
-  pathMapping: Record<string,string>;
   useJsonRpc = true;
 
   constructor() {
     this.lastRequestId = 0;
-    this.pathMapping = {};
   }
 
   async setServer(options: Record<string, any> = {}, timeout=5): Promise<Record<string, any>> {
@@ -61,10 +54,6 @@ class TRPC {
       }
     }
 
-    if(this.options.pathMapping){
-      this.pathMapping = this.readPathMapping(this.options.pathMapping)
-    }
-
     this.invalidatePersitentData();
     
     this.sessionArguments = await this.getSession();
@@ -73,27 +62,6 @@ class TRPC {
     this.setSessionStatsRefreshInterval();
 
     return this.sessionArguments;
-  }
-
-  readPathMapping(pathMapping: string): Record<string,string> {
-    const result: Record<string,string> = {};
-    pathMapping.split(/\r?\n/).forEach((pathMap: string) => {
-      const paths = pathMap.match(/^(.+) ?= ?(.+)$/)||[];
-      for(const key in paths){
-        if(paths[key]){
-          if(paths[key].startsWith(' ')){
-            paths[key]=paths[key].substring(1);
-          }
-          if(paths[key].endsWith(' ')){
-            paths[key]=paths[key].slice(0, -1);
-          }
-        }
-      }
-      if(paths.length>=3){
-        result[paths[1]]=paths[2];
-      }
-    });
-    return result;
   }
 
   async refreshFreeSpace(): Promise<void> {
@@ -487,8 +455,6 @@ class TRPC {
   }
 
   async request(action: string, token?: string, args: Record<string, any> = {}, ignoreError=false) {
-    let ret: Record<string, any>;
-
     const requestId = ++this.lastRequestId;
     const headers = this.getHeaders();
     const requestUrl = this.getRequestUrl();
@@ -508,12 +474,7 @@ class TRPC {
       body:null as string|null
     }
 
-    if(window.net){
-      ret = await this.electronRequest(options,datas);
-    }
-    else {
-      ret = await this.browserRequest(requestUrl,options,datas);
-    }
+    const ret = await this.browserRequest(requestUrl,options,datas);
 
     // Don't return result if tags doesn't match or server has been changed.
     // JSON-RPC 2.0 uses id. A tag or id of 0 is still a real id.
@@ -530,60 +491,8 @@ class TRPC {
     return ret;
   }
 
-  /*async nativePluginRequest(requestUrl: string, options: any, datas: Record<string, any>) {
-    // HTTP request using CapacitorHttp (allow CORS)
-    let result: Record<string, any>={};
-    options.data = datas
-    
-    await this.timeout(this.options.timeout*1000, CapacitorHttp.post({
-      url: requestUrl,
-      headers: options.headers,
-      data: datas,
-      connectTimeout: options.timeout*1000,
-      responseType: 'json'
-    })).then((response) => {
-      result=response as Record<string, any>;
-    }).catch((error) => {
-      if(error.status){
-        result=error as Record<string, any>;
-      }
-      else {
-        result.errorMessage=(error=="TypeError: Failed to fetch") ? "Unable to reach host" : error;
-      }
-    });
-
-    return result;
-  }*/
-
-  async electronRequest(options: any, datas: Record<string, any>) {
-    // HTTP request using Electron net (allow CORS)
-    let result: Record<string, any>={};
-
-    Object.assign(options,{
-      hostname:this.options.host,
-      port:this.options.port,
-      path:this.options.path,
-      protocol:this.options.https ? "https:" : "http:"
-    })
-
-    await this.timeout(this.options.timeout*1000, window.net.request(options, datas))
-      .then((response: any) => {
-        result=response;
-      })
-      .catch((error) => {
-        if(error.status){
-          result=error;
-        }
-        else if(error){
-          result.errorMessage=error;
-        }
-      });
-
-    return result;
-  }
-
   async browserRequest(requestUrl: string, options: any, datas: Record<string, any>) {
-    // HTTP request using fetch or CapacitorHttp
+    // HTTP request using fetch
     let result: Record<string, any>={};
     options.body = JSON.stringify(datas);
 
@@ -631,9 +540,7 @@ class TRPC {
 }
 
 function staticWebPage(): PageLocation | undefined {
-  if (typeof window === "undefined" || window.net) return undefined;
-  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
-  if (cap && cap.isNativePlatform && cap.isNativePlatform()) return undefined;
+  if (typeof window === "undefined") return undefined;
   const protocol = window.location.protocol;
   if (protocol !== "http:" && protocol !== "https:") return undefined;
   return {

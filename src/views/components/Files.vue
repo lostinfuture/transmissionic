@@ -2,7 +2,7 @@
     <VirtualScroll v-bind="$attrs" ref="content" :items="currentDirectoryContent" :item-size="64" key-field="name" :bottom="true">
       
       <template v-slot:start >
-        <div class="breadcrumb swiper-no-swiping" ref="breadcrumb">
+        <div class="breadcrumb" ref="breadcrumb">
             <div :class="{ active: breadcrumb.length==0 }">
               <a @click="selectDirectory(0)"><ion-icon class="home" :ios="homeOutline" :md="homeSharp"></ion-icon></a>
               <ion-icon class="chevron" :icon="chevronForwardOutline"></ion-icon>
@@ -55,7 +55,7 @@
       </template>
 
       <template v-slot:end>
-        <div class="chips swiper-no-swiping">
+        <div class="chips">
           <ion-chip v-for="(wanted, ext) in extList" :key="ext" :color="wanted ? 'primary' : undefined" @click="selectExt(ext, !wanted)">
             <ion-icon :color="wanted ? 'primary' : undefined" :ios="documentOutline" :md="documentSharp"></ion-icon>
             <ion-label>{{ext}}</ion-label>

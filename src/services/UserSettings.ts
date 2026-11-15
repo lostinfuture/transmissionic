@@ -150,7 +150,6 @@ export const UserSettings = {
     let result: Array<Record<string,unknown>> = [...defaultServers];
 
     if (typeof localStorage !== "undefined") {
-      // Remove any legacy capacitor-secure-storage-plugin entry so plaintext/base64 passwords do not linger
       localStorage.removeItem("cap_sec_servers");
       const raw = getStoredValue("servers");
       if (raw && raw !== "[]") {

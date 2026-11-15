@@ -34,10 +34,9 @@
       v-on:retry="retry()">
     </ConnectionStatus>
 
-    <div class="swiper" ref="swiper" v-show="connectionStatus.connected">
-      <div class="swiper-wrapper">
+    <div class="tab-views" v-show="connectionStatus.connected">
         <!-- General tab --> 
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=0">
+        <div class="tab-pane" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=0">
 
           <ion-content class="ion-padding" ref="content">
 
@@ -48,7 +47,7 @@
                 </ion-label>
               </ion-list-header>
 
-              <div id="presets" class="swiper-no-swiping">
+              <div id="presets">
 
                 <ion-chip @click="addPreset()">
                   <ion-label>{{ Locale.add }}</ion-label>
@@ -70,7 +69,7 @@
               </ion-list-header>
 
               <ion-item class="autocomplete" v-if="connectionStatus.connected">
-                <div class="stacked-field swiper-no-swiping">
+                <div class="stacked-field">
                   <span class="field-label">{{ Locale.downloadDir }}</span>
                   <autocomplete 
                     :aria-label="Locale.downloadDir"
@@ -83,7 +82,7 @@
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="settings.start" justify="space-between" class="swiper-no-swiping">{{ Locale.actions.start }}</ion-toggle>
+                <ion-toggle v-model="settings.start" justify="space-between">{{ Locale.actions.start }}</ion-toggle>
               </ion-item>
 
               <ion-item>
@@ -159,11 +158,11 @@
 
         </div>
         <!-- Files tab -->
-        <div class="swiper-slide" v-if="!multiple && data.files" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
+        <div class="tab-pane" v-if="!multiple && data.files" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
           <Files :actions="false" v-on:changeDirectory="changeDirectory"></Files>
         </div>
         <!-- Torrents tab -->
-        <div class="swiper-slide" v-if="multiple" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
+        <div class="tab-pane" v-if="multiple" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=1">
           <VirtualScroll v-bind="$attrs" :items="files" :item-size="64">
             <template v-slot:default="{item}">
               <div class="torrent">
@@ -188,7 +187,6 @@
             </template>
           </VirtualScroll>
         </div>
-      </div>
     </div>
     
 </template>
@@ -367,7 +365,7 @@ export default defineComponent({
   mounted() {
     Utils.customScrollbar(this.$refs.content);
 
-    this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+    this.tabController.init(this.$refs.tabs);
   },
   beforeUnmount() {
     this.tabController.destroy();

@@ -76,11 +76,20 @@ assert.deepStrictEqual(defaults, {});
 const pkg = JSON.parse(read("package.json"));
 assert.strictEqual(pkg.version, "1.10.25");
 assert.ok(pkg.scripts && pkg.scripts.test);
+assert.strictEqual(pkg.devDependencies["@types/node"], "^26.0.0");
 assert.ok(!("chart.js" in pkg.dependencies));
 assert.ok(!("swiper" in pkg.dependencies));
 assert.ok(!("@capacitor/core" in pkg.dependencies));
 assert.ok(!("capacitor-secure-storage-plugin" in pkg.dependencies));
 assert.ok(!("@capacitor-community/electron" in (pkg.devDependencies || {})));
+
+const readme = read("README.md");
+assert.ok(readme.includes("Node.js 26"));
+assert.ok(!readme.includes("Node.js 24"));
+
+const upstreamWorkflow = read(".github/workflows/upstream.yml");
+assert.ok(upstreamWorkflow.includes("actions/checkout@v7"));
+assert.ok(!upstreamWorkflow.includes("actions/checkout@v4"));
 
 const mainTs = read("src/main.ts");
 assert.ok(mainTs.includes('mode: "md"'));
@@ -94,5 +103,22 @@ assert.ok(userSettingsSource.includes("sanitizeServersForStorage"));
 const detailsSource = read("src/views/TorrentDetails.vue");
 assert.ok(!detailsSource.includes("@ionic/core/dist/collection"));
 assert.ok(!list.includes("@ionic/core/dist/collection"));
+assert.ok(!fs.existsSync(path.join(__dirname, "..", "src/services/swiperLayout.ts")));
+assert.ok(!client.includes("electronRequest"));
+assert.ok(!client.includes("window.net"));
+
+for (const view of ["About.vue", "Settings.vue", "List.vue", "TorrentDetails.vue", "ServerDetails.vue", "AddTorrent.vue"]) {
+  const src = read(`src/views/${view}`);
+  assert.ok(!src.includes('isPlatform("capacitor")'), view);
+  assert.ok(!src.includes('isPlatform("electron")'), view);
+  assert.ok(!src.includes("swiper"), view);
+}
+
+const lock = JSON.parse(read("package-lock.json"));
+for (const key of Object.keys(lock.packages || {})) {
+  assert.ok(!key.includes("@capacitor"), key);
+  assert.ok(!key.includes("chart.js"), key);
+  assert.ok(!key.includes("swiper"), key);
+}
 
 console.log("torrent actions check ok");

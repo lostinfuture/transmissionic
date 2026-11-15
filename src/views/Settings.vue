@@ -33,10 +33,9 @@
       </ion-toolbar>
     </ion-header>
 
-    <div class="swiper" ref="swiper">
-      <div class="swiper-wrapper">
+    <div class="tab-views">
         <!-- Client tab -->
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab0" :aria-hidden="tabController.state.selectedTab!=0">
+        <div class="tab-pane" role="tabpanel" aria-labelledby="tab0" :aria-hidden="tabController.state.selectedTab!=0">
           <ion-content :fullscreen="true" class="ion-padding" ref="tab0">
             <ion-list>
               <ion-list-header>
@@ -81,23 +80,23 @@
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.useBits" justify="space-between" class="swiper-no-swiping">{{ Locale.speedUnit }}</ion-toggle>
+                <ion-toggle v-model="sharedState.useBits" justify="space-between">{{ Locale.speedUnit }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.compactMode" justify="space-between" class="swiper-no-swiping">{{ Locale.compactMode }}</ion-toggle>
+                <ion-toggle v-model="sharedState.compactMode" justify="space-between">{{ Locale.compactMode }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.expandMenu" justify="space-between" class="swiper-no-swiping">{{ Locale.expandSideMenu }}</ion-toggle>
+                <ion-toggle v-model="sharedState.expandMenu" justify="space-between">{{ Locale.expandSideMenu }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.showTrackerList" justify="space-between" class="swiper-no-swiping">{{ Locale.showTrackerList }}</ion-toggle>
+                <ion-toggle v-model="sharedState.showTrackerList" justify="space-between">{{ Locale.showTrackerList }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.ipFlags" justify="space-between" class="swiper-no-swiping">{{ Locale.displayFlag }}*</ion-toggle>
+                <ion-toggle v-model="sharedState.ipFlags" justify="space-between">{{ Locale.displayFlag }}*</ion-toggle>
               </ion-item>
               <div class="annotation">
                 * {{ Locale.formatString(Locale.useIpApi,'country.is') }} <a href="http://country.is/" target="_blank" rel="noopener"><ion-icon slot="icon-only" :ios="informationCircleOutline" :md="informationCircleSharp"></ion-icon></a>
@@ -113,13 +112,13 @@
 
               <ion-item>
                 <ion-label>{{ Locale.refreshInterval }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.refreshInterval" type="number" v-model.number="sharedState.refreshInterval"></ion-input>
                 </div>
               </ion-item>
               <ion-item>
                 <ion-label>{{ Locale.connectionTimeout }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.connectionTimeout" type="number" v-model.number="sharedState.timeout"></ion-input>
                 </div>
               </ion-item>
@@ -133,11 +132,11 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByName" class="swiper-no-swiping">{{ Locale.name }}</ion-checkbox>
+                <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByName">{{ Locale.name }}</ion-checkbox>
               </ion-item>
 
               <ion-item>
-                <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByDirectory" class="swiper-no-swiping">{{ Locale.downloadDir }}</ion-checkbox>
+                <ion-checkbox justify="space-between" label-placement="start" v-model="sharedState.searchByDirectory">{{ Locale.downloadDir }}</ion-checkbox>
               </ion-item>
             </ion-list>
 
@@ -149,7 +148,7 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.rememberSelectedPreset" justify="space-between" class="swiper-no-swiping">{{ Locale.rememberSelectedPreset }}</ion-toggle>
+                <ion-toggle v-model="sharedState.rememberSelectedPreset" justify="space-between">{{ Locale.rememberSelectedPreset }}</ion-toggle>
               </ion-item>
 
               <div class="ion-padding small">
@@ -167,11 +166,11 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="sharedState.openMagnetLinks" justify="space-between" class="swiper-no-swiping">{{ Locale.openMagnetLinks }}</ion-toggle>
+                <ion-toggle v-model="sharedState.openMagnetLinks" justify="space-between">{{ Locale.openMagnetLinks }}</ion-toggle>
               </ion-item>
             </ion-list>
 
-            <ion-list v-if="bookmarkletEnabled">
+            <ion-list>
               <ion-list-header>
                 <ion-label>
                   {{ Locale.bookmarklet }}
@@ -202,7 +201,7 @@
         </div>
 
         <!-- Servers tab -->
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=1">
+        <div class="tab-pane" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=1">
           <ion-content class="ion-padding" ref="tab1">
             <ion-list
               v-for="(s, i) in serverList"
@@ -256,7 +255,7 @@
         </div>
 
         <!-- Download tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=2">
+        <div v-if="hasServerConfig" class="tab-pane" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=2">
           <ion-content class="ion-padding" ref="tab2">
             <ion-list>
               <ion-list-header>
@@ -266,7 +265,7 @@
               </ion-list-header>
 
               <ion-item>
-                <div class="stacked-field swiper-no-swiping">
+                <div class="stacked-field">
                   <span class="field-label">{{ Locale.defaultDownloadDir }}</span>
                   <ion-input :aria-label="Locale.defaultDownloadDir" v-model="config['download-dir']"></ion-input>
                 </div>
@@ -274,13 +273,13 @@
 
               <ion-item>
                 <ion-label>{{ Locale.cacheSize + ' (M' + Locale.units.byte + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.cacheSize" v-model.number="config['cache-size-mb']" type="number"></ion-input>
                 </div>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['start-added-torrents']" justify="space-between" class="swiper-no-swiping">{{ Locale.startAddedTorrents }}</ion-toggle>
+                <ion-toggle v-model="config['start-added-torrents']" justify="space-between">{{ Locale.startAddedTorrents }}</ion-toggle>
               </ion-item>
             </ion-list>
 
@@ -292,19 +291,19 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['download-queue-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.enabled }}</ion-toggle>
+                <ion-toggle v-model="config['download-queue-enabled']" justify="space-between">{{ Locale.enabled }}</ion-toggle>
               </ion-item>
 
               <ion-item :disabled="!config['download-queue-enabled']">
                 <ion-label>{{ Locale.queueSize }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.queueSize" v-model.number="config['download-queue-size']" type="number"></ion-input>
                 </div>
               </ion-item>
 
               <ion-item>
                 <ion-label>{{ Locale.stopWhenInactive }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.stopWhenInactive" v-model.number="config['queue-stalled-minutes']" type="number" :disabled="!config['queue-stalled-enabled']"></ion-input>
                   <ion-toggle v-model="config['queue-stalled-enabled']" :aria-label="Locale.stopWhenInactive"></ion-toggle>
                 </div>
@@ -319,15 +318,15 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['rename-partial-files']" justify="space-between" class="swiper-no-swiping">{{ Locale.addPartExt }}</ion-toggle>
+                <ion-toggle v-model="config['rename-partial-files']" justify="space-between">{{ Locale.addPartExt }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['incomplete-dir-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.useTempDir }}</ion-toggle>
+                <ion-toggle v-model="config['incomplete-dir-enabled']" justify="space-between">{{ Locale.useTempDir }}</ion-toggle>
               </ion-item>
 
               <ion-item :disabled="!config['incomplete-dir-enabled']">
-                <div class="stacked-field swiper-no-swiping">
+                <div class="stacked-field">
                   <span class="field-label">{{ Locale.tempDirPath }}</span>
                   <ion-input :aria-label="Locale.tempDirPath" v-model="config['incomplete-dir']"></ion-input>
                 </div>
@@ -337,7 +336,7 @@
         </div>
 
         <!-- Limits tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=3">
+        <div v-if="hasServerConfig" class="tab-pane" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=3">
           <ion-content class="ion-padding" ref="tab3">
             <ion-list>
               <ion-list-header>
@@ -348,7 +347,7 @@
 
               <ion-item>
                 <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="config['speed-limit-down']" type="number" :disabled="!config['speed-limit-down-enabled']"></ion-input>
                   <ion-toggle v-model="config['speed-limit-down-enabled']" :aria-label="Locale.downloadLimit"></ion-toggle>
                 </div>
@@ -356,7 +355,7 @@
 
               <ion-item>
                 <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="config['speed-limit-up']" type="number" :disabled="!config['speed-limit-up-enabled']"></ion-input>
                   <ion-toggle v-model="config['speed-limit-up-enabled']" :aria-label="Locale.uploadLimit"></ion-toggle>
                 </div>
@@ -371,19 +370,19 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['alt-speed-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.enabled }}</ion-toggle>
+                <ion-toggle v-model="config['alt-speed-enabled']" justify="space-between">{{ Locale.enabled }}</ion-toggle>
               </ion-item>
 
               <ion-item>
                 <ion-label>{{ Locale.downloadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.downloadLimit" v-model.number="config['alt-speed-down']" type="number"></ion-input>
                 </div>
               </ion-item>
 
               <ion-item>
                 <ion-label>{{ Locale.uploadLimit + ' (' + speedUnit + ')' }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.uploadLimit" v-model.number="config['alt-speed-up']" type="number"></ion-input>
                 </div>
               </ion-item>
@@ -397,19 +396,19 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['alt-speed-time-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.enabled }}</ion-toggle>
+                <ion-toggle v-model="config['alt-speed-time-enabled']" justify="space-between">{{ Locale.enabled }}</ion-toggle>
               </ion-item>
 
               <ion-item :disabled="!config['alt-speed-time-enabled']">
                 <ion-label>{{ Locale.altSpeedBegin }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input time-input" :aria-label="Locale.altSpeedBegin" type="time" v-model="altSpeedTimeBegin"/>
                 </div>
               </ion-item>
 
               <ion-item :disabled="!config['alt-speed-time-enabled']">
                 <ion-label>{{ Locale.altSpeedEnd }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input time-input" :aria-label="Locale.altSpeedEnd" type="time" v-model="altSpeedTimeEnd"/>
                 </div>
               </ion-item>
@@ -430,7 +429,7 @@
 
               <ion-item>
                 <ion-label>{{ Locale.seedRatioLimit }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.seedRatioLimit" v-model.number="config.seedRatioLimit" type="number" :disabled="!config.seedRatioLimited"></ion-input>
                   <ion-toggle v-model="config.seedRatioLimited" :aria-label="Locale.seedRatioLimit"></ion-toggle>
                 </div>
@@ -438,7 +437,7 @@
 
               <ion-item>
                 <ion-label>{{ Locale.stopWhenInactive }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.stopWhenInactive" v-model.number="config['idle-seeding-limit']" type="number" :disabled="!config['idle-seeding-limit-enabled']"></ion-input>
                   <ion-toggle v-model="config['idle-seeding-limit-enabled']" :aria-label="Locale.stopWhenInactive"></ion-toggle>
                 </div>
@@ -454,14 +453,14 @@
 
               <ion-item>
                 <ion-label>{{ Locale.globalPeerLimit }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.globalPeerLimit" v-model.number="config['peer-limit-global']" type="number"></ion-input>
                 </div>
               </ion-item>
 
               <ion-item>
                 <ion-label>{{ Locale.peerLimitByTorrent }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.peerLimitByTorrent" v-model.number="config['peer-limit-per-torrent']" type="number"></ion-input>
                 </div>
               </ion-item>
@@ -470,7 +469,7 @@
         </div>
 
         <!-- Network tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab4" :aria-hidden="tabController.state.selectedTab!=4">
+        <div v-if="hasServerConfig" class="tab-pane" role="tabpanel" aria-labelledby="tab4" :aria-hidden="tabController.state.selectedTab!=4">
           <ion-content class="ion-padding" ref="tab4">
             <ion-list>
               <ion-list-header>
@@ -497,17 +496,17 @@
 
               <ion-item :disabled="config['peer-port-random-on-start']">
                 <ion-label>{{ Locale.port }}</ion-label>
-                <div class="row-controls swiper-no-swiping" slot="end">
+                <div class="row-controls" slot="end">
                   <ion-input class="compact-input" :aria-label="Locale.port" v-model.number="config['peer-port']" type="number"></ion-input>
                 </div>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['peer-port-random-on-start']" justify="space-between" class="swiper-no-swiping">{{ Locale.randomPortOnStart }}</ion-toggle>
+                <ion-toggle v-model="config['peer-port-random-on-start']" justify="space-between">{{ Locale.randomPortOnStart }}</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['port-forwarding-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.portForwarding }}</ion-toggle>
+                <ion-toggle v-model="config['port-forwarding-enabled']" justify="space-between">{{ Locale.portForwarding }}</ion-toggle>
               </ion-item>
 
               <div class="ion-padding small">
@@ -527,19 +526,19 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['dht-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.DHT }} (DHT)</ion-toggle>
+                <ion-toggle v-model="config['dht-enabled']" justify="space-between">{{ Locale.DHT }} (DHT)</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['lpd-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.LPD }} (LPD)</ion-toggle>
+                <ion-toggle v-model="config['lpd-enabled']" justify="space-between">{{ Locale.LPD }} (LPD)</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['pex-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.PEX }} (PEX)</ion-toggle>
+                <ion-toggle v-model="config['pex-enabled']" justify="space-between">{{ Locale.PEX }} (PEX)</ion-toggle>
               </ion-item>
 
               <ion-item>
-                <ion-toggle v-model="config['utp-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.UTP }} (µTP)</ion-toggle>
+                <ion-toggle v-model="config['utp-enabled']" justify="space-between">{{ Locale.UTP }} (µTP)</ion-toggle>
               </ion-item>
             </ion-list>
 
@@ -551,11 +550,11 @@
               </ion-list-header>
 
               <ion-item>
-                <ion-toggle v-model="config['blocklist-enabled']" justify="space-between" class="swiper-no-swiping">{{ Locale.enabled }}</ion-toggle>
+                <ion-toggle v-model="config['blocklist-enabled']" justify="space-between">{{ Locale.enabled }}</ion-toggle>
               </ion-item>
 
               <ion-item :disabled="!config['blocklist-enabled']">
-                <div class="stacked-field swiper-no-swiping">
+                <div class="stacked-field">
                   <span class="field-label">{{ Locale.blocklistUrl }}</span>
                   <ion-input :aria-label="Locale.blocklistUrl" v-model="config['blocklist-url']"></ion-input>
                 </div>
@@ -567,7 +566,6 @@
             </ion-list>
           </ion-content>
         </div>
-      </div>
     </div>
   </ion-page>
 </template>
@@ -597,7 +595,6 @@ import {
   IonInput,
   IonBackButton,
   IonToggle,
-  isPlatform,
   IonCheckbox
 } from '@ionic/vue';
 import {
@@ -621,12 +618,6 @@ import { UserSettings } from "../services/UserSettings";
 import { FileHandler } from '../services/FileHandler';
 import { Emitter } from '../services/Emitter';
 import * as _ from 'lodash';
-
-declare global {
-  interface Window {
-    magnetProtocol: any;
-  }
-}
 
 const bookmarkletFunction = (href: string) => {
   let found=0;
@@ -739,11 +730,8 @@ export default defineComponent({
       const bytes = this.config["download-dir-free-space"];
       return (Utils.formatBytes(bytes) as string) || "—";
     },
-    bookmarkletEnabled(): boolean {
-      return !isPlatform("electron") && !isPlatform("capacitor")
-    },
     protocolHandlerAvailable(): boolean {
-      return !isPlatform("electron") && !isPlatform("capacitor") && navigator.registerProtocolHandler!==undefined
+      return navigator.registerProtocolHandler !== undefined;
     },
     speedUnit(): string {
       return 'K' + (this.sharedState.useBits ? Locale.units.bit : Locale.units.byte) + Locale.units.perSecond;
@@ -845,7 +833,7 @@ export default defineComponent({
       Utils.customScrollbar(this.$refs.tab3);
       Utils.customScrollbar(this.$refs.tab4);
     }
-    this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+    this.tabController.init(this.$refs.tabs);
     if (this.initialTab) {
       this.tabController.setTab(this.initialTab, false);
     }

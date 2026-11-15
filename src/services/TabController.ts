@@ -23,8 +23,7 @@ export default class TabController {
     Emitter.on("previous-tab", this.onPrev);
   }
 
-  init(_swiper: unknown, segments: unknown): void {
-    void _swiper;
+  init(segments: unknown): void {
     this.state.segments = segments as Record<string, any>;
   }
 

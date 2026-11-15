@@ -1385,33 +1385,32 @@ span.selectable,
   user-select: text;
 }
 
-.swiper {
+.tab-views {
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
-.swiper-wrapper {
+.tab-pane {
   width: 100%;
   height: 100%;
 }
 
-.swiper-slide {
-  width: 100%;
-  height: 100%;
-}
-
-.swiper-slide[aria-hidden="true"] {
+.tab-pane[aria-hidden="true"] {
   display: none !important;
 }
 
-ion-item .swiper-no-swiping {
+ion-item .tri-toggle {
   align-items: center;
-  display: flex;
+  display: inline-flex;
 }
 
-ion-item .swiper-no-swiping ion-toggle {
+ion-item .tri-toggle ion-toggle {
   padding-inline: 16px 0px;
+}
+
+ion-item .row-controls .tri-toggle ion-toggle {
+  padding-inline: 0 !important;
 }
 
 ion-fab-button {
