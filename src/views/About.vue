@@ -23,16 +23,10 @@
         <ion-item>
           <div class="about-prose">
             <p>
-              Transmissionic is a static web interface for <code>transmission-daemon</code> built with Vue 3 and Ionic. Maintained fork.
+              Web interface for Transmission built with Vue 3 and Ionic. Maintained fork. Adds Transmission 4.1+ JSON-RPC 2.0 support, plain-HTTP LAN compatibility, live transfer graphs, and a redesigned desktop and mobile layout.
             </p>
             <p>
-              This fork strips out the legacy mobile and desktop wrappers to focus on the browser UI. It adds Transmission 4.1+ JSON-RPC 2.0 support with automatic fallback to the legacy RPC format, works over plain HTTP on a local network without <code>crypto.subtle</code>, and resolves same-origin RPC paths automatically behind reverse proxies.
-            </p>
-            <p>
-              The interface has been rebuilt with a neutral dark and light palette, a live transfer rate graph and session statistics in the sidebar, unified client and server settings, top-bar batch controls, and responsive layout fixes for desktop and Mobile Safari.
-            </p>
-            <p>
-              Source code and releases:
+              Repository:
               <a href="https://github.com/lostinfuture/transmissionic" target="_blank" rel="noopener">github.com/lostinfuture/transmissionic</a>
             </p>
           </div>
@@ -44,6 +38,7 @@
             <a :href="downloadUrl" target="_blank" rel="noopener">{{newVersion}}</a>
             <strong>{{formatText(Locale.updateAvailable).after}}</strong>
           </span>
+          <span v-else-if="updateStatus" class="update-note muted">{{ updateStatus }}</span>
         </div>
       </ion-list>
     </ion-content>
@@ -97,7 +92,8 @@ export default defineComponent({
     return {
       updateAvailable: false,
       newVersion: "",
-      downloadUrl: ""
+      downloadUrl: "",
+      updateStatus: ""
     }
   },
   setup() {
@@ -135,15 +131,25 @@ export default defineComponent({
     checkForUpdates() {
       fetch('https://api.github.com/repos/lostinfuture/transmissionic/releases/latest')
         .then(async (response) => {
-          Utils.responseToast("success");
-          const result = await response.json()
+          const result = await response.json();
           const tag = result.tag_name || result.name;
           if(!result.prerelease && tag){
-            this.updateAvailable = this.isNewerVersion(this.appVersion, tag)
+            this.updateAvailable = this.isNewerVersion(this.appVersion, tag);
             this.newVersion = tag;
             this.downloadUrl = `https://github.com/lostinfuture/transmissionic/releases/tag/${tag}`;
+            if (this.updateAvailable) {
+              this.updateStatus = "";
+              Utils.responseToast(Locale.formatString(Locale.updateAvailable, tag) as string);
+            } else {
+              this.updateStatus = `Up to date (${this.appVersion})`;
+              Utils.responseToast(this.updateStatus);
+            }
           }
         })
+        .catch(() => {
+          this.updateStatus = "";
+          Utils.responseToast(Locale.error.error);
+        });
     },
     isNewerVersion(current: string, latest: string) {
       if(current==latest) return false;
@@ -216,12 +222,11 @@ h4 {
   margin-bottom: 0;
 }
 
-.about-prose code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.92em;
-}
-
 .update-note {
   font-size: var(--fs-body);
+}
+
+.update-note.muted {
+  color: var(--muted);
 }
 </style>

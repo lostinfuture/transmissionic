@@ -4,22 +4,9 @@
       <ion-menu contentId="main-content" type="overlay" menu-id="left" :swipeGesture="privateState.swipeEnabled" v-on:ionDidClose="closeTrackerList()">
 
         <!-- Main menu -->
-        <ion-content v-show="!privateState.trackerListOpened || sharedState.showTrackerList" id="navigation" ref="navigation" scrollbar :class="{separator: sharedState.showTrackerList}">
+        <ion-content id="navigation" ref="navigation" scrollbar>
           <TransferGraph :torrentList="privateState.torrentList" :connected="privateState.connectionStatus.connected" />
 
-          <ion-list id="trackers-list" v-show="!sharedState.showTrackerList">
-            <ion-list-header>{{ LocaleController.getForm("tracker","other") }}</ion-list-header>
-
-            <ion-menu-toggle :auto-hide="false">
-              <ion-item @click="openTrackerList($event)" id="tracker-dropdown" lines="none" :detail="false" button>
-                <ion-label>{{ privateState.selectedTracker ? Utils.trackerDomain(privateState.selectedTracker).protocol+"://"+Utils.trackerDomain(privateState.selectedTracker).domain : Locale.filters.all }}</ion-label>
-                <div slot="end">
-                  <ion-icon :ios="caretDownOutline" :md="caretDownSharp"></ion-icon>
-                </div>
-              </ion-item>
-            </ion-menu-toggle>
-          </ion-list>
-  
           <ion-list id="filters-list">
             <ion-list-header>{{ Locale.filters.filters }}</ion-list-header>
 
@@ -31,32 +18,50 @@
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
-        </ion-content>
 
-        <!-- Tracker list -->
-        <ion-content v-show="privateState.trackerListOpened || sharedState.showTrackerList" id="trackers" ref="trackers">
-          <ion-list>
+          <ion-list id="trackers-list">
             <ion-list-header>{{ LocaleController.getForm("tracker","other") }}</ion-list-header>
-            <ion-menu-toggle :auto-hide="false">
-              <ion-item @click="selectTracker()" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==''}" button>
-                <ion-label>{{ Locale.filters.all }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-            <ion-menu-toggle :auto-hide="false" v-for="tracker in trackerList" :key="tracker.id">
-              <ion-item @click="selectTracker(tracker)" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==tracker.announce}" button>
-                <ion-label :title="tracker.announce">{{tracker.announce}}</ion-label>
-                <span slot="end" class="count">{{ tracker.ids.length }}</span>
-              </ion-item>
-            </ion-menu-toggle>
-            <ion-infinite-scroll
-              @ionInfinite="displayTrackers($event)" 
-              threshold="100px" 
+
+            <ion-item
               v-if="!sharedState.showTrackerList"
+              @click="toggleTrackerList($event)"
+              id="tracker-dropdown"
+              lines="none"
+              :detail="false"
+              :aria-expanded="privateState.trackerListOpened ? 'true' : 'false'"
+              button
             >
-              <ion-infinite-scroll-content
-                loading-spinner="circular">
-              </ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+              <ion-label>{{ privateState.selectedTracker ? Utils.trackerDomain(privateState.selectedTracker).protocol+"://"+Utils.trackerDomain(privateState.selectedTracker).domain : Locale.filters.all }}</ion-label>
+              <div slot="end">
+                <ion-icon
+                  :ios="privateState.trackerListOpened ? caretUpOutline : caretDownOutline"
+                  :md="privateState.trackerListOpened ? caretUpSharp : caretDownSharp"
+                ></ion-icon>
+              </div>
+            </ion-item>
+
+            <template v-if="privateState.trackerListOpened || sharedState.showTrackerList">
+              <ion-menu-toggle :auto-hide="false">
+                <ion-item @click="selectTracker()" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==''}" button>
+                  <ion-label>{{ Locale.filters.all }}</ion-label>
+                </ion-item>
+              </ion-menu-toggle>
+              <ion-menu-toggle :auto-hide="false" v-for="tracker in trackerList" :key="tracker.id">
+                <ion-item @click="selectTracker(tracker)" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==tracker.announce}" button>
+                  <ion-label :title="tracker.announce">{{tracker.announce}}</ion-label>
+                  <span slot="end" class="count">{{ tracker.ids.length }}</span>
+                </ion-item>
+              </ion-menu-toggle>
+              <ion-infinite-scroll
+                @ionInfinite="displayTrackers($event)" 
+                threshold="100px" 
+                v-if="!sharedState.showTrackerList"
+              >
+                <ion-infinite-scroll-content
+                  loading-spinner="circular">
+                </ion-infinite-scroll-content>
+              </ion-infinite-scroll>
+            </template>
           </ion-list>
         </ion-content>
 
@@ -108,6 +113,8 @@ import {
 import {
   caretDownOutline,
   caretDownSharp,
+  caretUpOutline,
+  caretUpSharp,
   settingsOutline,
   settingsSharp,
   helpCircleOutline,
@@ -286,6 +293,8 @@ export default defineComponent({
       Utils,
       caretDownOutline,
       caretDownSharp,
+      caretUpOutline,
+      caretUpSharp,
       settingsOutline,
       settingsSharp,
       helpCircleOutline,
@@ -341,7 +350,6 @@ export default defineComponent({
   mounted() {
     // Custom scrollbar for Web Browser and Electron
     Utils.customScrollbar(this.$refs.navigation);
-    Utils.customScrollbar(this.$refs.trackers);
     
     Emitter.on('refresh', (clean: any) => { this.refresh(clean); });
     Emitter.on('add-server', this.addServer);
@@ -390,10 +398,14 @@ export default defineComponent({
       }
     },
 
-    openTrackerList(e: Event) {
+    toggleTrackerList(e: Event) {
       e.stopPropagation();
-      this.privateState.trackerListOpened=true;
-      this.displayTrackers();
+      if (this.privateState.trackerListOpened) {
+        this.closeTrackerList();
+      } else {
+        this.privateState.trackerListOpened = true;
+        this.displayTrackers();
+      }
     },
 
     closeTrackerList() {
