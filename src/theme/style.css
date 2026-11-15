@@ -303,8 +303,17 @@ ion-menu-button:hover::part(native) {
   color: var(--ink) !important;
 }
 
+ion-button.add-button::part(native) {
+  background: var(--raised) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+}
+
 ion-button.add-button:hover::part(native) {
-  opacity: 0.88;
+  background: var(--active) !important;
+  color: var(--ink) !important;
+  border-color: var(--control) !important;
 }
 
 /* Segmented tab bar in modal/detail headers */
@@ -1381,15 +1390,19 @@ ion-item .swiper-no-swiping ion-toggle {
 }
 
 ion-fab-button {
-  --background: var(--ink);
-  --background-activated: var(--ink);
-  --background-hover: var(--ink);
-  --color: var(--surface);
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+  --background: var(--raised);
+  --background-activated: var(--control);
+  --background-hover: var(--active);
+  --color: var(--ink);
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: var(--line);
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, .28);
 }
 
 ion-fab-button:not([color="light"]):hover::part(native) {
-  opacity: 0.88;
+  background: var(--active) !important;
+  border-color: var(--control) !important;
 }
 
 ion-fab-button[color="light"] {

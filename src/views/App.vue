@@ -23,20 +23,17 @@
             <ion-list-header>{{ LocaleController.getForm("tracker","other") }}</ion-list-header>
 
             <ion-item
-              v-if="!sharedState.showTrackerList"
+              v-if="!sharedState.showTrackerList && !privateState.trackerListOpened"
               @click="toggleTrackerList($event)"
               id="tracker-dropdown"
               lines="none"
               :detail="false"
-              :aria-expanded="privateState.trackerListOpened ? 'true' : 'false'"
+              aria-expanded="false"
               button
             >
               <ion-label>{{ privateState.selectedTracker ? Utils.trackerDomain(privateState.selectedTracker).protocol+"://"+Utils.trackerDomain(privateState.selectedTracker).domain : Locale.filters.all }}</ion-label>
               <div slot="end">
-                <ion-icon
-                  :ios="privateState.trackerListOpened ? caretUpOutline : caretDownOutline"
-                  :md="privateState.trackerListOpened ? caretUpSharp : caretDownSharp"
-                ></ion-icon>
+                <ion-icon :ios="caretDownOutline" :md="caretDownSharp"></ion-icon>
               </div>
             </ion-item>
 
@@ -44,6 +41,9 @@
               <ion-menu-toggle :auto-hide="false">
                 <ion-item @click="selectTracker()" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==''}" button>
                   <ion-label>{{ Locale.filters.all }}</ion-label>
+                  <div slot="end" v-if="!sharedState.showTrackerList" @click.stop="toggleTrackerList($event)">
+                    <ion-icon :ios="caretUpOutline" :md="caretUpSharp"></ion-icon>
+                  </div>
                 </ion-item>
               </ion-menu-toggle>
               <ion-menu-toggle :auto-hide="false" v-for="tracker in trackerList" :key="tracker.id">

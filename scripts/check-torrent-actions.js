@@ -74,6 +74,6 @@ const defaults = JSON.parse(read("public/default.json"));
 assert.deepStrictEqual(defaults, {});
 
 const pkg = JSON.parse(read("package.json"));
-assert.strictEqual(pkg.version, "1.10.19");
+assert.strictEqual(pkg.version, "1.10.20");
 
 console.log("torrent actions check ok");
