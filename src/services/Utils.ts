@@ -446,7 +446,7 @@ export const Utils = {
         }
       });
     }
-    else {
+    else if(!isPlatform('ios')) {
       window.addEventListener('popstate', (e: any) => {
         if (e.origin && e.origin !== window.location.origin)
           return;
@@ -481,7 +481,10 @@ export const Utils = {
     });
   },
   pushState(): void {
-    if (!window.history.state.modal) {
+    if (isPlatform('ios')) {
+      return;
+    }
+    if (!window.history.state || !window.history.state.modal) {
       const modalState = { modal: true };
       history.pushState(modalState, "");
     }

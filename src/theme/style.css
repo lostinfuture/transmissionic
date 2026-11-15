@@ -8,6 +8,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -23,11 +24,13 @@ body {
   background: var(--surface);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overscroll-behavior-x: none;
   scrollbar-color: rgba(127,127,127,.4) transparent; /* Scrollbar style for Firefox */
 }
 
 ion-app {
   background: var(--surface);
+  overscroll-behavior-x: none;
 }
 
 h1, h2, h3 {

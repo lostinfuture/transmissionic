@@ -1,7 +1,7 @@
 <template>
   <ion-app>
     <ion-split-pane contentId="main-content" :disabled="!sharedState.expandMenu">
-      <ion-menu contentId="main-content" type="overlay" menu-id="left" :swipeGesture="privateState.swipeEnabled" v-on:ionDidClose="closeTrackerList()" v-on:ionDidOpen="Utils.pushState()">
+      <ion-menu contentId="main-content" type="overlay" menu-id="left" :swipeGesture="privateState.swipeEnabled" v-on:ionDidClose="closeTrackerList()">
 
         <!-- Main menu -->
         <ion-content v-show="!privateState.trackerListOpened || sharedState.showTrackerList" id="navigation" ref="navigation" scrollbar :class="{separator: sharedState.showTrackerList}">
@@ -42,7 +42,7 @@
             <ion-list-header>{{ Locale.filters.filters }}</ion-list-header>
 
             <ion-menu-toggle :auto-hide="false" v-for="(f, index) in privateState.filters" :key="index">
-              <ion-item @click="privateState.selectedFilter = index" lines="none" :class="{ selected: privateState.selectedFilter === index }" button>
+              <ion-item @click="privateState.selectedFilter = index" lines="none" :detail="false" :class="{ selected: privateState.selectedFilter === index }" button>
                 <ion-icon slot="start" :ios="f.iosIcon" :md="f.mdIcon"></ion-icon>
                 <ion-label class="text-transform">{{ f.label() }}</ion-label>
                 <span slot="end" class="count">{{ privateState.torrentFilters[f.id] || 0 }}</span>
@@ -56,12 +56,12 @@
           <ion-list>
             <ion-list-header>{{ LocaleController.getForm("tracker","other") }}</ion-list-header>
             <ion-menu-toggle :auto-hide="false">
-              <ion-item @click="selectTracker()" lines="none" :class="{selected:privateState.selectedTracker==''}" button>
+              <ion-item @click="selectTracker()" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==''}" button>
                 <ion-label>{{ Locale.filters.all }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
             <ion-menu-toggle :auto-hide="false" v-for="tracker in trackerList" :key="tracker.id">
-              <ion-item @click="selectTracker(tracker)" lines="none" :class="{selected:privateState.selectedTracker==tracker.announce}" button>
+              <ion-item @click="selectTracker(tracker)" lines="none" :detail="false" :class="{selected:privateState.selectedTracker==tracker.announce}" button>
                 <ion-label :title="tracker.announce">{{tracker.announce}}</ion-label>
                 <span slot="end" class="count">{{ tracker.ids.length }}</span>
               </ion-item>
