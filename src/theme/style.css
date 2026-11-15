@@ -113,7 +113,8 @@ ion-footer.footer-md::before {
   display: none;
 }
 
-ion-header ion-toolbar:last-of-type {
+ion-header ion-toolbar:last-of-type,
+ion-header:has(.summary.menu-expanded) ion-toolbar:first-of-type {
   --border-width: 0 0 1px 0;
 }
 
@@ -258,13 +259,34 @@ ion-segment-button.segment-button-checked::part(native) {
 }
 
 /* Searchbar */
-ion-searchbar {
-  --background: var(--raised);
+ion-searchbar,
+ion-searchbar.sc-ion-searchbar-md-h,
+ion-searchbar.sc-ion-searchbar-ios-h {
+  --background: transparent;
   --border-radius: var(--radius-control);
-  --box-shadow: none;
+  --box-shadow: none !important;
   --placeholder-color: var(--faint);
-  --icon-color: var(--faint);
+  --placeholder-opacity: 1;
+  --icon-color: var(--muted);
+  --cancel-button-color: var(--muted);
+  --clear-button-color: var(--muted);
   --color: var(--ink);
+  box-shadow: none !important;
+}
+
+ion-searchbar .searchbar-input-container,
+ion-searchbar .searchbar-input,
+ion-searchbar .searchbar-input:focus,
+ion-searchbar .searchbar-input:focus-visible {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+ion-searchbar .searchbar-cancel-button:hover,
+ion-searchbar .searchbar-clear-button:hover {
+  color: var(--ink);
 }
 
 /* Lists, settings panels, and form controls
