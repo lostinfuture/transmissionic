@@ -204,16 +204,16 @@
         <!-- Servers tab -->
         <div class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=1">
           <ion-content class="ion-padding" ref="tab1">
-            <ion-list>
-              <ion-list-header>
-                <ion-label>{{ Locale.servers }}</ion-label>
-              </ion-list-header>
-
+            <ion-list
+              v-for="(s, i) in serverList"
+              :key="i"
+              class="server-card"
+              :class="{ 'selected-server-card': selectedServer === i }"
+            >
               <ion-item
-                v-for="(s, i) in serverList"
-                :key="i"
                 @click="selectServer(i)"
                 :detail="false"
+                class="server-header-item"
                 :class="{ 'selected-server': selectedServer === i }"
                 button
               >
@@ -230,29 +230,28 @@
                 </ion-button>
               </ion-item>
 
-              <ion-item @click="addServer()" :detail="false" button>
-                <ion-icon slot="start" class="server-row-icon" :ios="addOutline" :md="addSharp"></ion-icon>
-                <ion-label>{{ Locale.add }}</ion-label>
-              </ion-item>
+              <template v-if="selectedServer === i && hasServerConfig && config">
+                <ion-item>
+                  <ion-label>{{ Locale.transmissionVersion }}</ion-label>
+                  <span slot="end" class="info-value tabular selectable">{{ config.version || "—" }}</span>
+                </ion-item>
+                <ion-item>
+                  <ion-label>{{ Locale.freeSpace }}</ion-label>
+                  <span slot="end" class="info-value tabular selectable">{{ freeSpaceFormatted }}</span>
+                </ion-item>
+                <ion-item>
+                  <ion-label>{{ Locale.port }}</ion-label>
+                  <span slot="end" class="info-value tabular selectable">{{ config["peer-port"] ?? "—" }}</span>
+                </ion-item>
+              </template>
             </ion-list>
 
-            <ion-list v-if="hasServerConfig && config">
-              <ion-list-header>
-                <ion-label>{{ Locale.serverInformation }}</ion-label>
-              </ion-list-header>
-              <ion-item>
-                <ion-label>{{ Locale.transmissionVersion }}</ion-label>
-                <span slot="end" class="info-value tabular selectable">{{ config.version || "—" }}</span>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{ Locale.freeSpace }}</ion-label>
-                <span slot="end" class="info-value tabular selectable">{{ freeSpaceFormatted }}</span>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{ Locale.port }}</ion-label>
-                <span slot="end" class="info-value tabular selectable">{{ config["peer-port"] ?? "—" }}</span>
-              </ion-item>
-            </ion-list>
+            <div class="server-actions">
+              <ion-button size="default" @click="addServer()">
+                <ion-icon slot="start" :ios="addOutline" :md="addSharp"></ion-icon>
+                {{ Locale.addServer || "Add server" }}
+              </ion-button>
+            </div>
           </ion-content>
         </div>
 
@@ -1085,14 +1084,33 @@ ion-content {
   margin-inline-end: 12px;
 }
 
+ion-item.server-header-item {
+  --background: var(--raised);
+  --border-color: var(--line);
+  font-weight: 600;
+}
+
 ion-item.selected-server {
   --background: var(--active);
   --color: var(--ink);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 ion-item.selected-server .server-row-icon {
   color: var(--ink);
+}
+
+.server-actions {
+  padding: 4px 0 12px;
+  display: flex;
+  align-items: center;
+}
+
+.server-actions ion-button ion-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-inline-end: 6px;
 }
 
 .server-edit-btn {

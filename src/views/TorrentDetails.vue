@@ -71,14 +71,6 @@
       </div>
     </div>
 
-    <div :class="{'no-fab':tabController.state.selectedTab!=3}">
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed" @click="addTracker()">
-        <ion-fab-button>
-          <ion-icon :icon="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </div>
-
 </template>
 
 <script lang="ts">
@@ -99,8 +91,6 @@ import {
   IonLabel,
   IonIcon,
   IonButton,
-  IonFab, 
-  IonFabButton,
 } from '@ionic/vue';
 import {
   playOutline,
@@ -155,8 +145,6 @@ export default defineComponent({
     IonLabel,
     IonIcon,
     IonButton,
-    IonFab, 
-    IonFabButton,
   },
   data() {
     return {

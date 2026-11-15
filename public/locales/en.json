@@ -47,6 +47,7 @@
     "size": "Size",
     "ratio": "Ratio",
     "newServer": "New server",
+    "addServer": "Add server",
     "serverDetails": "Server details",
     "general": "General",
     "hostname": "Hostname or IP address",

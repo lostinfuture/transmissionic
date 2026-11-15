@@ -89,7 +89,14 @@
       </ion-card>
     </template>
 
-    <ion-infinite-scroll @ionInfinite="displayMore($event)" threshold="100px">
+    <div class="tracker-actions">
+      <ion-button size="default" @click="addTracker()">
+        <ion-icon slot="start" :icon="add"></ion-icon>
+        {{ Locale.addTracker }}
+      </ion-button>
+    </div>
+
+    <ion-infinite-scroll v-if="displayedCount < trackerCount" @ionInfinite="displayMore($event)" threshold="100px">
       <ion-infinite-scroll-content loading-spinner="circular">
         <ion-button fill="clear" @click="displayMore()" :disabled="displayedCount>=trackerCount">
           {{ Locale.displayMore }}
@@ -393,5 +400,18 @@ ion-card.removed {
   text-align: left;
   color: var(--muted);
   text-transform: lowercase;
+}
+
+.tracker-actions {
+  padding: 4px 16px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.tracker-actions ion-button ion-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-inline-end: 6px;
 }
 </style>
