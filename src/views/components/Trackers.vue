@@ -1,92 +1,99 @@
 <template>
-  <ion-content ref="content">
-    <ion-list-header id="top">
-      <ion-label>
-        {{trackerCount}}
-        {{ LocaleController.getPlural("tracker",trackerCount) }}
-      </ion-label>
-    </ion-list-header>
+  <ion-content class="ion-padding" ref="content">
     <template v-for="tracker in displayedTrackerList" :key="tracker.id">
-      <ion-card :class="{removed: removed.includes(tracker.announce)}">
-        <ion-item>
-          <ion-label>
+      <ion-list class="tracker-card" :class="{ removed: removed.includes(tracker.announce) }">
+        <ion-item class="tracker-header-item">
+          <ion-label class="tracker-title">
+            <span class="domain" translate="no">{{ Utils.trackerDomain(tracker.host).domain }}</span>
             <ion-badge>{{ Locale.tier }} {{ tracker.tier+1 }}</ion-badge>
             <ion-badge translate="no">{{ Utils.trackerDomain(tracker.host).protocol }}</ion-badge>
-            {{ Utils.trackerDomain(tracker.host).domain }}
           </ion-label>
-          <ion-buttons slot="end">
-            <ion-button fill="clear" @click="trackerActions(tracker)">
-              <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
-            </ion-button>
-          </ion-buttons>
+          <ion-button slot="end" fill="clear" class="tracker-menu-btn" @click="trackerActions(tracker)" :aria-label="Locale.actions.editAddress">
+            <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
+          </ion-button>
         </ion-item>
 
-        <ion-card-content>
-          <p>
-            <strong>{{ Locale.address }}</strong><br>
-            <span class="selectable">{{ tracker.announce }}</span><br>
-          </p>
-          <p v-if="tracker.announceState!==0">
-            <strong>{{ Locale.announce }}</strong><br>
-            {{ Locale.state }} :
-            <template v-if="tracker.announceState==3">
-              <ion-icon color="warning" :ios="syncOutline" :md="syncSharp"></ion-icon>
-              {{ Locale.updating }}
-            </template>
-            <template v-else>
-              <template v-if="tracker.lastAnnounceSucceeded">
-                <ion-icon color="success" :ios="checkmarkOutline" :md="checkmarkSharp"></ion-icon>
-                {{ Locale.working }}
+        <ion-item>
+          <div class="stacked-field">
+            <span class="field-label">{{ Locale.address }}</span>
+            <span class="info-block code selectable" translate="no">{{ tracker.announce }}</span>
+          </div>
+        </ion-item>
+
+        <template v-if="tracker.announceState!==0">
+          <ion-item>
+            <ion-label>{{ Locale.announce }}</ion-label>
+            <span slot="end" class="info-value state-badge">
+              <template v-if="tracker.announceState==3">
+                <span class="dot warning" aria-hidden="true"></span>
+                <span>{{ Locale.updating }}</span>
               </template>
-              <span v-else class="error selectable">
-                {{ Utils.localizeError(tracker.lastAnnounceResult) }}
-              </span>
-              <template v-if="tracker.lastAnnounceSucceeded || tracker.lastAnnounceResult.length>0">
-                ({{ Utils.timeSince(tracker.lastAnnounceTime) }})
+              <template v-else-if="tracker.lastAnnounceSucceeded">
+                <span class="dot positive" aria-hidden="true"></span>
+                <span>{{ Locale.working }}</span>
               </template>
-            </template>
-            <br>
-            {{ Locale.peerCount }} : {{ tracker.lastAnnouncePeerCount>=0 ? tracker.lastAnnouncePeerCount : "?" }}<br>
-            {{ Locale.lastUpdate }} : {{ Utils.secondsToDate(tracker.lastAnnounceTime, false, true) }}<br>
-            {{ Locale.nextUpdate }} : {{ Utils.secondsToDate(tracker.nextAnnounceTime, false, true) }}<br>
-          </p>
-          <p v-if="tracker.scrapeState!==0 && tracker.scrapeState!=2">
-            <strong>{{ Locale.scrape }}</strong><br>
-            {{ Locale.state }} :
-            <template v-if="tracker.scrapeState==3">
-              <ion-icon color="warning" :ios="syncOutline" :md="syncSharp"></ion-icon>
-              {{ Locale.updating }}
-            </template>
-            <template v-else>
-              <template v-if="tracker.lastScrapeSucceeded">
-                <ion-icon color="success" :ios="checkmarkOutline" :md="checkmarkSharp"></ion-icon>
-                {{ Locale.working }}
-              </template>
-              <span v-else-if="tracker.lastScrapeResult.length>0" class="error selectable">
-                {{ Utils.localizeError(tracker.lastScrapeResult) }}
-              </span>
               <template v-else>
-                {{ Locale.filters.waiting }}
+                <span class="dot negative" aria-hidden="true"></span>
+                <span class="error selectable">{{ Utils.localizeError(tracker.lastAnnounceResult) }}</span>
               </template>
-              <template v-if="tracker.lastScrapeSucceeded || tracker.lastScrapeResult.length>0">
+              <span v-if="tracker.lastAnnounceSucceeded || (tracker.lastAnnounceResult && tracker.lastAnnounceResult.length>0)" class="muted tabular">
+                ({{ Utils.timeSince(tracker.lastAnnounceTime) }})
+              </span>
+            </span>
+          </ion-item>
+          <ion-item>
+            <ion-label>{{ Locale.peerCount }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ tracker.lastAnnouncePeerCount>=0 ? tracker.lastAnnouncePeerCount : "—" }}</span>
+          </ion-item>
+          <ion-item>
+            <ion-label>{{ Locale.lastUpdate }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ Utils.secondsToDate(tracker.lastAnnounceTime, false, true) }}</span>
+          </ion-item>
+          <ion-item>
+            <ion-label>{{ Locale.nextUpdate }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ Utils.secondsToDate(tracker.nextAnnounceTime, false, true) }}</span>
+          </ion-item>
+        </template>
+
+        <template v-if="tracker.scrapeState!==0 && tracker.scrapeState!=2">
+          <ion-item>
+            <ion-label>{{ Locale.scrape }}</ion-label>
+            <span slot="end" class="info-value state-badge">
+              <template v-if="tracker.scrapeState==3">
+                <span class="dot warning" aria-hidden="true"></span>
+                <span>{{ Locale.updating }}</span>
+              </template>
+              <template v-else-if="tracker.lastScrapeSucceeded">
+                <span class="dot positive" aria-hidden="true"></span>
+                <span>{{ Locale.working }}</span>
+              </template>
+              <template v-else-if="tracker.lastScrapeResult && tracker.lastScrapeResult.length>0">
+                <span class="dot negative" aria-hidden="true"></span>
+                <span class="error selectable">{{ Utils.localizeError(tracker.lastScrapeResult) }}</span>
+              </template>
+              <template v-else>
+                <span class="dot neutral" aria-hidden="true"></span>
+                <span>{{ Locale.filters.waiting }}</span>
+              </template>
+              <span v-if="tracker.lastScrapeSucceeded || (tracker.lastScrapeResult && tracker.lastScrapeResult.length>0)" class="muted tabular">
                 ({{ Utils.timeSince(tracker.lastScrapeTime) }})
-              </template>
-            </template>
-            <br>
-            <template v-if="tracker.seederCount>=0">
-              {{ Locale.seeders }} : {{ tracker.seederCount }}<br>
-            </template>
-            <template v-if="tracker.leecherCount>=0">
-              {{ Locale.leechers }} : {{ tracker.leecherCount }}<br>
-            </template>
-            <template v-if="tracker.downloadCount>=0">
-              {{ Locale.downloadCount }} : {{ tracker.downloadCount }}<br>
-            </template>
-            {{ Locale.lastUpdate }} : {{ Utils.secondsToDate(tracker.lastScrapeTime, false, true) }}<br>
-            {{ Locale.nextUpdate }} : {{ Utils.secondsToDate(tracker.nextScrapeTime, false, true) }}<br>
-          </p>
-        </ion-card-content>
-      </ion-card>
+              </span>
+            </span>
+          </ion-item>
+          <ion-item v-if="tracker.seederCount>=0">
+            <ion-label>{{ Locale.seeders }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ tracker.seederCount }}</span>
+          </ion-item>
+          <ion-item v-if="tracker.leecherCount>=0">
+            <ion-label>{{ Locale.leechers }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ tracker.leecherCount }}</span>
+          </ion-item>
+          <ion-item v-if="tracker.downloadCount>=0">
+            <ion-label>{{ Locale.downloadCount }}</ion-label>
+            <span slot="end" class="info-value tabular selectable">{{ tracker.downloadCount }}</span>
+          </ion-item>
+        </template>
+      </ion-list>
     </template>
 
     <div class="tracker-actions">
@@ -103,8 +110,6 @@
         </ion-button>
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>
-
-    
   </ion-content>
 </template>
 
@@ -114,25 +119,18 @@ import {
   actionSheetController,
   alertController,
   IonContent,
+  IonList,
   IonItem,
   IonLabel,
-  IonCard,
-  IonCardContent,
   IonIcon,
   IonButton,
-  IonButtons,
   IonBadge,
   IonInfiniteScroll, 
   IonInfiniteScrollContent,
-  IonListHeader
 } from '@ionic/vue';
 import {
   ellipsisVerticalOutline,
   ellipsisVerticalSharp,
-  syncOutline,
-  syncSharp,
-  checkmarkOutline,
-  checkmarkSharp,
   add
 } from 'ionicons/icons';
 import { LocaleController } from "../../services/LocaleController";
@@ -144,17 +142,14 @@ import { Emitter } from '../../services/Emitter';
 export default defineComponent({
   components: {
     IonContent,
+    IonList,
     IonItem,
     IonLabel,
-    IonCard,
-    IonCardContent,
     IonIcon,
     IonButton,
-    IonButtons,
     IonBadge,
     IonInfiniteScroll, 
     IonInfiniteScrollContent,
-    IonListHeader
   },
   data() {
     return {
@@ -175,10 +170,6 @@ export default defineComponent({
       LocaleController,
       ellipsisVerticalOutline,
       ellipsisVerticalSharp,
-      syncOutline,
-      syncSharp,
-      checkmarkOutline,
-      checkmarkSharp,
       add
     }
   },
@@ -359,51 +350,94 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-badge {
-  vertical-align: middle;
-  margin-left: 4px;
+.tracker-card.removed {
+  display: none;
 }
 
-ion-card {
-  --background: var(--surface);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-panel);
-  box-shadow: none;
-  margin: 8px 16px 12px;
-}
-
-ion-card ion-item {
+ion-item.tracker-header-item {
   --background: var(--raised);
-  --border-color: var(--rule);
+  --border-color: var(--line);
+  --min-height: 44px;
 }
 
-ion-card-content {
-  text-align: left;
+.tracker-title {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tracker-title .domain {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--ink);
+  margin-inline-end: 2px;
+}
+
+.tracker-menu-btn {
+  --color: var(--muted);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+  height: 32px;
+  width: 32px;
+}
+
+.tracker-menu-btn ion-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.info-value {
   font-size: var(--fs-body);
   color: var(--ink);
 }
 
-ion-card-content ion-icon {
-  vertical-align: middle;
+.info-value .muted {
+  color: var(--muted);
 }
 
-ion-card.removed {
-  display:none;
+.state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 65%;
+  text-align: end;
 }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 6px;
+  background: var(--neutral);
+}
+
+.dot.positive { background: var(--positive); }
+.dot.warning  { background: var(--warning); }
+.dot.negative { background: var(--negative); }
+.dot.neutral  { background: var(--neutral); }
 
 .error {
   color: var(--negative);
+  overflow-wrap: anywhere;
 }
 
-#top {
-  text-align: left;
+.info-block {
+  font-size: var(--fs-body);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.info-block.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
   color: var(--muted);
-  text-transform: lowercase;
 }
 
 .tracker-actions {
-  padding: 4px 16px 16px;
+  padding: 4px 0 12px;
   display: flex;
   align-items: center;
 }

@@ -1,63 +1,66 @@
 <template>
     <VirtualScroll v-bind="$attrs" ref="content" :items="currentDirectoryContent" :item-size="64" key-field="name" :bottom="true">
       
-      <template v-slot:start >
+      <template v-slot:start>
         <div class="breadcrumb" ref="breadcrumb">
-            <div :class="{ active: breadcrumb.length==0 }">
-              <a @click="selectDirectory(0)"><ion-icon class="home" :ios="homeOutline" :md="homeSharp"></ion-icon></a>
-              <ion-icon class="chevron" :icon="chevronForwardOutline"></ion-icon>
-            </div>
-            <div v-for="(dir,index) in breadcrumb" v-bind:key="dir" :class="{ active: index == breadcrumb.length-1 }">
-              <a @click="selectDirectory(index+1)">{{dir}}</a>
-              <ion-icon class="chevron" :icon="chevronForwardOutline" v-if="index != breadcrumb.length-1"></ion-icon>
-            </div>
+          <div class="crumb-item" :class="{ active: breadcrumb.length==0 }">
+            <a @click="selectDirectory(0)" :aria-label="Locale.files">
+              <ion-icon class="home" :ios="homeOutline" :md="homeSharp" aria-hidden="true"></ion-icon>
+            </a>
+            <ion-icon v-if="breadcrumb.length > 0" class="chevron" :icon="chevronForwardOutline" aria-hidden="true"></ion-icon>
+          </div>
+          <div v-for="(dir,index) in breadcrumb" v-bind:key="dir" class="crumb-item" :class="{ active: index == breadcrumb.length-1 }">
+            <a @click="selectDirectory(index+1)">{{dir}}</a>
+            <ion-icon class="chevron" :icon="chevronForwardOutline" v-if="index != breadcrumb.length-1" aria-hidden="true"></ion-icon>
+          </div>
         </div>
         <div v-if="currentDirectory!=''" class="back click" @click="selectDirectory(-1)">
           <div class="side">
-            <ion-icon :ios="returnUpBackOutline" :md="returnUpBackSharp"></ion-icon>
+            <ion-icon :ios="returnUpBackOutline" :md="returnUpBackSharp" aria-hidden="true"></ion-icon>
           </div>
-          ..
+          <div class="middle">
+            <div class="name">..</div>
+          </div>
         </div>
       </template>
 
       <template v-slot:default="{item}">
-        <div :class="{file:true,actions:actions}">
+        <div :class="{ file: true, actions: actions }">
           <div class="side">
             <ion-checkbox :aria-label="item.name" v-bind="checkedAttributes(item.ids)" @ionChange="checboxUpdate($event,item.ids)"></ion-checkbox>
           </div>
           <div :class="{ middle: true, click: item.folder }" @click="fileAction(item)" @contextmenu="fileTitle(item.name, $event)">
-            <div class="name">
-              {{item.name}}
-            </div>
-            <div class="details">
-              <ion-icon v-if="getPriority(item.ids)==1" color="success" :ios="caretUpOutline" :md="caretUpSharp"></ion-icon>
-              <ion-icon v-if="getPriority(item.ids)==-1" color="danger" :ios="caretDownOutline" :md="caretDownSharp"></ion-icon>
-              <ion-icon 
-                color="medium"
+            <div class="name" :title="item.name">{{item.name}}</div>
+            <div class="details tabular">
+              <ion-icon
+                class="type-icon"
                 :ios="item.folder ? folderOpenOutline : documentOutline"
-                :md="item.folder ? folderOpenSharp : documentSharp">
+                :md="item.folder ? folderOpenSharp : documentSharp"
+                aria-hidden="true">
               </ion-icon>
-
-              <template v-if="item.bytesCompleted!=undefined && item.bytesCompleted!=item.length">
-                &nbsp;{{ Utils.formatBytes(item.bytesCompleted) }} {{ Locale.of }}
-              </template>
-              {{ Utils.formatBytes(item.length) }}
-              <template v-if="item.bytesCompleted!=undefined">
-                ({{ Utils.getPercent(item.bytesCompleted/item.length) }})
-              </template>
+              <span>
+                <template v-if="item.bytesCompleted!=undefined && item.bytesCompleted!=item.length">
+                  {{ Utils.formatBytes(item.bytesCompleted) }} {{ Locale.of }}
+                </template>
+                {{ Utils.formatBytes(item.length) }}
+                <template v-if="item.bytesCompleted!=undefined">
+                  ({{ Utils.getPercent(item.bytesCompleted/item.length) }})
+                </template>
+              </span>
+              <span v-if="getPriority(item.ids)==1" class="prio high">↑ {{ Locale.priority.high }}</span>
+              <span v-if="getPriority(item.ids)==-1" class="prio low">↓ {{ Locale.priority.low }}</span>
             </div>
           </div>
-          <div v-if="actions" class="side click" @click="fileActions(item)">
-            <ion-icon :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp">
-            </ion-icon>
-          </div>
+          <button v-if="actions" type="button" class="row-action" @click="fileActions(item)" :aria-label="item.name">
+            <ion-icon :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp" aria-hidden="true"></ion-icon>
+          </button>
         </div>
       </template>
 
       <template v-slot:end>
         <div class="chips">
           <ion-chip v-for="(wanted, ext) in extList" :key="ext" :color="wanted ? 'primary' : undefined" @click="selectExt(ext, !wanted)">
-            <ion-icon :color="wanted ? 'primary' : undefined" :ios="documentOutline" :md="documentSharp"></ion-icon>
+            <ion-icon :ios="documentOutline" :md="documentSharp" aria-hidden="true"></ion-icon>
             <ion-label>{{ext}}</ion-label>
           </ion-chip>
         </div>
@@ -82,10 +85,6 @@ import {
   chevronForwardOutline,
   returnUpBackOutline,
   returnUpBackSharp,
-  caretUpOutline,
-  caretUpSharp,
-  caretDownOutline,
-  caretDownSharp,
   folderOpenOutline,
   documentOutline,
   folderOpenSharp,
@@ -132,10 +131,6 @@ export default defineComponent({
       chevronForwardOutline,
       returnUpBackOutline,
       returnUpBackSharp,
-      caretUpOutline,
-      caretUpSharp,
-      caretDownOutline,
-      caretDownSharp,
       folderOpenOutline,
       documentOutline,
       folderOpenSharp,
@@ -459,147 +454,198 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.file,.back {
-  height:64px;
-  border-bottom: 1px solid var(--ion-border-color);
-  text-align:left;
-}
-
-.file > div {
-  padding:5px;
-  vertical-align: top;
-}
-
-.click {
-  cursor:pointer;
-}
-
-.side {
-  height:64px;
-  width:50px;
-  display: inline-flex;
+.file,
+.back {
+  box-sizing: border-box;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 12px;
   align-items: center;
-  justify-content: center;
-}
-
-.side.click {
-  width: 36px;
-  height: 36px;
-  margin: 14px 7px;
-  border-radius: var(--radius-control);
-  color: var(--muted);
-  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
-}
-
-.side.click:hover {
-  background: var(--raised);
-  color: var(--ink);
-}
-
-.back.click {
+  padding: 0 16px;
+  border-bottom: 1px solid var(--rule);
+  text-align: start;
   transition: background-color var(--t-hover) var(--ease-out);
 }
 
-.back.click:hover,
-.middle.click:hover {
-  background: var(--raised);
+.file.actions {
+  grid-template-columns: 32px minmax(0, 1fr) 36px;
+}
+
+.click {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .back.click:hover,
+  .file:has(.middle.click:hover) {
+    background: var(--raised);
+  }
+}
+
+.side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
 }
 
 .side ion-icon {
   font-size: 18px;
-  margin: 18px 0px;
+  width: 18px;
+  height: 18px;
 }
 
 .middle {
-  position:relative;
-  display:inline-block;
-  height:64px;
-  width:calc(100% - 50px);
-}
-
-.actions .middle {
-  width:calc(100% - 100px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
 .name {
   font-size: var(--fs-body);
   font-weight: 500;
-  line-height: 1.25rem;
-  height: 38px;
+  line-height: 1.35;
+  color: var(--ink);
+  white-space: nowrap;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 }
+
 .details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--fs-small);
+  line-height: 1.3;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.details ion-icon {
-  vertical-align: -2px;
+.type-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--faint);
+  flex: 0 0 14px;
+}
+
+.prio {
+  font-weight: 500;
+}
+
+.prio.high {
+  color: var(--positive);
+}
+
+.prio.low {
+  color: var(--warning);
+}
+
+.row-action {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+}
+
+.row-action:hover {
+  background: var(--raised);
+  color: var(--ink);
+}
+
+.row-action ion-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .chips {
+  box-sizing: border-box;
   height: 50px;
-  padding-top:4px;
-  overflow-y: auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
   white-space: nowrap;
+  border-top: 1px solid var(--line);
+  background: var(--raised);
+}
+
+.chips ion-chip {
+  margin: 0;
 }
 
 /* Breadcrumb */
 .breadcrumb {
-  position:relative;
-  list-style: none;
-  height: 48px;
+  box-sizing: border-box;
+  height: 42px;
+  background: var(--raised);
   color: var(--ink);
   font-size: var(--fs-body);
   font-weight: 500;
-  overflow: auto;
+  overflow-x: auto;
   white-space: nowrap;
   margin: 0;
-  padding: 0px 16px;
-  text-align: left;
+  padding: 0 12px;
+  text-align: start;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--rule);
+  gap: 2px;
+  border-bottom: 1px solid var(--line);
 }
 
-.breadcrumb div:last-child {
-  margin-right:15px;
-  padding-right:15px;
-}
-
-.breadcrumb div {
-  display: inline-block;
+.crumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   color: var(--muted);
 }
+
+.crumb-item.active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .breadcrumb a {
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  cursor:pointer;
-  color:inherit;
+  cursor: pointer;
+  color: inherit;
   padding: 4px 6px;
   border-radius: var(--radius-control);
   transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
 }
+
 .breadcrumb a:hover {
-  background: var(--raised);
+  background: var(--active);
   color: var(--ink);
 }
+
 .breadcrumb ion-icon {
   font-size: 16px;
-  vertical-align: top;
+  width: 16px;
+  height: 16px;
 }
+
 .breadcrumb .chevron {
-  padding: 0 5px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
   color: var(--faint);
-}
-.breadcrumb div.active {
-  color: var(--ink);
-  font-weight: 600;
-  padding-right:15px;
 }
 </style>

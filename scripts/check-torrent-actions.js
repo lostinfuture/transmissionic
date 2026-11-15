@@ -124,5 +124,21 @@ for (const key of Object.keys(lock.packages || {})) {
 const styleSource = read("src/theme/style.css");
 assert.ok(styleSource.includes("--background-hover-opacity: 0 !important;"));
 assert.ok(!list.includes('class="add-button"\n            fill="solid"\n            color="primary"'));
+assert.ok(detailsSource.includes("<ion-page>"));
+assert.ok(detailsSource.includes('<ion-segment-button :value="0"'));
+assert.ok(add.includes("<ion-page>"));
+assert.ok(add.includes('<ion-segment-button :value="0"'));
+
+const infosSource = read("src/views/components/Infos.vue");
+assert.ok(infosSource.includes('class="ion-padding"'));
+assert.ok(infosSource.includes("<ion-list>"));
+
+const trackersSource = read("src/views/components/Trackers.vue");
+assert.ok(trackersSource.includes('class="ion-padding"'));
+assert.ok(trackersSource.includes('class="tracker-card"'));
+
+const peersSource = read("src/views/components/Peers.vue");
+assert.ok(!peersSource.includes("down.png"));
+assert.ok(!peersSource.includes("up.png"));
 
 console.log("torrent actions check ok");

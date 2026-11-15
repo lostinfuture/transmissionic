@@ -1,30 +1,31 @@
 <template>
-  <ion-content :fullscreen="fullscreen" ref="virtualscroll">
+  <ion-content :fullscreen="fullscreen" :class="{ 'framed-content': !fullscreen }" ref="virtualscroll">
     <slot name="fab"></slot>
 
-    <RecycleScroller
-      :class="{ scroller:true, bottom }"
-      ref="scroller"
-      :items="items"
-      :item-size="itemSize"
-      :key-field="keyField ? keyField : null"
-    >
-      <template v-slot:before>
-        <slot name="start"></slot>
+    <div :class="{ 'scroller-frame': !fullscreen }">
+      <RecycleScroller
+        :class="{ scroller: true, bottom }"
+        ref="scroller"
+        :items="items"
+        :item-size="itemSize"
+        :key-field="keyField ? keyField : null"
+      >
+        <template v-slot:before>
+          <slot name="start"></slot>
 
-        <div class="placeholder" v-if="items.length==0">
-          <strong class="capitalize">{{ Locale.empty }}</strong>
-          <p><slot name="search"></slot></p>
-        </div>
-      </template>
+          <div class="placeholder" v-if="items.length==0">
+            <strong class="capitalize">{{ Locale.empty }}</strong>
+            <p><slot name="search"></slot></p>
+          </div>
+        </template>
 
-      <template v-slot:default="{item}">
-        <slot :item="item"></slot>
-      </template>
-    </RecycleScroller>
-    
-    <slot name="end"></slot>
-    
+        <template v-slot:default="{item}">
+          <slot :item="item"></slot>
+        </template>
+      </RecycleScroller>
+      
+      <slot name="end"></slot>
+    </div>
   </ion-content>
 </template>
 
@@ -73,11 +74,34 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.scroller {
-  height:100%;
+ion-content.framed-content {
+  --background: var(--ground);
 }
-.scroller.bottom {
-  height:calc(100% - 50px);
+
+.scroller-frame {
+  box-sizing: border-box;
+  height: calc(100% - 32px);
+  margin: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroller {
+  height: 100%;
+}
+
+.scroller-frame .scroller {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+}
+
+.scroller.bottom:not(.scroller-frame .scroller) {
+  height: calc(100% - 50px);
 }
 
 .placeholder {

@@ -1,41 +1,32 @@
 <template>
-  <VirtualScroll ref="content" :items="details.peers" :item-size="48" key-field="address">
+  <VirtualScroll ref="content" :items="details.peers" :item-size="56" key-field="address">
     <template v-slot:start>
-      <ion-list-header id="top">
-        <ion-label>
+      <div class="list-head">
+        <span class="tabular">
           {{ details.peers.length }}
           {{ LocaleController.getPlural("peer",details.peers.length) }}
-        </ion-label>
-      </ion-list-header>
+        </span>
+      </div>
     </template>
 
     <template v-slot:default="{item}">
       <div class="peer">
-        <div class="main">
-          <div class="bloc fit">
+        <div class="peer-main">
+          <div class="peer-host tabular" translate="no">
             <img v-if="flagEnabled" class="flag" v-bind="flagAttributes(item.address)" @click="countryName(item.address)" alt="">
-            {{item.address}}
-            <ion-icon v-if="item.isEncrypted" :ios="lockClosedOutline" :md="lockClosedSharp"></ion-icon>
+            <span class="selectable">{{ item.address }}</span>
+            <ion-icon v-if="item.isEncrypted" class="lock" :ios="lockClosedOutline" :md="lockClosedSharp" aria-hidden="true"></ion-icon>
           </div>
-          <div class="bloc right truncate">
-            <span class="selectable">{{ item.clientName }}</span>
-          </div>
-
+          <div class="peer-client selectable" translate="no">{{ item.clientName }}</div>
         </div>
-        <div class="details">
-          <span class="bloc">
-            <img class="icon" :src="downIcon" alt="Download">
-            {{Utils.formatBytes(item.rateToClient,2,true)}}
+        <div class="peer-details tabular">
+          <span class="rate down" :class="{ idle: !(item.rateToClient > 0) }">
+            ↓&nbsp;{{ Utils.formatBytes(item.rateToClient,1,true) }}
           </span>
-
-          <span class="bloc">
-            <img class="icon" :src="upIcon" alt="Upload">
-            {{Utils.formatBytes(item.rateToPeer,2,true)}}
+          <span class="rate up" :class="{ idle: !(item.rateToPeer > 0) }">
+            ↑&nbsp;{{ Utils.formatBytes(item.rateToPeer,1,true) }}
           </span>
-
-          <span style="float:right">
-            {{ Utils.getPercent(item.progress) }}
-          </span>
+          <span class="progress">{{ Utils.getPercent(item.progress) }}</span>
         </div>
       </div>
     </template>
@@ -46,8 +37,6 @@
 import { defineComponent, inject } from 'vue';
 import { 
   IonIcon,
-  IonListHeader,
-  IonLabel
 } from '@ionic/vue';
 import {
   lockClosedOutline,
@@ -65,13 +54,9 @@ export default defineComponent({
   components: {
     VirtualScroll,
     IonIcon,
-    IonListHeader,
-    IonLabel
   },
   data() {
     return {
-      downIcon:"./assets/down.png",
-      upIcon:"./assets/up.png",
       details:{} as Record<string,any>,
       flags:{} as Record<string,any>
     }
@@ -129,69 +114,99 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-icon,img.flag {
-  vertical-align: -2px;
+.list-head {
+  box-sizing: border-box;
+  height: 42px;
+  padding: 0 16px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--ink);
+  text-align: start;
 }
 
-#top {
-  text-align: left;
-  color:var(--ion-color-medium);
-  text-transform: lowercase;
+.peer {
+  box-sizing: border-box;
+  height: 56px;
+  border-bottom: 1px solid var(--rule);
+  text-align: start;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
-img.icon {
-  height:10px;
+.peer-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.peer-host {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .flag {
-  height: 16px;
+  height: 14px;
+  width: auto;
   object-fit: cover;
-  width: max-content;
+  border-radius: 2px;
+  cursor: pointer;
 }
 
-
-.peer {
-  height:48px;
-  border-bottom: 1px solid var(--rule);
-  text-align:left;
-  padding: 6px 16px;
-  box-sizing: border-box;
+.lock {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
 }
 
-.main {
-  display:flex;
-  flex-flow: wrap;
-  flex-direction: row;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  height:20px;
-  margin-bottom:2px;
-  overflow: hidden;
-}
-
-.bloc {
-  height:18px;
-  white-space: nowrap;
-  margin-right:4px;
-}
-.bloc.fit {
-  flex: 0 0 auto;
-}
-.bloc.truncate {
-  flex: 1 1 1%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.bloc.right {
-  text-align: right;
-  margin-right:0px;
-}
-
-.details {
+.peer-client {
   font-size: var(--fs-small);
   color: var(--muted);
-  height: 1rem;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: end;
+  min-width: 0;
+}
+
+.peer-details {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: var(--fs-small);
+  color: var(--muted);
+}
+
+.rate.down {
+  color: var(--positive);
+}
+
+.rate.up {
+  color: var(--info);
+}
+
+.rate.idle {
+  color: var(--faint);
+}
+
+.progress {
+  margin-inline-start: auto;
+  color: var(--ink);
+  font-weight: 500;
 }
 </style>

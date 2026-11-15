@@ -1,5 +1,5 @@
 <template>
-
+  <ion-page>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -27,19 +27,19 @@
       </ion-toolbar>
       <ion-toolbar>
         <ion-segment ref="tabs" @ionChange="tabController.setTab($event.detail.value)" v-model="tabController.state.selectedTab" scrollable>
-          <ion-segment-button value="0" id="tab1">
+          <ion-segment-button :value="0" id="tab1">
             <ion-label>{{ Locale.general }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="1" id="tab2">
+          <ion-segment-button :value="1" id="tab2">
             <ion-label>{{ Locale.options }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="2" id="tab3">
+          <ion-segment-button :value="2" id="tab3">
             <ion-label>{{ Locale.files }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="3" id="tab4">
+          <ion-segment-button :value="3" id="tab4">
             <ion-label>{{ LocaleController.getForm("tracker","other") }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="4" id="tab5">
+          <ion-segment-button :value="4" id="tab5">
             <ion-label>{{ LocaleController.getForm("peer","other") }}</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -68,7 +68,7 @@
         <Peers v-if="tabController.isVisible(4)"></Peers>
       </div>
     </div>
-
+  </ion-page>
 </template>
 
 <script lang="ts">
@@ -78,6 +78,7 @@ import {
   loadingController,
   alertController,
   actionSheetController,
+  IonPage,
   IonHeader, 
   IonTitle, 
   IonToolbar,
@@ -127,6 +128,7 @@ export default defineComponent({
     Files,
     Trackers,
     Peers,
+    IonPage,
     IonHeader, 
     IonTitle, 
     IonToolbar,
@@ -217,7 +219,6 @@ export default defineComponent({
   },
   mounted() {
     Utils.customScrollbar(this.$refs.tabs, false, false);
-    Utils.customScrollbar(this.$refs.content);
 
     this.tabController.init(this.$refs.tabs);
 

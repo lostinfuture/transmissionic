@@ -1,4 +1,5 @@
 <template>
+  <ion-page>
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -16,13 +17,13 @@
       </ion-toolbar>
       <ion-toolbar>
         <ion-segment ref="tabs" @ionChange="tabController.setTab($event.detail.value)" v-model="tabController.state.selectedTab" scrollable>
-          <ion-segment-button value="0" id="tab1">
+          <ion-segment-button :value="0" id="tab1">
             <ion-label>{{ Locale.general }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="1" v-if="!multiple" :disabled="!data.files" id="tab2">
+          <ion-segment-button :value="1" v-if="!multiple" :disabled="!data.files" id="tab2">
             <ion-label>{{ Locale.files }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="1" v-else id="tab2">
+          <ion-segment-button :value="1" v-else id="tab2">
             <ion-label class="text-transform">{{ LocaleController.getForm("torrent","other") }}</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -177,10 +178,9 @@
                   <div class="name">
                     {{item.data.name || item.torrent}}
                   </div>
-                  <div class="details">
-                    <ion-icon color="medium" :ios="documentOutline" :md="documentSharp"></ion-icon>
-
-                    {{ Utils.formatBytes(item.data.length) }}
+                  <div class="details tabular">
+                    <ion-icon class="type-icon" :ios="documentOutline" :md="documentSharp" aria-hidden="true"></ion-icon>
+                    <span>{{ Utils.formatBytes(item.data.length) }}</span>
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@
           </VirtualScroll>
         </div>
     </div>
-    
+  </ion-page>
 </template>
 
 <script lang="ts">
@@ -198,6 +198,7 @@ import {
   alertController,
   loadingController,
   actionSheetController,
+  IonPage,
   IonContent, 
   IonHeader, 
   IonTitle, 
@@ -252,6 +253,7 @@ export default defineComponent({
     Autocomplete,
     Files,
     VirtualScroll,
+    IonPage,
     IonContent, 
     IonHeader, 
     IonTitle, 
@@ -603,55 +605,58 @@ p {
 }
 
 .torrent {
-  height:64px;
+  box-sizing: border-box;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: center;
+  padding: 0 16px;
   border-bottom: 1px solid var(--rule);
-  text-align:left;
-}
-
-.torrent > div {
-  padding:5px;
-  vertical-align: top;
+  text-align: start;
 }
 
 .side {
-  height:64px;
-  width:50px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.side ion-icon {
-  font-size: 18px;
-  margin: 18px 0px;
-}
-
 .middle {
-  position:relative;
-  display:inline-block;
-  height:64px;
-  width:calc(100% - 50px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
 .name {
   font-size: var(--fs-body);
   font-weight: 500;
-  line-height: 1.25rem;
-  height: 38px;
+  line-height: 1.35;
+  color: var(--ink);
+  white-space: nowrap;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 }
+
 .details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--fs-small);
+  line-height: 1.3;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.details ion-icon {
-  vertical-align: -2px;
+.type-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--faint);
+  flex: 0 0 14px;
 }
 </style>
