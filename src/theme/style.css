@@ -100,6 +100,10 @@ ion-footer ion-toolbar {
   --border-color: var(--line);
   --color: var(--ink);
   --min-height: 52px;
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  --padding-start: 8px;
+  --padding-end: 8px;
   --ion-toolbar-segment-color: var(--muted);
   --ion-toolbar-segment-color-checked: var(--ink);
   --ion-toolbar-segment-indicator-color: transparent;
@@ -122,10 +126,52 @@ ion-footer ion-toolbar:first-of-type {
   --border-width: 1px 0 0 0;
 }
 
-ion-title {
+ion-title,
+.ios ion-title,
+.md ion-title,
+ion-toolbar ion-title {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: var(--control-height) !important;
+  min-height: var(--control-height) !important;
+  padding-inline: 8px 12px !important;
+  padding-block: 0 !important;
+  margin: 0 !important;
+  text-align: start !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   font-size: var(--fs-section);
   font-weight: 600;
   letter-spacing: -0.01em;
+  line-height: 1.25 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+ion-toolbar ion-buttons {
+  display: flex !important;
+  align-items: center !important;
+  margin-block: 0 !important;
+  margin-inline: 0 !important;
+  min-height: 36px;
+}
+
+ion-toolbar ion-back-button,
+ion-toolbar ion-menu-button,
+ion-toolbar ion-buttons .button-has-icon-only,
+.sc-ion-buttons-md-s .button-has-icon-only.button-clear,
+.sc-ion-buttons-ios-s .button-has-icon-only.button-clear {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  --padding-start: 0 !important;
+  --padding-end: 0 !important;
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
 }
 
 ion-button,
@@ -886,6 +932,8 @@ ion-menu ion-content {
 
 ion-menu ion-footer {
   border-top: 1px solid var(--line);
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 ion-menu ion-footer.footer-md::before {
@@ -933,7 +981,10 @@ ion-menu ion-item ion-icon {
 }
 
 ion-menu ion-item [slot="start"] {
-  margin-inline-end: 12px;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 12px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 ion-menu ion-item.selected {
@@ -951,7 +1002,8 @@ ion-menu ion-list#trackers-list {
 }
 
 ion-menu ion-list#other-list {
-  padding: 8px 0;
+  padding: 12px 0;
+  margin: 0;
 }
 
 ion-menu .count {

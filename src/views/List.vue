@@ -60,8 +60,8 @@
                 <span aria-hidden="true">{{ sharedState.reverse ? "↓" : "↑" }}</span>
               </button>
             </template>
-            <ion-button @click="toggleSearch()" fill="clear" :aria-label="Locale.search" :title="Locale.search">
-              <ion-icon slot="icon-only" :ios="searchOutline" :md="searchSharp"></ion-icon>
+            <ion-button @click="toggleSearch()" fill="clear" class="tool-btn" :aria-label="Locale.search" :title="Locale.search">
+              <ion-icon slot="start" :ios="searchOutline" :md="searchSharp" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button
               v-if="connectionStatus.connected"
@@ -852,6 +852,9 @@ export default defineComponent({
 
 .screen-title {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: start;
   font-size: var(--fs-section);
   font-weight: 600;
   line-height: 1.25;
@@ -870,7 +873,7 @@ export default defineComponent({
   --background-focused-opacity: 0.12;
   --color: var(--surface);
   height: var(--control-height);
-  margin-inline: 6px 8px;
+  margin-inline: 6px 0;
   font-size: var(--fs-body);
   display: none;
 }
@@ -1007,9 +1010,13 @@ export default defineComponent({
   --color: var(--ink);
 }
 
-.header-tools .tool-btn ion-icon[slot="start"] {
+.header-tools .tool-btn ion-icon,
+.header-tools .tool-btn ion-icon[slot="start"],
+.header-tools .tool-btn ion-icon[slot="icon-only"] {
   margin-inline-end: 0;
-  font-size: 16px;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .tool-label {
