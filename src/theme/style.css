@@ -438,6 +438,11 @@ ion-searchbar .searchbar-cancel-button.sc-ion-searchbar-ios {
 
 ion-searchbar .searchbar-cancel-button,
 ion-searchbar .searchbar-clear-button {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
   border-radius: var(--radius-control);
   transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
 }
@@ -461,6 +466,20 @@ ion-header ion-searchbar,
 ion-header ion-searchbar .searchbar-input-container {
   min-height: 36px !important;
   height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+ion-header ion-searchbar .searchbar-input,
+ion-header ion-searchbar .searchbar-input.sc-ion-searchbar-md,
+ion-header ion-searchbar .searchbar-input.sc-ion-searchbar-ios {
+  min-height: 36px !important;
+  height: 36px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-inline-start: 36px !important;
+  padding-inline-end: 12px !important;
+  line-height: 36px !important;
 }
 
 ion-searchbar .searchbar-search-icon,
@@ -478,6 +497,7 @@ ion-searchbar .searchbar-cancel-button ion-icon {
 ion-searchbar .searchbar-search-icon,
 ion-searchbar .searchbar-search-icon.sc-ion-searchbar-md,
 ion-searchbar .searchbar-search-icon.sc-ion-searchbar-ios {
+  inset-inline-start: 10px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   margin-top: 0 !important;
@@ -672,7 +692,7 @@ body.dark ion-toggle {
   --background: var(--control);
   --background-checked: var(--positive);
   --handle-background: var(--ink);
-  --handle-background-checked: #0e110f;
+  --handle-background-checked: #ffffff;
 }
 
 ion-checkbox {
