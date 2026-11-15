@@ -57,7 +57,7 @@ jobs:
           sha=$(git rev-parse HEAD)
           name="transmissionic-webui-${sha}.zip"
           zip -r "$name" web
-          test ! -f Transmissionic-webui-v1.10.6.zip
+          test ! -f Transmissionic-webui-v1.10.8.zip
           unzip -p "$name" web/LICENSE | grep -q "Copyright (c) 2021 Transmissionic"
 
       - uses: actions/upload-artifact@v4
