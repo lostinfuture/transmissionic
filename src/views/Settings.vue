@@ -176,7 +176,7 @@
               </ion-list-header>
 
               <ion-item>
-                {{ Locale.bookmarkletDetail }}
+                <p class="item-prose">{{ Locale.bookmarkletDetail }}</p>
               </ion-item>
 
               <div class="ion-padding small">

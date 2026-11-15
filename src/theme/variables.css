@@ -149,6 +149,16 @@
   --ion-color-light-tint: #f2f3f2;
 }
 
+@media (max-width: 767px) {
+  :root {
+    --fs-small: 13px;
+    --fs-body: 15px;
+    --fs-section: 17px;
+    --fs-title: 21px;
+    --control-height: 36px;
+  }
+}
+
 /*
   Ionic variables that point at app tokens. Declared on body, not :root:
   a custom property that uses var() is resolved where it is declared, so on

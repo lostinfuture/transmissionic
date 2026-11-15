@@ -226,6 +226,7 @@ export default defineComponent({
 }
 
 .step:hover {
+  background: var(--raised);
   border-color: var(--control);
   color: var(--ink);
 }
@@ -245,13 +246,13 @@ export default defineComponent({
   min-width: 0;
   display: grid;
   grid-template-rows: auto 4px auto;
-  row-gap: 6px;
+  row-gap: 7px;
 }
 
 .name {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 500;
-  line-height: 20px;
+  line-height: 1.4;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

@@ -15,7 +15,7 @@
             {{ Utils.trackerDomain(tracker.host).domain }}
           </ion-label>
           <ion-buttons slot="end">
-            <ion-button fill="clear" color="dark" @click="trackerActions(tracker)">
+            <ion-button fill="clear" @click="trackerActions(tracker)">
               <ion-icon slot="icon-only" :ios="ellipsisVerticalOutline" :md="ellipsisVerticalSharp"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -91,7 +91,7 @@
 
     <ion-infinite-scroll @ionInfinite="displayMore($event)" threshold="100px">
       <ion-infinite-scroll-content loading-spinner="circular">
-        <ion-button fill="clear" color="dark" @click="displayMore()" :disabled="displayedCount>=trackerCount">
+        <ion-button fill="clear" @click="displayMore()" :disabled="displayedCount>=trackerCount">
           {{ Locale.displayMore }}
         </ion-button>
       </ion-infinite-scroll-content>

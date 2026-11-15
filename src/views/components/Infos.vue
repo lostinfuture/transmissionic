@@ -228,7 +228,7 @@ dl > div {
   display: grid;
   grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
   gap: 16px;
-  padding: 9px 0;
+  padding: 11px 0;
   border-bottom: 1px solid var(--rule);
   min-width: 0;
 }
@@ -236,14 +236,14 @@ dl > div {
 dt {
   font-size: var(--fs-body);
   font-weight: 500;
-  line-height: 20px;
+  line-height: 1.55;
   color: var(--muted);
 }
 
 dd {
   margin: 0;
   font-size: var(--fs-body);
-  line-height: 20px;
+  line-height: 1.55;
   color: var(--ink);
   overflow-wrap: anywhere;
   min-width: 0;

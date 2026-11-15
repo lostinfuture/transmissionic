@@ -252,7 +252,14 @@ export default defineComponent({
 }
 
 .md .location-alert .alert-button-group ion-button {
-  --background-hover-opacity: 0;
+  --color: var(--ink);
+  --background-hover: var(--raised);
+  --background-hover-opacity: 1;
+}
+
+.md .location-alert .alert-button-group ion-button:hover::part(native),
+.ios .location-alert .alert-button-group ion-button:hover::part(native) {
+  background: var(--raised) !important;
 }
 
 .ios .location-alert {

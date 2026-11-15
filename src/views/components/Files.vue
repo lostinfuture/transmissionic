@@ -482,6 +482,29 @@ export default defineComponent({
   justify-content: center;
 }
 
+.side.click {
+  width: 36px;
+  height: 36px;
+  margin: 14px 7px;
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+}
+
+.side.click:hover {
+  background: var(--raised);
+  color: var(--ink);
+}
+
+.back.click {
+  transition: background-color var(--t-hover) var(--ease-out);
+}
+
+.back.click:hover,
+.middle.click:hover {
+  background: var(--raised);
+}
+
 .side ion-icon {
   font-size: 18px;
   margin: 18px 0px;
@@ -558,6 +581,13 @@ export default defineComponent({
   text-decoration: none;
   cursor:pointer;
   color:inherit;
+  padding: 4px 6px;
+  border-radius: var(--radius-control);
+  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out);
+}
+.breadcrumb a:hover {
+  background: var(--raised);
+  color: var(--ink);
 }
 .breadcrumb ion-icon {
   font-size: 16px;
