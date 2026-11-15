@@ -12,51 +12,40 @@
       <div class="app-details">
         <img :src="iconSrc" alt="Logo">
         <h4>Transmissionic {{appVersion}}</h4>
-        <p>Maintained fork.</p>
-        <p>Copyright (c) 2021 Transmissionic<br>Copyright (c) 2026 lostinfuture</p>
+        <p class="subtitle">Maintained fork of <a href="https://github.com/6c65726f79/Transmissionic" target="_blank" rel="noopener">6c65726f79/Transmissionic</a></p>
+        <p class="copyright">Copyright (c) 2021 Transmissionic<br>Copyright (c) 2026 lostinfuture</p>
       </div>
 
-      <ion-list v-if="sessionArguments">
+      <ion-list>
         <ion-list-header>
-          <ion-label>{{ Locale.serverInformation }}</ion-label>
+          <ion-label>{{ Locale.about.about }}</ion-label>
         </ion-list-header>
         <ion-item>
-          <ion-label>{{ Locale.transmissionVersion }}</ion-label>
-          <span slot="end" class="info-value tabular selectable">{{ sessionArguments.version || "—" }}</span>
+          <div class="about-prose">
+            <p>
+              Transmissionic is a static web interface for <code>transmission-daemon</code> built with Vue 3 and Ionic. Maintained fork.
+            </p>
+            <p>
+              This fork strips out the legacy mobile and desktop wrappers to focus on the browser UI. It adds Transmission 4.1+ JSON-RPC 2.0 support with automatic fallback to the legacy RPC format, works over plain HTTP on a local network without <code>crypto.subtle</code>, and resolves same-origin RPC paths automatically behind reverse proxies.
+            </p>
+            <p>
+              The interface has been rebuilt with a neutral dark and light palette, a live transfer rate graph and session statistics in the sidebar, unified client and server settings, top-bar batch controls, and responsive layout fixes for desktop and Mobile Safari.
+            </p>
+            <p>
+              Source code and releases:
+              <a href="https://github.com/lostinfuture/transmissionic" target="_blank" rel="noopener">github.com/lostinfuture/transmissionic</a>
+            </p>
+          </div>
         </ion-item>
-        <ion-item>
-          <ion-label>{{ Locale.freeSpace }}</ion-label>
-          <span slot="end" class="info-value tabular selectable">{{ freeSpaceFormatted }}</span>
-        </ion-item>
-        <ion-item>
-          <ion-label>{{ Locale.port }}</ion-label>
-          <span slot="end" class="info-value tabular selectable">{{ sessionArguments["peer-port"] ?? "—" }}</span>
-        </ion-item>
+        <div class="ion-padding small" v-if="isWebUI">
+          <ion-button size="default" @click="checkForUpdates()">{{ Locale.checkUpdates }}</ion-button>
+          <span v-if="updateAvailable && downloadUrl" class="update-note">
+            <strong>{{formatText(Locale.updateAvailable).before}}</strong>
+            <a :href="downloadUrl" target="_blank" rel="noopener">{{newVersion}}</a>
+            <strong>{{formatText(Locale.updateAvailable).after}}</strong>
+          </span>
+        </div>
       </ion-list>
-
-      <p>
-        {{Locale.about.description}}
-      </p>
-      <p>
-        {{formatText(Locale.about.github).before}}
-        <a href="https://github.com/6c65726f79/Transmissionic" target="_blank" rel="noopener">https://github.com/6c65726f79/Transmissionic</a>
-        {{formatText(Locale.about.github).after}}
-      </p>
-      <p>
-        {{formatText(Locale.about.poeditor).before}}
-        <a href="https://poeditor.com/join/project?hash=sbVnI9eo3d" target="_blank" rel="noopener">https://poeditor.com/join/project?hash=sbVnI9eo3d</a>
-        {{formatText(Locale.about.poeditor).after}}
-      </p>
-
-      <p v-if="isWebUI">
-        <ion-button size="default" @click="checkForUpdates()">{{ Locale.checkUpdates }}</ion-button>
-      </p>
-
-      <p v-if="updateAvailable && downloadUrl">
-        <strong>{{formatText(Locale.updateAvailable).before}}</strong>
-        <a :href="downloadUrl" target="_blank" rel="noopener">{{newVersion}}</a>
-        <strong>{{formatText(Locale.updateAvailable).after}}</strong>
-      </p>
     </ion-content>
   </ion-page>
 </template>
@@ -81,7 +70,6 @@ import {
 import { defineComponent } from 'vue';
 import { Locale } from "../services/Locale";
 import { Utils } from "../services/Utils";
-import { TransmissionRPC } from "../services/TransmissionRPC";
 
 declare global {
   interface Window {
@@ -109,8 +97,7 @@ export default defineComponent({
     return {
       updateAvailable: false,
       newVersion: "",
-      downloadUrl: "",
-      sessionArguments: TransmissionRPC.sessionArguments ? { ...TransmissionRPC.sessionArguments } : null as Record<string, any> | null
+      downloadUrl: ""
     }
   },
   setup() {
@@ -122,16 +109,8 @@ export default defineComponent({
       iconSrc: "./assets/icon/favicon.png" // Force Vue.js to load relative path without transformAssetUrls
     }
   },
-  async mounted() {
+  mounted() {
     Utils.customScrollbar(this.$refs.content);
-    if (TransmissionRPC.sessionArguments) {
-      try {
-        await TransmissionRPC.refreshFreeSpace();
-        this.sessionArguments = { ...TransmissionRPC.sessionArguments };
-      } catch (e) {
-        this.sessionArguments = { ...TransmissionRPC.sessionArguments };
-      }
-    }
   },
   computed: {
     appVersion: function(): string {
@@ -139,11 +118,6 @@ export default defineComponent({
     },
     isWebUI: function() {
       return !isPlatform("electron") && !isPlatform("capacitor")
-    },
-    freeSpaceFormatted(): string {
-      if (!this.sessionArguments) return "—";
-      const bytes = this.sessionArguments["download-dir-free-space"];
-      return (Utils.formatBytes(bytes) as string) || "—";
     }
   },
   methods: {
@@ -159,14 +133,15 @@ export default defineComponent({
       }
     },
     checkForUpdates() {
-      fetch('https://api.github.com/repos/6c65726f79/Transmissionic/releases/latest')
+      fetch('https://api.github.com/repos/lostinfuture/transmissionic/releases/latest')
         .then(async (response) => {
           Utils.responseToast("success");
           const result = await response.json()
-          if(!result.prerelease){
-            this.updateAvailable = this.isNewerVersion(this.appVersion,result.name)
-            this.newVersion = result.name;
-            this.downloadUrl = `https://github.com/6c65726f79/Transmissionic/releases/tag/${result.name}`;
+          const tag = result.tag_name || result.name;
+          if(!result.prerelease && tag){
+            this.updateAvailable = this.isNewerVersion(this.appVersion, tag)
+            this.newVersion = tag;
+            this.downloadUrl = `https://github.com/lostinfuture/transmissionic/releases/tag/${tag}`;
           }
         })
     },
@@ -213,5 +188,40 @@ h4 {
 .info-value {
   font-size: var(--fs-body);
   color: var(--muted);
+}
+
+.subtitle {
+  margin: 4px 0;
+  color: var(--muted);
+}
+
+.copyright {
+  margin: 4px 0 0;
+  font-size: var(--fs-small);
+  color: var(--muted);
+}
+
+.about-prose {
+  padding: 14px 0;
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.about-prose p {
+  margin: 0 0 12px;
+}
+
+.about-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.about-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+
+.update-note {
+  font-size: var(--fs-body);
 }
 </style>

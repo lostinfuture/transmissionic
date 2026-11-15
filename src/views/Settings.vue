@@ -12,18 +12,21 @@
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
-      <ion-toolbar v-if="hasServerConfig">
+      <ion-toolbar>
         <ion-segment ref="tabs" @ionChange="tabController.setTab($event.detail.value)" v-model="tabController.state.selectedTab" scrollable>
           <ion-segment-button :value="0" id="tab0">
             <ion-label>{{ Locale.client || Locale.interface }}</ion-label>
           </ion-segment-button>
           <ion-segment-button :value="1" id="tab1">
+            <ion-label>{{ Locale.servers }}</ion-label>
+          </ion-segment-button>
+          <ion-segment-button v-if="hasServerConfig" :value="2" id="tab2">
             <ion-label>{{ Locale.download }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button :value="2" id="tab2">
+          <ion-segment-button v-if="hasServerConfig" :value="3" id="tab3">
             <ion-label>{{ Locale.limits }}</ion-label>
           </ion-segment-button>
-          <ion-segment-button :value="3" id="tab3">
+          <ion-segment-button v-if="hasServerConfig" :value="4" id="tab4">
             <ion-label>{{ Locale.network }}</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -33,7 +36,7 @@
     <div class="swiper" ref="swiper">
       <div class="swiper-wrapper">
         <!-- Client tab -->
-        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab0" :aria-hidden="hasServerConfig && tabController.state.selectedTab!=0">
+        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab0" :aria-hidden="tabController.state.selectedTab!=0">
           <ion-content :fullscreen="true" class="ion-padding" ref="tab0">
             <ion-list>
               <ion-list-header>
@@ -198,9 +201,64 @@
           </ion-content>
         </div>
 
-        <!-- Download tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=1">
+        <!-- Servers tab -->
+        <div class="swiper-slide" role="tabpanel" aria-labelledby="tab1" :aria-hidden="tabController.state.selectedTab!=1">
           <ion-content class="ion-padding" ref="tab1">
+            <ion-list>
+              <ion-list-header>
+                <ion-label>{{ Locale.servers }}</ion-label>
+              </ion-list-header>
+
+              <ion-item
+                v-for="(s, i) in serverList"
+                :key="i"
+                @click="selectServer(i)"
+                :detail="false"
+                :class="{ 'selected-server': selectedServer === i }"
+                button
+              >
+                <ion-icon slot="start" class="server-row-icon" :ios="serverOutline" :md="serverSharp"></ion-icon>
+                <ion-label>{{ s.name }}</ion-label>
+                <ion-button
+                  slot="end"
+                  fill="clear"
+                  class="server-edit-btn"
+                  @click.stop="editServer(i)"
+                  :aria-label="Locale.serverDetails"
+                >
+                  <ion-icon slot="icon-only" :ios="pencilOutline" :md="pencilSharp"></ion-icon>
+                </ion-button>
+              </ion-item>
+
+              <ion-item @click="addServer()" :detail="false" button>
+                <ion-icon slot="start" class="server-row-icon" :ios="addOutline" :md="addSharp"></ion-icon>
+                <ion-label>{{ Locale.add }}</ion-label>
+              </ion-item>
+            </ion-list>
+
+            <ion-list v-if="hasServerConfig && config">
+              <ion-list-header>
+                <ion-label>{{ Locale.serverInformation }}</ion-label>
+              </ion-list-header>
+              <ion-item>
+                <ion-label>{{ Locale.transmissionVersion }}</ion-label>
+                <span slot="end" class="info-value tabular selectable">{{ config.version || "—" }}</span>
+              </ion-item>
+              <ion-item>
+                <ion-label>{{ Locale.freeSpace }}</ion-label>
+                <span slot="end" class="info-value tabular selectable">{{ freeSpaceFormatted }}</span>
+              </ion-item>
+              <ion-item>
+                <ion-label>{{ Locale.port }}</ion-label>
+                <span slot="end" class="info-value tabular selectable">{{ config["peer-port"] ?? "—" }}</span>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </div>
+
+        <!-- Download tab -->
+        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=2">
+          <ion-content class="ion-padding" ref="tab2">
             <ion-list>
               <ion-list-header>
                 <ion-label>
@@ -280,8 +338,8 @@
         </div>
 
         <!-- Limits tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab2" :aria-hidden="tabController.state.selectedTab!=2">
-          <ion-content class="ion-padding" ref="tab2">
+        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=3">
+          <ion-content class="ion-padding" ref="tab3">
             <ion-list>
               <ion-list-header>
                 <ion-label>
@@ -413,8 +471,8 @@
         </div>
 
         <!-- Network tab -->
-        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab3" :aria-hidden="tabController.state.selectedTab!=3">
-          <ion-content class="ion-padding" ref="tab3">
+        <div v-if="hasServerConfig" class="swiper-slide" role="tabpanel" aria-labelledby="tab4" :aria-hidden="tabController.state.selectedTab!=4">
+          <ion-content class="ion-padding" ref="tab4">
             <ion-list>
               <ion-list-header>
                 <ion-label>
@@ -516,7 +574,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import {
   modalController,
   alertController,
@@ -547,7 +605,13 @@ import {
   saveOutline,
   saveSharp,
   informationCircleOutline,
-  informationCircleSharp
+  informationCircleSharp,
+  serverOutline,
+  serverSharp,
+  pencilOutline,
+  pencilSharp,
+  addOutline,
+  addSharp
 } from 'ionicons/icons';
 import TabController from '../services/TabController';
 import { TransmissionRPC } from "../services/TransmissionRPC";
@@ -556,6 +620,7 @@ import { Locale } from "../services/Locale";
 import { LocaleController } from "../services/LocaleController";
 import { UserSettings } from "../services/UserSettings";
 import { FileHandler } from '../services/FileHandler';
+import { Emitter } from '../services/Emitter';
 import * as _ from 'lodash';
 
 declare global {
@@ -597,11 +662,20 @@ const bookmarkletFunction = (href: string) => {
 
 export default defineComponent({
   name: 'Settings',
+  props: {
+    initialTab: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       sharedState: UserSettings.state,
       config: TransmissionRPC.sessionArguments ? _.clone(TransmissionRPC.sessionArguments) : null as Record<string, any> | null,
       portStatus: null as null | boolean,
+      connectionStatus: {} as Record<string, any>,
+      serverList: [] as Array<Record<string, any>>,
+      selectedServer: 0
     }
   },
   components: {
@@ -635,11 +709,36 @@ export default defineComponent({
         this.config['speed-limit-up'] = Math.round(this.config['speed-limit-up'] * factor);
         this.config['speed-limit-down'] = Math.round(this.config['speed-limit-down'] * factor);
       }
+    },
+    "connectionStatus.sessionArguments"(newSessionArgs: Record<string, any> | null) {
+      if (newSessionArgs) {
+        const nextConfig = _.clone(newSessionArgs);
+        this.applySpeedMultiplier(nextConfig);
+        this.config = nextConfig;
+        this.portStatus = null;
+        this.$nextTick(() => {
+          Utils.customScrollbar(this.$refs.tab2);
+          Utils.customScrollbar(this.$refs.tab3);
+          Utils.customScrollbar(this.$refs.tab4);
+        });
+        this.refreshServerInfo();
+      } else {
+        this.config = null;
+        this.portStatus = null;
+        if (this.tabController.state.selectedTab > 1) {
+          this.tabController.setTab(1, false);
+        }
+      }
     }
   },
   computed: {
     hasServerConfig(): boolean {
       return Boolean(this.config && Object.keys(this.config).length > 0);
+    },
+    freeSpaceFormatted(): string {
+      if (!this.config) return "—";
+      const bytes = this.config["download-dir-free-space"];
+      return (Utils.formatBytes(bytes) as string) || "—";
     },
     bookmarkletEnabled(): boolean {
       return !isPlatform("electron") && !isPlatform("capacitor")
@@ -724,30 +823,70 @@ export default defineComponent({
       saveOutline,
       saveSharp,
       informationCircleOutline,
-      informationCircleSharp
+      informationCircleSharp,
+      serverOutline,
+      serverSharp,
+      pencilOutline,
+      pencilSharp,
+      addOutline,
+      addSharp
     }
   },
   created() {
-    if (this.config && UserSettings.state.useBits) {
-      this.config['alt-speed-up'] = this.config['alt-speed-up'] * 8;
-      this.config['alt-speed-down'] = this.config['alt-speed-down'] * 8;
-      this.config['speed-limit-up'] = this.config['speed-limit-up'] * 8;
-      this.config['speed-limit-down'] = this.config['speed-limit-down'] * 8;
-    }
+    this.connectionStatus = (inject('connectionStatus') as Record<string, any>) || {};
+    this.serverList = (inject('serverList') as any) || [];
+    this.selectedServer = (inject('selectedServer') as any) ?? 0;
+    this.applySpeedMultiplier(this.config);
   },
   mounted() {
     Utils.customScrollbar(this.$refs.tab0);
+    Utils.customScrollbar(this.$refs.tab1);
     if (this.hasServerConfig) {
-      Utils.customScrollbar(this.$refs.tab1);
       Utils.customScrollbar(this.$refs.tab2);
       Utils.customScrollbar(this.$refs.tab3);
-      this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+      Utils.customScrollbar(this.$refs.tab4);
     }
+    this.tabController.init(this.$refs.swiper, this.$refs.tabs);
+    if (this.initialTab) {
+      this.tabController.setTab(this.initialTab, false);
+    }
+    this.refreshServerInfo();
   },
   beforeUnmount() {
     this.tabController.destroy();
   },
   methods: {
+    applySpeedMultiplier(target: Record<string, any> | null) {
+      if (target && UserSettings.state.useBits) {
+        target['alt-speed-up'] = target['alt-speed-up'] * 8;
+        target['alt-speed-down'] = target['alt-speed-down'] * 8;
+        target['speed-limit-up'] = target['speed-limit-up'] * 8;
+        target['speed-limit-down'] = target['speed-limit-down'] * 8;
+      }
+    },
+    async refreshServerInfo() {
+      if (TransmissionRPC.sessionArguments) {
+        try {
+          await TransmissionRPC.refreshFreeSpace();
+          if (this.config && TransmissionRPC.sessionArguments) {
+            this.config['download-dir-free-space'] = TransmissionRPC.sessionArguments['download-dir-free-space'];
+          }
+        } catch (e) {
+          return;
+        }
+      }
+    },
+    selectServer(serverId: number) {
+      if (this.selectedServer !== serverId || !this.connectionStatus.connected) {
+        Emitter.emit("select-server", serverId);
+      }
+    },
+    editServer(serverId: number) {
+      Emitter.emit("edit-server", serverId);
+    },
+    addServer() {
+      Emitter.emit("add-server");
+    },
     minutesToHhmm(minutes: number) {
       const hours = Math.floor(minutes/60);
       const min = minutes%60;
@@ -936,5 +1075,43 @@ ion-content {
 .port-status.closed {
   color: var(--negative);
   background: var(--pill-negative-bg);
+}
+
+.server-row-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  margin-inline-end: 12px;
+}
+
+ion-item.selected-server {
+  --background: var(--active);
+  --color: var(--ink);
+  font-weight: 500;
+}
+
+ion-item.selected-server .server-row-icon {
+  color: var(--ink);
+}
+
+.server-edit-btn {
+  --color: var(--muted);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+  height: 32px;
+  width: 32px;
+}
+
+.server-edit-btn ion-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.info-value {
+  font-size: var(--fs-body);
+  color: var(--muted);
 }
 </style>

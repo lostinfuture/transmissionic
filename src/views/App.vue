@@ -6,24 +6,6 @@
         <!-- Main menu -->
         <ion-content v-show="!privateState.trackerListOpened || sharedState.showTrackerList" id="navigation" ref="navigation" scrollbar :class="{separator: sharedState.showTrackerList}">
           <TransferGraph :torrentList="privateState.torrentList" :connected="privateState.connectionStatus.connected" />
-          <ion-list id="servers-list">
-            <ion-list-header>{{ Locale.servers }}</ion-list-header>
-  
-            <ion-menu-toggle class="ion-activatable" :auto-hide="false" v-for="(s, i) in privateState.serverList" :key="i">
-              <ion-item @click="selectServer(i)" class="hydrated" lines="none" :detail="false" :class="{ selected: privateState.selectedServer === i }" button>
-                <ion-icon slot="start" :ios="serverOutline" :md="serverSharp"></ion-icon>
-                <ion-label>{{ s.name }}</ion-label>
-                <ion-icon slot="end" :ios="pencilOutline" :md="pencilSharp" @click="openServerDetailsModal(i,$event)" tabindex="0" :aria-label="Locale.serverDetails"></ion-icon>
-              </ion-item>
-            </ion-menu-toggle>
-
-            <ion-menu-toggle :auto-hide="false">
-              <ion-item @click="addServer($event)" class="hydrated" lines="none" :detail="false" button>
-                <ion-icon slot="start" :ios="addOutline" :md="addSharp"></ion-icon>
-                <ion-label>{{ Locale.add }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          </ion-list>
 
           <ion-list id="trackers-list" v-show="!sharedState.showTrackerList">
             <ion-list-header>{{ LocaleController.getForm("tracker","other") }}</ion-list-header>
@@ -124,12 +106,6 @@ import {
   IonInfiniteScrollContent
 } from '@ionic/vue';
 import {
-  serverOutline,
-  serverSharp,
-  pencilOutline,
-  pencilSharp,
-  addOutline,
-  addSharp,
   caretDownOutline,
   caretDownSharp,
   settingsOutline,
@@ -291,6 +267,8 @@ export default defineComponent({
     return {
       connectionStatus: this.privateState.connectionStatus,
       serverCount: computed(() => this.privateState.serverList.length),
+      serverList: computed(() => this.privateState.serverList),
+      selectedServer: computed(() => this.privateState.selectedServer),
       torrentList: computed(() => this.privateState.torrentList),
       filter: computed(() => this.privateState.filters[this.privateState.selectedFilter].id),
       filterLabel: computed(() => this.privateState.filters[this.privateState.selectedFilter].label()),
@@ -306,12 +284,6 @@ export default defineComponent({
       Locale,
       LocaleController,
       Utils,
-      serverOutline,
-      serverSharp,
-      pencilOutline,
-      pencilSharp,
-      addOutline,
-      addSharp,
       caretDownOutline,
       caretDownSharp,
       settingsOutline,
@@ -373,9 +345,10 @@ export default defineComponent({
     
     Emitter.on('refresh', (clean: any) => { this.refresh(clean); });
     Emitter.on('add-server', this.addServer);
+    Emitter.on('edit-server', (i: any) => { this.openServerDetailsModal(i, null); });
     Emitter.on('swipe-enabled', (value: any) => this.privateState.swipeEnabled=value );
     Emitter.on('about', this.openAboutModal);
-    Emitter.on('info-server', this.openAboutModal);
+    Emitter.on('info-server', () => { this.openSettingsModal(1); });
     Emitter.on('settings', this.openSettingsModal);
     Emitter.on('config-server', this.openSettingsModal);
     Emitter.on('toggle-menu', () => { menuController.toggle("left") });
@@ -465,11 +438,15 @@ export default defineComponent({
       return TransmissionRPC.persistentData ? TransmissionRPC.persistentData.trackers : []
     },
 
-    async openSettingsModal() {
+    async openSettingsModal(initialTab: any = 0) {
+      const tab = typeof initialTab === 'number' ? initialTab : 0;
       const modal = await modalController
         .create({
           component: Settings,
-          cssClass: 'settings'
+          cssClass: 'settings',
+          componentProps: {
+            initialTab: tab
+          }
         })
       modal.onDidDismiss()
         .then(() => {
@@ -506,7 +483,11 @@ export default defineComponent({
         })
       modal.onDidDismiss()
         .then(() => {
-          this.refresh(false)
+          if (!add && serverId === this.privateState.selectedServer && this.privateState.serverList[serverId]) {
+            this.selectServer(serverId);
+          } else {
+            this.refresh(false);
+          }
         })
       return modal.present();
     },
@@ -521,6 +502,7 @@ export default defineComponent({
       this.privateState.connectionStatus.error="";
       this.privateState.connectionStatus.loading=true;
       this.privateState.connectionStatus.connected=false;
+      this.privateState.connectionStatus.sessionArguments=null;
       TransmissionRPC.setServer(this.privateState.serverList[serverId], this.sharedState.timeout)
         .then((response) => {
           this.privateState.connectionStatus.sessionArguments = response;
