@@ -20,7 +20,12 @@
       </ion-toolbar>
 
       <ion-toolbar v-else-if="privateState.viewSearch" key="search-toolbar" class="search-toolbar">
-        <ion-searchbar id="search" show-cancel-button="always" v-model="privateState.search" @ionCancel="toggleSearch()" :placeholder="Locale.search + '…'" :cancel-button-text="Locale.actions.cancel" :spellcheck="false" autocapitalize="off" inputmode="search"></ion-searchbar>
+        <ion-searchbar id="search" show-cancel-button="never" show-clear-button="never" v-model="privateState.search" :placeholder="Locale.search + '…'" :spellcheck="false" autocapitalize="off" inputmode="search"></ion-searchbar>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" class="tool-btn" @click="toggleSearch()" :aria-label="Locale.actions.cancel" :title="Locale.actions.cancel">
+            <ion-icon slot="icon-only" :ios="closeOutline" :md="closeSharp" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
 
       <ion-toolbar v-else key="main-toolbar">
