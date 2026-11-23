@@ -1,7 +1,7 @@
 <template>
   <ion-app>
     <ion-split-pane contentId="main-content" :disabled="!sharedState.expandMenu">
-      <ion-menu contentId="main-content" type="overlay" menu-id="left" :swipeGesture="privateState.swipeEnabled" v-on:ionDidClose="closeTrackerList()">
+      <ion-menu contentId="main-content" type="overlay" menu-id="left" :swipeGesture="privateState.swipeEnabled" :maxEdgeStart="menuMaxEdgeStart" v-on:ionDidClose="closeTrackerList()">
 
         <!-- Main menu -->
         <ion-content id="navigation" ref="navigation" scrollbar>
@@ -151,6 +151,7 @@ import { Locale } from "../services/Locale";
 import { LocaleController } from "../services/LocaleController";
 import { Utils } from "../services/Utils";
 import { Emitter } from "../services/Emitter";
+import { computeMenuMaxEdgeStart } from "../services/menuGesture";
 import * as _ from 'lodash';
 
 export default defineComponent({
@@ -187,6 +188,7 @@ export default defineComponent({
         displayTrackerCount: 0,
         fullTrackerList: [] as Record<string, any>[],
         swipeEnabled:true,
+        viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 390,
         trackerListOpened:false,
         connectionStatus:{
           connected:false,
@@ -346,6 +348,8 @@ export default defineComponent({
     });
   },
   mounted() {
+    window.addEventListener('resize', this.onViewportResize);
+
     // Custom scrollbar for Web Browser and Electron
     Utils.customScrollbar(this.$refs.navigation);
     
@@ -363,7 +367,13 @@ export default defineComponent({
     })
     Emitter.on('select-server', (i: any) => { this.selectServer(i) })
   },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.onViewportResize);
+  },
   computed: {
+    menuMaxEdgeStart: function(): number {
+      return computeMenuMaxEdgeStart(this.privateState.viewportWidth);
+    },
     colorScheme: function(): string {
       return this.sharedState.colorScheme
     },
@@ -375,6 +385,10 @@ export default defineComponent({
     }
   },
   methods: {
+
+    onViewportResize() {
+      this.privateState.viewportWidth = window.innerWidth;
+    },
 
     addServer(e: any=null) {
       this.openServerDetailsModal(this.privateState.serverList.length,e,true);

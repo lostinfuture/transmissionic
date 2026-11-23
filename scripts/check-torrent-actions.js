@@ -74,7 +74,7 @@ const defaults = JSON.parse(read("public/default.json"));
 assert.deepStrictEqual(defaults, {});
 
 const pkg = JSON.parse(read("package.json"));
-assert.strictEqual(pkg.version, "1.10.25");
+assert.strictEqual(pkg.version, "1.10.26");
 assert.ok(pkg.scripts && pkg.scripts.test);
 assert.strictEqual(pkg.devDependencies["@types/node"], "^26.0.0");
 assert.ok(!("chart.js" in pkg.dependencies));

@@ -1,13 +1,13 @@
 {
   "name": "transmissionic",
-  "version": "1.10.25",
+  "version": "1.10.26",
   "private": true,
   "scripts": {
     "serve": "vite",
     "build": "vite build",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint src",
-    "test": "node scripts/check-add-torrent.js && node scripts/check-overlay-history.js && node scripts/check-rpc.js && node scripts/check-rpc-url.js && node scripts/check-torrent-actions.js",
+    "test": "node scripts/check-add-torrent.js && node scripts/check-overlay-history.js && node scripts/check-rpc.js && node scripts/check-rpc-url.js && node scripts/check-torrent-actions.js && node scripts/check-egress.js",
     "build:webui": "npm run build",
     "prebuild:webui": "node scripts/prebuild-webui.js",
     "postbuild:webui": "node scripts/postbuild-webui.js"

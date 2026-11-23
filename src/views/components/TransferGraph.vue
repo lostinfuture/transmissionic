@@ -133,6 +133,21 @@
         </tbody>
       </table>
     </div>
+
+    <div class="egress-wrap">
+      <table class="stats-table egress-table tabular" :aria-label="Locale.egressIp || 'Egress IP'">
+        <tbody>
+          <tr>
+            <th scope="row">{{ Locale.egressIp || "Egress IP" }}</th>
+            <td class="selectable" translate="no" :class="{ muted: !egressIp }">{{ egressIp || "—" }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ Locale.location || "Location" }}</th>
+            <td class="selectable location-cell" :class="{ muted: !egressLocation }" :title="egressTitle || undefined">{{ egressLocation || "—" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -143,6 +158,12 @@ import { Utils } from "../../services/Utils";
 import { TransmissionRPC } from "../../services/TransmissionRPC";
 import { Emitter } from "../../services/Emitter";
 import { UserSettings } from "../../services/UserSettings";
+import {
+  EgressInfo,
+  fetchEgressInfo,
+  formatEgressLocation,
+  formatEgressTitle,
+} from "../../services/EgressInfo";
 
 interface Point {
   x: number;
@@ -237,6 +258,9 @@ export default defineComponent({
       sessionStats: null as Record<string, any> | null,
       hoverIndex: null as number | null,
       sharedState: UserSettings.state,
+      egress: null as EgressInfo | null,
+      egressTimer: null as ReturnType<typeof setInterval> | null,
+      lastEgressFetch: 0,
     };
   },
   setup() {
@@ -245,14 +269,43 @@ export default defineComponent({
       Utils,
     };
   },
+  watch: {
+    connected(isConnected: boolean) {
+      if (isConnected) {
+        this.refreshEgress(true);
+      }
+    },
+  },
   created() {
     this.syncFromRPC();
     Emitter.on("session-stats", this.onSessionStats);
+    Emitter.on("refresh", this.onRefresh);
+    this.refreshEgress(true);
+    this.egressTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        return;
+      }
+      this.refreshEgress(false);
+    }, 60000);
   },
   beforeUnmount() {
     Emitter.off("session-stats", this.onSessionStats);
+    Emitter.off("refresh", this.onRefresh);
+    if (this.egressTimer !== null) {
+      clearInterval(this.egressTimer);
+      this.egressTimer = null;
+    }
   },
   computed: {
+    egressIp(): string {
+      return this.egress?.ip || "";
+    },
+    egressLocation(): string {
+      return formatEgressLocation(this.egress);
+    },
+    egressTitle(): string {
+      return formatEgressTitle(this.egress);
+    },
     normalizedSamples(): Array<{ dl: number; ul: number; ts: number }> {
       const now = Date.now();
       const raw = this.history.length > 0 ? this.history : TransmissionRPC.statsHistory || [];
@@ -471,6 +524,18 @@ export default defineComponent({
     onMouseLeave() {
       this.hoverIndex = null;
     },
+    onRefresh() {
+      this.refreshEgress(false);
+    },
+    async refreshEgress(force = false) {
+      const now = Date.now();
+      if (!force && now - this.lastEgressFetch < 10000) {
+        return;
+      }
+      this.lastEgressFetch = now;
+      const info = await fetchEgressInfo();
+      this.egress = info;
+    },
   },
 });
 </script>
@@ -661,5 +726,30 @@ export default defineComponent({
   color: var(--ink);
   font-weight: 500;
   white-space: nowrap;
+}
+
+.egress-wrap {
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.egress-table {
+  table-layout: fixed;
+}
+
+.egress-table tbody th {
+  width: 36%;
+  white-space: nowrap;
+}
+
+.egress-table tbody td {
+  width: 64%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.egress-table tbody td.muted {
+  color: var(--muted);
+  font-weight: 400;
 }
 </style>

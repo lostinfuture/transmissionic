@@ -255,5 +255,7 @@
     "testPort": "Test if the port is open",
     "stopAll": "Stop all",
     "resumeAll": "Resume all",
-    "client": "Client"
+    "client": "Client",
+    "egressIp": "Egress IP",
+    "location": "Location"
 }
